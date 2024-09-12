@@ -1,4 +1,4 @@
-from src.telegram_bot.service.app import App
+from src.real_estate_telegram_bot.service.app import App
 
 def test_app_run():
     # Arrange

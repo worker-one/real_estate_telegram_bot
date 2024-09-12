@@ -33,7 +33,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: konverner/telegram_bot:latest
+          tags: konverner/real_estate_telegram_bot:latest
 
       - name: Log out from DockerHub
         run: docker logout

@@ -1,4 +1,4 @@
-from src.telegram_bot.api import telegram
+from src.real_estate_telegram_bot.api import telegram
 
 def test_send_welcome(mocker):
     # Arrange

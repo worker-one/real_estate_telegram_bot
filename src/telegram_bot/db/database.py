@@ -14,7 +14,7 @@ from .models import Base, Message, User
 
 # Load logging configuration with OmegaConf
 logging_config = OmegaConf.to_container(
-    OmegaConf.load("./src/telegram_bot/conf/logging_config.yaml"),
+    OmegaConf.load("./src/real_estate_telegram_bot/conf/logging_config.yaml"),
     resolve=True
 )
 logging.config.dictConfig(logging_config)
@@ -30,7 +30,7 @@ if DATABASE_URL is None:
 def get_enginge():
     return create_engine(
         DATABASE_URL,
-        connect_args={'connect_timeout': 5, "application_name": "telegram_bot"},
+        connect_args={'connect_timeout': 5, "application_name": "real_estate_telegram_bot"},
         poolclass=NullPool
     )
 
