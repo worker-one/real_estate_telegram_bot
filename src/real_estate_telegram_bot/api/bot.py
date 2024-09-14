@@ -27,4 +27,4 @@ welcome.register_handlers(bot)
 
 def start_bot():
     logger.info(f"Bot `{str(bot.get_me().username)}` has started")
-    bot.polling()
+    bot.infinity_polling()
