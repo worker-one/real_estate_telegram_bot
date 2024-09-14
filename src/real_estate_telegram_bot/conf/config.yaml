@@ -1,2 +1,18 @@
-application:
-  parameter: "value"
+lang: "en"
+strings:
+  en:
+    start: "Hello! I am a real estate bot. I can help you find a property to buy or rent. Please choose an option below."
+    help: "I can help"
+    query:
+      ask_name: "Please enter the project name you want to search for."
+      result_positive: "Projects found:"
+      result_negative: "No projects found."
+  ru:
+    start: "Привет! Я бот по недвижимости. Я могу помочь вам найти недвижимость для покупки или аренды. Пожалуйста, выберите один из вариантов ниже."
+    help: "Я могу помочь"
+    query:
+      ask_name: "Пожалуйста, введите название проекта, который вы хотите найти."
+      result_positive: "Найденные проекты:"
+      result_negative: "Проекты не найдены."
+
+

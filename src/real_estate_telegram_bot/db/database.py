@@ -22,10 +22,20 @@ logger = logging.getLogger(__name__)
 
 load_dotenv(find_dotenv(usecwd=True))
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-if DATABASE_URL is None:
-    logger.error("DATABASE_URL is not set in the environment variables.")
+# Retrieve environment variables
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT")
+DB_NAME = os.getenv("DB_NAME")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+
+# Check if any of the required environment variables are not set
+if not all([DB_HOST, DB_NAME, DB_USER, DB_PASSWORD]):
+    logger.error("One or more database environment variables are not set.")
     exit(1)
+
+# Construct the database URL
+DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?sslmode=require"
 
 def get_enginge():
     return create_engine(
