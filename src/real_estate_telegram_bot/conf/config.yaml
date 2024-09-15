@@ -1,18 +1,83 @@
 lang: "en"
 strings:
   en:
-    start: "Hello! I am a real estate bot. I can help you find a property to buy or rent. Please choose an option below."
+    start: |
+      Welcome to Building Finder Bot.
+      It’s a free and helpful bot for real estate agents and investors.
+      In a glance you will be able to find all available information about any registered building in Dubai: handover date, building configuration, developer information and many more.
+      All data is official from Dubai Land Department (DLD).
+
+      1. Find building info
+      2. Useful links
+      3. Support
+      4. Select your language (EN, RU)
     help: "I can help"
     query:
-      ask_name: "Please enter the project name you want to search for."
-      result_positive: "Projects found:"
-      result_negative: "No projects found."
+      ask_name: |
+        Please input building name in a search bar below.
+
+        For example:
+        La Sirene
+
+        Keep in mind search rules:
+        -	One or two words max
+        -	If name input is incorrect – bot will offer you similar options. Choose the one you need and repeat the search request.
+
+        Enjoy the result and don’t forget to share this bot with your colleagues ;-)
+
+      result_positive_unique: "Project found:"
+      result_positive_nonunique: "Several projects found based on your query:"
+      result_positive_report: "If some information is inaccurate please report to @hunkydory_uae"
+      result_negative: "No project found."
+    
+    useful_links: |
+      Secondary Dubai Only: https://t.me/secondary_dubai
+      Request Dubai Only: https://t.me/Request_dubai
+      Rent Dubai Only: https://t.me/rent_dubai1
+      Distress Dubai Only: https://t.me/distress_dubai1
+
+      Owner’s Instagram: https://www.instagram.com/kirill_egorov_uae
+      Owner’s Telegram: @egorov_uae”
+    
+    support: "Please send your questions, offers and critics here @hunkydory_uae"
+
+
   ru:
-    start: "Привет! Я бот по недвижимости. Я могу помочь вам найти недвижимость для покупки или аренды. Пожалуйста, выберите один из вариантов ниже."
-    help: "Я могу помочь"
+    start: |
+      Добро пожаловать в Building Finder Bot.
+      Это бесплатный и полезный бот для агентов по недвижимости и инвесторов.
+      В мгновение вы сможете найти всю доступную информацию о любом зарегистрированном здании в Дубае: дату сдачи, конфигурацию здания, информацию о застройщике и многое другое. Вся информация основана на данных Земельного департамента Дубая (DLD).
+
+      1. Найти информацию о здании
+      2. Полезные ссылки
+      3. Поддержка
+      4. Выберите язык (EN, RU)
+
     query:
-      ask_name: "Пожалуйста, введите название проекта, который вы хотите найти."
-      result_positive: "Найденные проекты:"
+      ask_name: |
+        Введите название здания в строку поиска ниже.
+
+        Например:
+        La Sirene
+
+        Правила поиска:
+        - Максимум одно-два слова
+        - Если название введено неверно, то бот предложит вам похожие варианты. Выберите нужный и повторите поисковый запрос.
+
+        Наслаждайтесь результатом и не забудьте поделиться ссылкой на бот с коллегами ;-)
+
+      result_positive_unique: "Здание найдено:"
+      result_positive_report: "Если вы нашли неточности в данных, просьба сообщить @hunkydory_uae"
+      result_positive_nonunique: "Несколько зданий найдено по вашему запросу:"
       result_negative: "Проекты не найдены."
 
+      useful_links: |
+        Secondary Dubai Only: https://t.me/secondary_dubai
+        Request Dubai Only: https://t.me/Request_dubai
+        Rent Dubai Only: https://t.me/rent_dubai1
+        Distress Dubai Only: https://t.me/distress_dubai1
 
+        Instagram основателя: https://www.instagram.com/kirill_egorov_uae
+        Telegram основателя: @egorov_uae
+
+      support: "Please send your questions, offers and critics here @hunkydory_uae"

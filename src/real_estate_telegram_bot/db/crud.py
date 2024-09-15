@@ -38,11 +38,9 @@ def upsert_project(project: Project):
     db.commit()
     db.close()
 
-def query_project_by_name(project_name: str) -> Project:
+def query_projects_by_name(project_name: str) -> list[Project]:
     db: Session = get_session()
-    result = db.query(Project).filter(
-        func.lower(Project.project_name_id_buildings) == func.lower(project_name)
-        ).first()
+    result = db.query(Project).filter(Project.project_name_id_buildings.ilike(f"%{project_name}%")).all()
     db.close()
     return result
 
