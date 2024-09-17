@@ -1,6 +1,6 @@
 import math
 import datetime
-import json
+import yaml
 import logging
 
 from omegaconf import OmegaConf
@@ -19,39 +19,39 @@ logging_config = OmegaConf.to_container(
 logging.config.dictConfig(logging_config)
 logger = logging.getLogger(__name__)
 
+
+def format_date(date):
+    return date.strftime('%d.%m.%Y') if date else 'N/A'
+
 def prepepare_response(project_json: dict) -> str:
-    project_info = f"""
-    **Project information**:
+    template = strings.project_info_template
 
-    Project: {project_json['project_name']} ({project_json['project_name_id_buildings']})
-    Developer: {project_json['developer_name_en']}
-    Master developer: {project_json['master_developer_name_en']}
-    Area (Arabic): {project_json['area_name_en']}
-    Area (English): {project_json['master_project_en']}
-    Project registration date: {project_json['registration_date'].strftime('%d.%m.%Y') if project_json['registration_date'] else 'N/A'}
-    Project start date: {project_json['project_start_date'].strftime('%d.%m.%Y') if project_json['project_start_date'] else 'N/A'}
-    Project end date: {project_json['project_end_date'].strftime('%d.%m.%Y') if project_json['project_end_date'] else 'N/A'}
-    Construction duration (up to date): {project_json.get('construction_duration', 'N/A')} (Лет)
-    How old is the building: {project_json.get('project_age', 'N/A')} (Количество лет зданию)
-    Project status: {project_json['project_status']}
-    Completion: {project_json['percent_completed']}% 
-    Number of buildings: {project_json['no_of_buildings']}
-    Number of units: {project_json['no_of_units']}
-    Number of floors: {project_json['floors']}
-    Freehold: {project_json['is_free_hold']}
-    Project description: {project_json['project_description_en']}
+    formatted_project_json = {
+        'project_name_id_buildings': project_json['project_name_id_buildings'],
+        'developer_name_en': project_json['developer_name_en'],
+        'master_developer_name_en': project_json['master_developer_name_en'],
+        'area_name_en': project_json['area_name_en'],
+        'master_project_en': project_json['master_project_en'],
+        'registration_date': format_date(project_json['registration_date']),
+        'project_start_date': format_date(project_json['project_start_date']),
+        'project_end_date': format_date(project_json['project_end_date']),
+        'construction_duration': project_json.get('construction_duration', 'N/A'),
+        'project_age': project_json.get('project_age', 'Under construction'),
+        'project_status': project_json['project_status'],
+        'percent_completed': project_json['percent_completed'],
+        'no_of_buildings': project_json['no_of_buildings'],
+        'no_of_units': project_json['no_of_units'],
+        'floors': project_json['floors'],
+        'is_free_hold': project_json['is_free_hold'],
+        'project_description_en': project_json['project_description_en'],
+        'license_source_en': project_json['license_source_en'],
+        'license_number': project_json['license_number'],
+        'license_issue_date': format_date(project_json['license_issue_date']),
+        'license_expiry_date': format_date(project_json['license_expiry_date']),
+        'webpage': project_json['webpage']
+    }
 
-    **Developer information**:
-
-    Developer license information
-    Developer registration date: {project_json['registration_date'].strftime('%d.%m.%Y') if project_json['registration_date'] else 'N/A'}
-    License source: {project_json['license_source_en']}
-    Licence number: {project_json['license_number']}
-    Issue date: {project_json['license_issue_date'].strftime('%d.%m.%Y') if project_json['license_issue_date'] else 'N/A'}
-    Expiry date: {project_json['license_expiry_date'].strftime('%d.%m.%Y') if project_json['license_expiry_date'] else 'N/A'}
-    Web-site: {project_json['webpage']}
-    """
-    return project_info.strip()
+    return template.format(**formatted_project_json).strip()
 
 def register_handlers(bot):
     @bot.message_handler(commands=['query'])
@@ -84,6 +84,13 @@ def register_handlers(bot):
                 if project.project_end_date and datetime.datetime.now() > project.project_end_date:
                     project_json['project_age'] = datetime.datetime.now() - project.project_end_date
                     project_json['project_age'] = str(math.ceil((project_json['project_age'].days / 365.25) * 10) / 10)
+
+                # compute construction completion using consturction duration
+                if project.project_start_date and project.project_end_date:
+                    project_json['percent_completed'] = (datetime.datetime.now() - project.project_start_date).days / (project.project_end_date - project.project_start_date).days * 100
+                    if project_json['percent_completed'] > 100:
+                        project_json['percent_completed'] = 100
+                    project_json['percent_completed'] = str(math.ceil(project_json['percent_completed'] * 10) / 10)
 
                 bot.send_message(user_id, prepepare_response(project_json), parse_mode="markdown")
             bot.send_message(user_id, strings.query.result_positive_report)

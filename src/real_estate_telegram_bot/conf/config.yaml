@@ -41,6 +41,37 @@ strings:
     
     support: "Please send your questions, offers and critics here @hunkydory_uae"
 
+    project_info_template: |
+      **Project information**:
+
+      Project: {project_name_id_buildings}
+      Developer: {developer_name_en}
+      Master developer: {master_developer_name_en}
+      Area (Arabic): {area_name_en}
+      Area (English): {master_project_en}
+      Project registration date: {registration_date}
+      Project start date: {project_start_date}
+      Project end date: {project_end_date}
+      Construction duration (up to date): {construction_duration} (Years)
+      How old is the building: {project_age} (Number of years of the building)
+      Project status: {project_status}
+      Completion: {percent_completed}% 
+      Number of buildings: {no_of_buildings}
+      Number of units: {no_of_units}
+      Number of floors: {floors}
+      Freehold: {is_free_hold}
+      Project description: {project_description_en}
+
+      **Developer information**:
+
+      Developer license information
+      Developer registration date: {registration_date}
+      License source: {license_source_en}
+      Licence number: {license_number}
+      Issue date: {license_issue_date}
+      Expiry date: {license_expiry_date}
+      Web-site: {webpage}
+
 
   ru:
     start: |
