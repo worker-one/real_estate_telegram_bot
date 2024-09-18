@@ -52,8 +52,8 @@ strings:
       Project registration date: {registration_date}
       Project start date: {project_start_date}
       Project end date: {project_end_date}
-      Construction duration (up to date): {construction_duration} (Years)
-      How old is the building: {project_age} (Number of years of the building)
+      Construction duration (up to date): {construction_duration} years
+      How old is the building: {project_age} years
       Project status: {project_status}
       Completion: {percent_completed}% 
       Number of buildings: {no_of_buildings}
