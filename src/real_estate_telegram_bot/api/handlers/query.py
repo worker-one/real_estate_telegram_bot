@@ -85,12 +85,9 @@ def register_handlers(bot):
                     project_json['project_age'] = datetime.datetime.now() - project.project_end_date
                     project_json['project_age'] = str(math.ceil((project_json['project_age'].days / 365.25) * 10) / 10)
 
-                # compute construction completion using consturction duration
-                if project.project_start_date and project.project_end_date:
-                    project_json['percent_completed'] = (datetime.datetime.now() - project.project_start_date).days / (project.project_end_date - project.project_start_date).days * 100
-                    if project_json['percent_completed'] > 100:
-                        project_json['percent_completed'] = 100
-                    project_json['percent_completed'] = str(math.ceil(project_json['percent_completed'] * 10) / 10)
+                # 
+                if project_json['percent_completed'] != 100:
+                    project_json['project_age'] = 'Under construction'
 
                 bot.send_message(user_id, prepepare_response(project_json), parse_mode="markdown")
             bot.send_message(user_id, strings.query.result_positive_report)
