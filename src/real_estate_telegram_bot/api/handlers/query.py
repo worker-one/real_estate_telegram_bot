@@ -51,6 +51,12 @@ def prepepare_response(project_json: dict) -> str:
         'webpage': project_json['webpage']
     }
 
+    if formatted_project_json['construction_duration'] != 'N/A':
+        formatted_project_json['construction_duration'] += " years"
+    
+    if formatted_project_json['project_age'] != "Under construction":
+        formatted_project_json['project_age'] += " years"
+
     return template.format(**formatted_project_json).strip()
 
 def register_handlers(bot):
