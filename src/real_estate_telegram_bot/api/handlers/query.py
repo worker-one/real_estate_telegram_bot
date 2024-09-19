@@ -94,8 +94,8 @@ def register_handlers(bot):
                 # 
                 if project_json['percent_completed'] != 100:
                     project_json['project_age'] = 'Under construction'
+                bot.send_message(user_id, prepepare_response(project_json).replace('_', " "), parse_mode="Markdown")
 
-                bot.send_message(user_id, prepepare_response(project_json), parse_mode="markdown")
             bot.send_message(user_id, strings.query.result_positive_report)
         else:
             bot.reply_to(message, strings.query.result_negative)
