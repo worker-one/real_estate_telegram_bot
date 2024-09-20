@@ -4,12 +4,13 @@ import yaml
 import logging
 
 from omegaconf import OmegaConf
-from real_estate_telegram_bot.db.crud import query_projects_by_name
+from real_estate_telegram_bot.db.crud import query_projects_by_name, read_user
 from real_estate_telegram_bot.db.models import Project
+from real_estate_telegram_bot.api.handlers.menu import create_main_menu_markup, create_main_menu_button
+
 
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
-lang = config.lang
-strings = config.strings[lang]
+strings = config.strings
 
 # Load logging configuration with OmegaConf
 logging_config = OmegaConf.to_container(
@@ -53,7 +54,7 @@ def prepepare_response(project_json: dict) -> str:
 
     if formatted_project_json['construction_duration'] != 'N/A':
         formatted_project_json['construction_duration'] += " years"
-    
+
     if formatted_project_json['project_age'] != "Under construction":
         formatted_project_json['project_age'] += " years"
 
@@ -62,22 +63,28 @@ def prepepare_response(project_json: dict) -> str:
 def register_handlers(bot):
     @bot.message_handler(commands=['query'])
     def query_handler(message):
-        logger.info(f"Received query command from user {message.from_user.id}")
-        bot.reply_to(message, strings.query.ask_name)
+        user_id = message.from_user.id
+        user = read_user(user_id)
+        lang = user.language
+
+        logger.info(user_id=user_id, message=message.text)
+        bot.reply_to(message, strings[lang].query.ask_name)
         bot.register_next_step_handler(message, perform_query)
 
     def perform_query(message):
         user_id = message.from_user.id
+        user = read_user(user_id)
+        lang = user.language
         project_name = message.text
 
-        logger.info(f"User {message.from_user.id} queried for project: {project_name}")
+        logger.info(user_id=user_id, message=message.text)
         projects = query_projects_by_name(project_name)
 
         if projects:
             if len(projects) == 1:
-                bot.reply_to(message, strings.query.result_positive_unique)
+                bot.reply_to(message, strings[lang].query.result_positive_unique)
             if len(projects) > 1:
-                bot.reply_to(message, strings.query.result_positive_nonunique)
+                bot.reply_to(message, strings[lang].query.result_positive_nonunique)
             for project in projects:
                 project_json = project.as_dict()
 
@@ -96,6 +103,12 @@ def register_handlers(bot):
                     project_json['project_age'] = 'Under construction'
                 bot.send_message(user_id, prepepare_response(project_json).replace('_', " "), parse_mode="Markdown")
 
-            bot.send_message(user_id, strings.query.result_positive_report)
+            bot.send_message(
+                user_id, strings.query.result_positive_report,
+                reply_markup=create_main_menu_button(strings[lang])
+                )
         else:
-            bot.reply_to(message, strings.query.result_negative)
+            bot.reply_to(
+                message, strings.query.result_negative,
+                reply_markup=create_main_menu_button(strings[lang])
+            )

@@ -17,10 +17,9 @@ class User(Base):
 
     user_id = Column(Integer, primary_key=True)
     first_message_timestamp = Column(DateTime)
-    first_name = Column(String)
-    last_name = Column(String)
     username = Column(String)
     phone_number = Column(String)
+    language = Column(String, default='en')
 
 
 class Project(Base):

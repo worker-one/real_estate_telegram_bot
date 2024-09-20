@@ -1,11 +1,10 @@
 import logging
-from datetime import datetime
+
 from omegaconf import OmegaConf
 from sqlalchemy.orm import Session
 
 from real_estate_telegram_bot.db.database import get_session
-from real_estate_telegram_bot.db.models import Message, User, Project
-from sqlalchemy import func
+from real_estate_telegram_bot.db.models import Project, User
 
 # Load logging configuration with OmegaConf
 logging_config = OmegaConf.to_container(OmegaConf.load("./src/real_estate_telegram_bot/conf/logging_config.yaml"), resolve=True)
@@ -25,8 +24,20 @@ def read_users() -> list[User]:
     db.close()
     return result
 
-def upsert_user(user_id: str, username: str):
-    user = User(user_id=user_id, username=username)
+def upsert_user(
+        user_id: str,
+        username: str,
+        phone_number: str = None,
+        language: str = None
+    ):
+    user = User(
+        user_id=user_id,
+        username=username
+    )
+    if phone_number:
+        user.phone_number = phone_number
+    if language:
+        user.language = language
     db: Session = get_session()
     db.merge(user)
     db.commit()

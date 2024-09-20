@@ -26,7 +26,7 @@ def register_handlers(bot):
 
         logger.info(f"Received start command from user {message.from_user.id}")
         bot.reply_to(message, strings.start)
-    
+
     @bot.message_handler(commands=['help'])
     def help_handler(message):
 

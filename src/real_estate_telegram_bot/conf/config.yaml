@@ -1,6 +1,7 @@
 lang: "en"
 strings:
   en:
+    language_selected: "You have selected English language."
     start: |
       Welcome to Building Finder Bot.
       It’s a free and helpful bot for real estate agents and investors.
@@ -11,7 +12,6 @@ strings:
       2. Useful links
       3. Support
       4. Select your language (EN, RU)
-    help: "I can help"
     query:
       ask_name: |
         Please input building name in a search bar below.
@@ -24,12 +24,12 @@ strings:
         -	If name input is incorrect – bot will offer you similar options. Choose the one you need and repeat the search request.
 
         Enjoy the result and don’t forget to share this bot with your colleagues ;-)
-
       result_positive_unique: "Project found:"
       result_positive_nonunique: "Several projects found based on your query:"
       result_positive_report: "If some information is inaccurate please report to @hunkydory_uae"
       result_negative: "No project found."
     
+
     useful_links: |
       Secondary Dubai Only: https://t.me/secondary_dubai
       Request Dubai Only: https://t.me/Request_dubai
@@ -40,6 +40,15 @@ strings:
       Owner’s Telegram: @egorov_uae”
     
     support: "Please send your questions, offers and critics here @hunkydory_uae"
+
+    language_en: "English"
+    language_ru: "Russian"
+
+    menu:
+      query: "Find building info"
+      useful_links: "Useful links"
+      support: "Support"
+      language: "Select your language (EN, RU)"
 
     project_info_template: |
       **Project information**:
@@ -73,6 +82,16 @@ strings:
 
 
   ru:
+    language_selected: "Вы выбрали русский язык."
+    description: |
+      Привет всем участникам, любителям и профессионалам рынка недвижимости Дубая!
+
+      Вас приветствует совершенно бесплатный телеграм бот, который поможет вам быстро найти полезную информацию о недвижимости Дубая.
+
+      Вся информация основана на данных Земельного департамента Дубая (DLD).
+
+      Удачи и не забудьте поделиться с коллегами и друзьями!
+
     start: |
       Добро пожаловать в Building Finder Bot.
       Это бесплатный и полезный бот для агентов по недвижимости и инвесторов.
@@ -82,6 +101,12 @@ strings:
       2. Полезные ссылки
       3. Поддержка
       4. Выберите язык (EN, RU)
+
+    menu:
+      query: "Найти информацию о здании"
+      useful_links: "Полезные ссылки"
+      support: "Поддержка"
+      language: "Выбор языка (EN, RU)"
 
     query:
       ask_name: |
@@ -101,13 +126,17 @@ strings:
       result_positive_nonunique: "Несколько зданий найдено по вашему запросу:"
       result_negative: "Проекты не найдены."
 
-      useful_links: |
-        Secondary Dubai Only: https://t.me/secondary_dubai
-        Request Dubai Only: https://t.me/Request_dubai
-        Rent Dubai Only: https://t.me/rent_dubai1
-        Distress Dubai Only: https://t.me/distress_dubai1
+    useful_links: |
+      Secondary Dubai Only: https://t.me/secondary_dubai
+      Request Dubai Only: https://t.me/Request_dubai
+      Rent Dubai Only: https://t.me/rent_dubai1
+      Distress Dubai Only: https://t.me/distress_dubai1
 
-        Instagram основателя: https://www.instagram.com/kirill_egorov_uae
-        Telegram основателя: @egorov_uae
+      Instagram основателя: https://www.instagram.com/kirill_egorov_uae
+      Telegram основателя: @egorov_uae
 
-      support: "Please send your questions, offers and critics here @hunkydory_uae"
+    support: "Пожалуйста, отправляйте свои вопросы, предложения и критику сюда @hunkydory_uae"
+
+    language_en: "Английский"
+    language_ru: "Русский"
+
