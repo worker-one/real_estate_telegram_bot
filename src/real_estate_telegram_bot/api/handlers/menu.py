@@ -1,10 +1,11 @@
-from ast import In
 import logging.config
+from ast import In
 from turtle import up
-from real_estate_telegram_bot.db.crud import read_user, upsert_user
-from omegaconf import OmegaConf
-from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
+from omegaconf import OmegaConf
+from real_estate_telegram_bot.api.users import check_user_in_channel_sync
+from real_estate_telegram_bot.db.crud import read_user, upsert_user
+from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 # Load logging configuration with OmegaConf
 logging_config = OmegaConf.to_container(
@@ -36,7 +37,8 @@ def create_lang_menu_markup(strings):
     return lang_menu_markup
 
 def create_main_menu_button(strings):
-    main_menu_button = InlineKeyboardButton(strings.menu.main_menu, callback_data="_main_menu")
+    main_menu_button = InlineKeyboardMarkup(row_width=1)
+    main_menu_button.add(InlineKeyboardButton(strings.main_menu, callback_data="_main_menu"))
     return main_menu_button
 
 
@@ -46,29 +48,35 @@ def register_handlers(bot):
 
         user_id = message.from_user.id
         username = message.from_user.username
+
+        # Check if user is in the channel
+        if check_user_in_channel_sync(config.channel_name, username) is False:
+            bot.send_message(
+                message.chat.id,
+                f"You need to join the channel @{config.channel_name} to use the bot."
+            )
+            return
         upsert_user(user_id, username)
 
         user = read_user(user_id)
         lang = user.language
         logger.info({"user_id": message.from_user.id, "message": message.text})
 
-        strings = config.strings[lang]
-        main_menu_markup = create_main_menu_markup(strings)
-        bot.send_message(message.chat.id, "Main menu", reply_markup=main_menu_markup)
+        main_menu_markup = create_main_menu_markup(strings[lang])
+        bot.send_message(message.chat.id, strings[lang].main_menu, reply_markup=main_menu_markup)
 
     @bot.callback_query_handler(func=lambda call: call.data == "_main_menu")
-    def main_menu_callback(message):
-        user_id = message.from_user.id
-        username = message.from_user.username
+    def main_menu_callback(call):
+        user_id = call.message.from_user.id
+        username = call.message.from_user.username
         upsert_user(user_id, username)
 
         user = read_user(user_id)
         lang = user.language
-        logger.info({"user_id": message.from_user.id, "message": message.data})
+        logger.info({"user_id": call.message.from_user.id, "message": call.data})
 
-        strings = config.strings[lang]
-        main_menu_markup = create_main_menu_markup(strings)
-        bot.send_message(message.chat.id, "Main menu", reply_markup=main_menu_markup)
+        main_menu_markup = create_main_menu_markup(strings[lang])
+        bot.send_message(call.message.chat.id, strings[lang].main_menu, reply_markup=main_menu_markup)
 
     # Language selection
     @bot.callback_query_handler(func=lambda call: call.data == "_language")
@@ -76,10 +84,10 @@ def register_handlers(bot):
         user_id = call.from_user.id
         user = read_user(user_id)
         lang = user.language
-        strings = config.strings[lang]
+
         logger.info({"user_id": call.from_user.id, "message": call.data})
 
-        lang_menu_markup = create_lang_menu_markup(strings)
+        lang_menu_markup = create_lang_menu_markup(strings[lang])
         bot.send_message(call.message.chat.id, "Language", reply_markup=lang_menu_markup)
 
     @bot.callback_query_handler(func=lambda call: call.data == "_ru")

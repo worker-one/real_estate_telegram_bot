@@ -2,7 +2,7 @@ version: 1
 formatters:
   simple:
     format: "%(message)s"
-  json:
+  normalFormatter:
     format: '{"time": "%(asctime)s", "level": "%(levelname)s", "user_id": "%(user_id)s", "message": "%(message)s", "user_message": "%(user_message)s"}'
 
 handlers:
@@ -10,17 +10,17 @@ handlers:
     class: logging.StreamHandler
     formatter: simple
     level: INFO
-  json:
+  normalFormatter:
     class: logging.StreamHandler
-    formatter: json
+    formatter: normalFormatter
     level: INFO
 
 loggers:
   __main__:
     level: INFO
-    handlers: [console, json]
+    handlers: [console, normalFormatter]
     propagate: no
 
 root:
   level: INFO
-  handlers: [console, json]
+  handlers: [console, normalFormatter]

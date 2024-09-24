@@ -1,4 +1,5 @@
 lang: "en"
+channel_name: "egorov_uae"
 strings:
   en:
     language_selected: "You have selected English language."
@@ -43,43 +44,12 @@ strings:
 
     language_en: "English"
     language_ru: "Russian"
-
+    main_menu: "Main menu"
     menu:
       query: "Find building info"
       useful_links: "Useful links"
       support: "Support"
       language: "Select your language (EN, RU)"
-
-    project_info_template: |
-      **Project information**:
-
-      Project: {project_name_id_buildings}
-      Developer: {developer_name_en}
-      Master developer: {master_developer_name_en}
-      Area (Arabic): {area_name_en}
-      Area (English): {master_project_en}
-      Project registration date: {registration_date}
-      Project start date: {project_start_date}
-      Project end date: {project_end_date}
-      Construction duration (up to date): {construction_duration}
-      How old is the building: {project_age}
-      Project status: {project_status}
-      Completion: {percent_completed}% 
-      Number of buildings: {no_of_buildings}
-      Number of units: {no_of_units}
-      Number of floors: {floors}
-      Freehold: {is_free_hold}
-      Project description: {project_description_en}
-
-      **Developer information**:
-
-      Developer registration date: {registration_date}
-      License source: {license_source_en}
-      Licence number: {license_number}
-      Issue date: {license_issue_date}
-      Expiry date: {license_expiry_date}
-      Web-site: {webpage}
-
 
   ru:
     language_selected: "Вы выбрали русский язык."
@@ -102,6 +72,7 @@ strings:
       3. Поддержка
       4. Выберите язык (EN, RU)
 
+    main_menu: "Главное меню"
     menu:
       query: "Найти информацию о здании"
       useful_links: "Полезные ссылки"
@@ -140,3 +111,32 @@ strings:
     language_en: "Английский"
     language_ru: "Русский"
 
+  project_info_template: |
+      **Project information**:
+
+      Project: {project_name_id_buildings}
+      Developer: {developer_name_en}
+      Master developer: {master_developer_name_en}
+      Area (Arabic): {area_name_en}
+      Area (English): {master_project_en}
+      Project registration date: {registration_date}
+      Project start date: {project_start_date}
+      Project end date: {project_end_date}
+      Construction duration (up to date): {construction_duration}
+      How old is the building: {project_age}
+      Project status: {project_status}
+      Completion: {percent_completed}% 
+      Number of buildings: {no_of_buildings}
+      Number of units: {no_of_units}
+      Number of floors: {floors}
+      Freehold: {is_free_hold}
+      Project description: {project_description_en}
+
+      **Developer information**:
+
+      Developer registration date: {registration_date}
+      License source: {license_source_en}
+      Licence number: {license_number}
+      Issue date: {license_issue_date}
+      Expiry date: {license_expiry_date}
+      Web-site: {webpage}
