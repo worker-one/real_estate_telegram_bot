@@ -25,7 +25,8 @@ dependencies = [
     "sqlalchemy==1.4.25",
     "psycopg2-binary",
     "python-dotenv",
-    "Telethon"
+    "Telethon",
+    "apscheduler==3.10.4",
 ]
 
 [project.optional-dependencies]

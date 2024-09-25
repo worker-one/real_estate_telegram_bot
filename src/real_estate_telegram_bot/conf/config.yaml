@@ -3,10 +3,13 @@ channel_name: "egorov_uae"
 strings:
   en:
     language_selected: "You have selected English language."
+    admin_menu:
+      title: "Admin menu 🔑"
+      send_message: "Send message"
     no_rights: "The user {username} does not have admin rights."
     record_message_prompt: "Enter a message:"
     enter_datetime_prompt: "Enter the time and date the message was sent in the following format %Y-%m-%d %H:%M:%S . For example, 2024-10-02 12:00:00"
-    past_datetime_error: "too late"
+    past_datetime_error: "The specified date has already passed"
     message_scheduled_confirmation: "The message has been scheduled for {send_datetime}"
     invalid_datetime_format: "The datetime format is not correct."
     start: |
@@ -59,10 +62,15 @@ strings:
 
   ru:
     language_selected: "Вы выбрали русский язык."
+    admin_menu:
+      title: "Меню администратора 🔑"
+      send_message: "Рассылка сообщения"
     no_rights: "Пользователь {username} не имеет прав администратора."
     record_message_prompt: "Введите сообщение:"
     enter_datetime_prompt: "Введите время и дату отправки сообщения в следующем формате %Y-%m-%d %H:%M:%S . Например, 2024-10-02 12:00:00"
     message_scheduled_confirmation: "Сообщение запланировано на {send_datetime}"
+    past_datetime_error: "Указанная дата уже прошла"
+    invalid_datetime_format: "Неверный формат даты и времени."
     description: |
       Привет всем участникам, любителям и профессионалам рынка недвижимости Дубая!
 
