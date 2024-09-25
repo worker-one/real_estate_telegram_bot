@@ -6,7 +6,7 @@ import telebot
 from dotenv import find_dotenv, load_dotenv
 from omegaconf import OmegaConf
 
-from real_estate_telegram_bot.api.handlers import query, welcome, menu
+from real_estate_telegram_bot.api.handlers import query, welcome, menu, admin
 
 logging_config = OmegaConf.to_container(
     OmegaConf.load("./src/real_estate_telegram_bot/conf/logging_config.yaml"), resolve=True
@@ -26,6 +26,7 @@ bot = telebot.TeleBot(BOT_TOKEN, parse_mode=None)
 query.register_handlers(bot)
 welcome.register_handlers(bot)
 menu.register_handlers(bot)
+admin.register_handlers(bot)
 
 def start_bot():
     logger.info(f"Bot `{str(bot.get_me().username)}` has started")

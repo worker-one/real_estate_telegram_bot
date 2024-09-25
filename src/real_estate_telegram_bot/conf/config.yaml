@@ -3,6 +3,12 @@ channel_name: "egorov_uae"
 strings:
   en:
     language_selected: "You have selected English language."
+    no_rights: "The user {username} does not have admin rights."
+    record_message_prompt: "Enter a message:"
+    enter_datetime_prompt: "Enter the time and date the message was sent in the following format %Y-%m-%d %H:%M:%S . For example, 2024-10-02 12:00:00"
+    past_datetime_error: "too late"
+    message_scheduled_confirmation: "The message has been scheduled for {send_datetime}"
+    invalid_datetime_format: "The datetime format is not correct."
     start: |
       Welcome to Building Finder Bot.
       It’s a free and helpful bot for real estate agents and investors.
@@ -53,6 +59,10 @@ strings:
 
   ru:
     language_selected: "Вы выбрали русский язык."
+    no_rights: "Пользователь {username} не имеет прав администратора."
+    record_message_prompt: "Введите сообщение:"
+    enter_datetime_prompt: "Введите время и дату отправки сообщения в следующем формате %Y-%m-%d %H:%M:%S . Например, 2024-10-02 12:00:00"
+    message_scheduled_confirmation: "Сообщение запланировано на {send_datetime}"
     description: |
       Привет всем участникам, любителям и профессионалам рынка недвижимости Дубая!
 

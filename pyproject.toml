@@ -24,7 +24,8 @@ dependencies = [
     "omegaconf==2.3.0",
     "sqlalchemy==1.4.25",
     "psycopg2-binary",
-    "python-dotenv"
+    "python-dotenv",
+    "Telethon"
 ]
 
 [project.optional-dependencies]
