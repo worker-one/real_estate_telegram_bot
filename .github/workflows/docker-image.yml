@@ -24,6 +24,9 @@ jobs:
           echo "DB_NAME=${{ vars.DB_NAME }}" >> .env
           echo "DB_USER=${{ vars.DB_USER }}" >> .env
           echo "DB_PASSWORD=${{ vars.DB_PASSWORD }}" >> .env
+          echo "PHONE=${{ vars.PHONE }}" >> .env
+          echo "API_HASH=${{ vars.API_HASH }}" >> .env
+          echo "API_ID=${{ vars.API_ID }}" >> .env
 
       - name: Login to DockerHub
         uses: docker/login-action@v2
