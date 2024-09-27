@@ -1,0 +1,44 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+    environment: global
+    steps:
+    - uses: actions/checkout@v4
+    - name: Create .env file
+      run: |
+        echo "BOT_TOKEN=${{ vars.BOT_TOKEN }}" >> .env
+        echo "DB_HOST=${{ vars.DB_HOST }}" >> .env
+        echo "DB_PORT=${{ vars.DB_PORT }}" >> .env
+        echo "DB_NAME=${{ vars.DB_NAME }}" >> .env
+        echo "DB_USER=${{ vars.DB_USER }}" >> .env
+        echo "DB_PASSWORD=${{ vars.DB_PASSWORD }}" >> .env
+        echo "PHONE=${{ vars.PHONE }}" >> .env
+        echo "API_HASH=${{ vars.API_HASH }}" >> .env
+        echo "API_ID=${{ vars.API_ID }}" >> .env
+  
+    - name: Login to DockerHub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ vars.DOCKERHUB_USERNAME }}
+        password: ${{ vars.DOCKERHUB_TOKEN }}
+  
+    - name: Build and push
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: true
+        tags: ${{ vars.DOCKERHUB_USERNAME }}/real_estate_telegram_bot:latest
+  
+    - name: Log out from DockerHub
+      run: docker logout
+
