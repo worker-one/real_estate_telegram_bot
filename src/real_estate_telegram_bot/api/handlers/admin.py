@@ -36,7 +36,7 @@ def register_handlers(bot):
         user = read_user(user_id)
         lang = user.language
 
-        if user.username not in ["hunkydory_uae", "konverner"]:
+        if user.username not in config.admins:
             # inform that the user does not have rights
             bot.send_message(user_id, strings[lang].no_rights)
             return
