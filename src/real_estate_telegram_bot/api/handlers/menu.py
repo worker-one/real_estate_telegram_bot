@@ -47,7 +47,7 @@ def register_handlers(bot):
     def menu_menu_command(message):
 
         user_id = message.from_user.id
-        username = message.from_user.username + 'a'
+        username = message.from_user.username
 
         # Check if user is in the channel
         if check_user_in_channel_sync(config.channel_name, username) is False:
