@@ -53,7 +53,7 @@ def register_handlers(bot):
         user = read_user(user_id)
         lang = user.language
 
-        if user.username not in ["hunkydory_uae", "konverner"]:
+        if user.username.lower() not in config.admins:
             # inform that the user does not have rights
             bot.send_message(user_id, strings[lang].no_rights)
             return
@@ -86,7 +86,8 @@ def schedule_message(message, bot, user_id, lang, prerecorded_message):
     try:
         # Parse the input datetime
         send_datetime = datetime.datetime.strptime(message.text, "%Y-%m-%d %H:%M:%S")
-        current_datetime = datetime.datetime.now()
+        send_datetime = send_datetime.replace(tzinfo=datetime.timezone.utc).astimezone(datetime.timezone(datetime.timedelta(hours=2)))  # Convert to Paris time
+        current_datetime = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=2)))  # Current time in Paris time
 
         # Calculate the delay (in seconds) to send the message
         delay = (send_datetime - current_datetime).total_seconds()
@@ -111,6 +112,26 @@ def schedule_message(message, bot, user_id, lang, prerecorded_message):
                 run_date=send_datetime,
                 args=[bot, prerecorded_message, user.user_id]
             )
+            # every 5 minutes
+            sched.add_job(
+                send_scheduled_message,
+                "interval",
+                minutes=5,
+                start_date=send_datetime,
+                end_date=send_datetime,
+                args=[bot, prerecorded_message, user.user_id]
+            )
+            # with cron trigger
+            sched.add_job(
+                send_scheduled_message,
+                "cron",
+                day_of_week='mon-sun',
+                hour=send_datetime.hour,
+                minute=send_datetime.minute,
+                second=send_datetime.second,
+                args=[bot, prerecorded_message, user.user_id]
+            )
+
         sched.start()
         # list all jobs
         sched.print_jobs()

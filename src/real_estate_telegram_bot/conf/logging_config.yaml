@@ -3,7 +3,7 @@ formatters:
   simple:
     format: "%(message)s"
   json:
-    format: '{"time": "%(asctime)s", "level": "%(levelname)s", "user_id": "%(user_id)s", "message": "%(message)s", "user_message": "%(user_message)s"}'
+    format: '{"time": "%(asctime)s", "level": "%(levelname)s", "message": "%(message)s"}'
 
 handlers:
   console:
