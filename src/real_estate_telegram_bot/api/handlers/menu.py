@@ -82,6 +82,9 @@ def register_handlers(bot):
 
         lang_menu_markup = create_lang_menu_markup(strings[lang])
         bot.send_message(call.message.chat.id, "Language", reply_markup=lang_menu_markup)
+        # send main menu button
+        main_menu_button = create_main_menu_button(strings[lang])
+        bot.send_message(call.message.chat.id, strings[lang].main_menu, reply_markup=main_menu_button)
 
     @bot.callback_query_handler(func=lambda call: call.data == "_ru")
     def language_ru(call):

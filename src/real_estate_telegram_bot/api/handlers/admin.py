@@ -112,10 +112,11 @@ def register_handlers(bot):
                 run_date=scheduled_datetime, 
                 args=[bot, user.user_id, user_message]
         )
-        
+
         # Inform the user that the message has been scheduled
         response = strings[lang].message_scheduled_confirmation.format(
-            send_datetime=scheduled_datetime.strftime('%Y-%m-%d %H:%M')
+            n_users = len(users),
+            send_datetime = scheduled_datetime.strftime('%Y-%m-%d %H:%M')
         )
         bot.send_message(user_id, response)
 

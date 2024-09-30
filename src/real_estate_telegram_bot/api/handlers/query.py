@@ -84,7 +84,7 @@ def register_handlers(bot):
         user = read_user(user_id)
         lang = user.language
 
-        logger.info(msg="User event", extra={"user_id": user_id, "message": message.text})
+        logger.info(msg="User event", extra={"user_id": user_id, "user_message": message.text})
         bot.reply_to(message, strings[lang].query.ask_name)
         bot.register_next_step_handler(message, perform_query)
 
@@ -106,7 +106,7 @@ def register_handlers(bot):
         lang = user.language
         project_name = message.text
 
-        logger.info(msg="User event", extra={"user_id": user_id, "message": message.text})
+        logger.info(msg="User event", extra={"user_id": user_id, "user_message": message.text})
         projects = query_projects_by_name(project_name)
 
         if projects:
@@ -129,7 +129,7 @@ def register_handlers(bot):
                 reply_markup=create_main_menu_button(strings[lang])
             )
 
-    @bot.callback_query_handler(func=lambda call: call.data[0] != "_")
+    @bot.callback_query_handler(func=lambda call: call.data[0] not in {"_", "/"})
     def show_selected_project(call):
         project_id = call.data
         print(project_id)
