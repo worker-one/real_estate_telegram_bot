@@ -12,12 +12,7 @@ from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
 strings = config.strings
 
-# Load logging configuration with OmegaConf
-logging_config = OmegaConf.to_container(
-    OmegaConf.load("./src/real_estate_telegram_bot/conf/logging_config.yaml"),
-    resolve=True
-)
-logging.config.dictConfig(logging_config)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 

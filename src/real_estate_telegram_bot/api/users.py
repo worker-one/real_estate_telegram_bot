@@ -6,12 +6,7 @@ from dotenv import find_dotenv, load_dotenv
 from telethon import TelegramClient
 
 
-# Load logging configuration with OmegaConf
-logging_config = OmegaConf.to_container(
-    OmegaConf.load("./src/real_estate_telegram_bot/conf/logging_config.yaml"),
-    resolve=True
-)
-logging.config.dictConfig(logging_config)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
@@ -31,8 +26,7 @@ async def check_user_in_channel(channel_name: str, username: str):
     if PHONE is None:
         logger.error("Variable PHONE is not set")
 
-    phone = '+330609029293'
-    client = TelegramClient(PHONE, API_ID, API_HASH)
+    client = TelegramClient("user", API_ID, API_HASH)
     await client.start()
 
 

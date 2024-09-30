@@ -27,6 +27,8 @@ dependencies = [
     "python-dotenv",
     "Telethon",
     "apscheduler==3.10.4",
+    "apscheduler",
+    "pytz"
 ]
 
 [project.optional-dependencies]

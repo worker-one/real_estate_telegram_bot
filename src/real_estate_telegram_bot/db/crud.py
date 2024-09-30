@@ -6,11 +6,8 @@ from sqlalchemy.orm import Session
 from real_estate_telegram_bot.db.database import get_session
 from real_estate_telegram_bot.db.models import Project, User
 
-# Load logging configuration with OmegaConf
-logging_config = OmegaConf.to_container(OmegaConf.load("./src/real_estate_telegram_bot/conf/logging_config.yaml"), resolve=True)
-logging.config.dictConfig(logging_config)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
 
 def read_user(user_id: int) -> User:
     db: Session = get_session()
