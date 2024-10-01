@@ -16,8 +16,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Define Paris timezone
-TIMEZONE = 'Asia/Dubai'
-paris_timezone = pytz.timezone(TIMEZONE)
+timezone = pytz.timezone(config.timezone)
 
 # Initialize the scheduler
 scheduler = BackgroundScheduler()
@@ -79,9 +78,7 @@ def register_handlers(bot):
         try:
             # Parse the user's input into a datetime object
             user_datetime_obj = datetime.strptime(user_input, '%Y-%m-%d %H:%M')
-
-            # Localize the time to Paris timezone
-            user_datetime_localized = paris_timezone.localize(user_datetime_obj)
+            user_datetime_localized = timezone.localize(user_datetime_obj)
 
             # Store the datetime and move to the next step (waiting for the message content)
             user_data[user_id] = {'datetime': user_datetime_localized}
@@ -117,7 +114,8 @@ def register_handlers(bot):
         # Inform the user that the message has been scheduled
         response = strings[lang].message_scheduled_confirmation.format(
             n_users = len(users),
-            send_datetime = scheduled_datetime.strftime('%Y-%m-%d %H:%M')
+            send_datetime = scheduled_datetime.strftime('%Y-%m-%d %H:%M'),
+            timezone = config.timezone
         )
         bot.send_message(user_id, response)
 
