@@ -138,4 +138,7 @@ def register_handlers(bot):
         user = read_user(user_id)
         lang = user.language
 
-        bot.send_message(call.message.chat.id, strings[lang].query.ask_name)
+        bot.send_message(
+            call.message.chat.id, strings[lang].query.ask_name,
+            reply_markup=create_main_menu_button(strings[lang])
+        )

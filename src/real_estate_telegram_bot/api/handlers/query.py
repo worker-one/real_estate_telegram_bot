@@ -85,7 +85,10 @@ def register_handlers(bot):
         lang = user.language
 
         logger.info(msg="User event", extra={"user_id": user_id, "user_message": message.text})
-        bot.reply_to(message, strings[lang].query.ask_name)
+        bot.reply_to(
+            message, strings[lang].query.ask_name,
+            reply_markup=create_main_menu_button(strings[lang])
+        )
         bot.register_next_step_handler(message, perform_query)
 
     @bot.message_handler(func=lambda message: message.text[0] != '/')

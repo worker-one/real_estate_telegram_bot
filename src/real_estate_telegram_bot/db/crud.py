@@ -25,8 +25,8 @@ def upsert_user(
         user_id: str,
         username: str,
         phone_number: str = None,
-        language: str = None
-    ):
+        language: str = "en"
+    ) -> User:
     user = User(
         user_id=user_id,
         username=username
@@ -39,6 +39,7 @@ def upsert_user(
     db.merge(user)
     db.commit()
     db.close()
+    return user
 
 def upsert_project(project: Project):
     db: Session = get_session()
