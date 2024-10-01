@@ -20,7 +20,6 @@ def register_handlers(bot):
         username = message.from_user.username
         upsert_user(user_id, username)
 
-        logger.info(f"Received start command from user {message.from_user.id}")
         bot.reply_to(message, strings.start)
 
     @bot.message_handler(commands=['help'])
@@ -32,3 +31,11 @@ def register_handlers(bot):
 
         logger.info(f"Received help command from user {message.from_user.id}")
         bot.reply_to(message, strings.help)
+
+    @bot.message_handler(commands=['restart'])
+    def help_handler(message):
+
+        user_id = message.from_user.id
+        username = message.from_user.username
+        upsert_user(user_id, username)
+        bot.reply_to(message, "Bot has been restarted")

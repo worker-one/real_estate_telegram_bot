@@ -1,5 +1,6 @@
 lang: "en"
 channel_name: "centralparkandpdlm"
+timezone: "Asia/Dubai"
 admins:
   - konverner
   - hunkydory_uae
@@ -13,7 +14,7 @@ strings:
     record_message_prompt: "Enter a message:"
     enter_datetime_prompt: "Enter the time and date the message was sent in the following format %Y-%m-%d %H:%M . For example, 2024-10-02 12:00"
     past_datetime_error: "The specified date has already passed"
-    message_scheduled_confirmation: "The message for {n_users} users has been scheduled for {send_datetime}"
+    message_scheduled_confirmation: "The message for {n_users} users has been scheduled for {send_datetime} ({timezone})"
     invalid_datetime_format: "The datetime format is not correct."
     start: |
       Welcome to Building Finder Bot.
@@ -71,7 +72,7 @@ strings:
     no_rights: "Пользователь {username} не имеет прав администратора."
     record_message_prompt: "Введите сообщение:"
     enter_datetime_prompt: "Введите время и дату отправки сообщения в следующем формате %Y-%m-%d %H:%M . Например, 2024-10-02 12:00"
-    message_scheduled_confirmation: "Сообщение для {n_users} пользователей запланировано на {send_datetime}"
+    message_scheduled_confirmation: "Сообщение для {n_users} пользователей запланировано на {send_datetime} ({timezone})"
     past_datetime_error: "Указанная дата уже прошла"
     invalid_datetime_format: "Неверный формат даты и времени."
     description: |
