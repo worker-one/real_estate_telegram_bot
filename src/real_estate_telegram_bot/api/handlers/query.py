@@ -94,7 +94,7 @@ def prepare_response(project) -> str:
 def create_query_results_buttons(results: list[str]) -> InlineKeyboardMarkup:
     buttons_markup = InlineKeyboardMarkup(row_width=1)
     for result in results:
-        buttons_markup.add(InlineKeyboardButton(result, callback_data=result))
+        buttons_markup.add(InlineKeyboardButton(result, callback_data=f"_select_{result}"))
     return buttons_markup
 
 def register_handlers(bot):
@@ -104,7 +104,8 @@ def register_handlers(bot):
         user = read_user(user_id)
         lang = user.language
         logger.info(msg="User event", extra={"user_id": user_id, "user_message": message.text})
-        bot.reply_to(message, strings[lang].query.ask_name)
+        bot.reply_to(message, strings[lang].query.ask_name,
+            reply_markup=create_main_menu_button(strings[lang]))
         bot.register_next_step_handler(message, perform_query)
 
     @bot.message_handler(func=lambda message: message.text[0] != '/')
@@ -148,9 +149,9 @@ def register_handlers(bot):
                 reply_markup=create_main_menu_button(strings[lang])
             )
 
-    @bot.callback_query_handler(func=lambda call: call.data[0] not in {"_", "/"})
+    @bot.callback_query_handler(func=lambda call: "_select_" in call.data)
     def show_selected_project(call):
-        project_id = call.data
+        project_id = call.data.replace("_select_", "")
         user_id = call.from_user.id
         user = read_user(user_id)
         lang = user.language
