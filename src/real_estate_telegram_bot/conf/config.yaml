@@ -21,11 +21,6 @@ strings:
       It’s a free and helpful bot for real estate agents and investors.
       In a glance you will be able to find all available information about any registered building in Dubai: handover date, building configuration, developer information and many more.
       All data is official from Dubai Land Department (DLD).
-
-      1. Find building info
-      2. Useful links
-      3. Support
-      4. Select your language (EN, RU)
     query:
       ask_name: |
         Please input building name in a search bar below.
@@ -41,7 +36,12 @@ strings:
       result_positive_unique: "Project found:"
       result_positive_nonunique: "Several projects found based on your query:"
       result_positive_report: "If some information is inaccurate please report to @hunkydory_uae"
-      result_negative: "No project found."
+      result_negative: |
+        No project found. Try again.
+        Keep in mind search rules:
+        - One or two words max
+        - If name input is not accurate – bot will offer you similar options. Choose the one you need and repeat the search request
+        - If name input is incorrect – try other name or search correct name in Google and then try again in bot
     
 
     useful_links: |
@@ -59,10 +59,10 @@ strings:
     language_ru: "Russian"
     main_menu: "Main menu"
     menu:
-      query: "Find building info"
-      useful_links: "Useful links"
-      support: "Support"
-      language: "Select your language (EN, RU)"
+      query: "Find building info 🔎"
+      useful_links: "Useful links 🔗"
+      support: "Support  🦸🏻‍♂️"
+      language: "Select your language 🇬🇧🇷🇺"
 
   ru:
     language_selected: "Вы выбрали русский язык."
@@ -75,7 +75,7 @@ strings:
     message_scheduled_confirmation: "Сообщение для {n_users} пользователей запланировано на {send_datetime} ({timezone})"
     past_datetime_error: "Указанная дата уже прошла"
     invalid_datetime_format: "Неверный формат даты и времени."
-    description: |
+    start: |
       Привет всем участникам, любителям и профессионалам рынка недвижимости Дубая!
 
       Вас приветствует совершенно бесплатный телеграм бот, который поможет вам быстро найти полезную информацию о недвижимости Дубая.
@@ -83,23 +83,12 @@ strings:
       Вся информация основана на данных Земельного департамента Дубая (DLD).
 
       Удачи и не забудьте поделиться с коллегами и друзьями!
-
-    start: |
-      Добро пожаловать в Building Finder Bot.
-      Это бесплатный и полезный бот для агентов по недвижимости и инвесторов.
-      В мгновение вы сможете найти всю доступную информацию о любом зарегистрированном здании в Дубае: дату сдачи, конфигурацию здания, информацию о застройщике и многое другое. Вся информация основана на данных Земельного департамента Дубая (DLD).
-
-      1. Найти информацию о здании
-      2. Полезные ссылки
-      3. Поддержка
-      4. Выберите язык (EN, RU)
-
     main_menu: "Главное меню"
     menu:
-      query: "Найти информацию о здании"
-      useful_links: "Полезные ссылки"
-      support: "Поддержка"
-      language: "Выбор языка (EN, RU)"
+      query: "Найти информацию о здании 🔎"
+      useful_links: "Полезные ссылки 🔗"
+      support: "Поддержка 🦸🏻‍♂️"
+      language: "Выбор языка 🇬🇧🇷🇺"
 
     query:
       ask_name: |
@@ -117,7 +106,13 @@ strings:
       result_positive_unique: "Здание найдено:"
       result_positive_report: "Если вы нашли неточности в данных, просьба сообщить @hunkydory_uae"
       result_positive_nonunique: "Несколько зданий найдено по вашему запросу:"
-      result_negative: "Проекты не найдены."
+      result_negative: |
+        Проект не найден. Попробуйте еще раз.
+        Помните о правилах поиска:
+        - Одно или два слова максимум
+        - Если имя введено неточно — бот предложит вам
+          похожие варианты. Выберите нужный и повторите поисковый запрос
+        - Если имя введено неверно — попробуйте другое имя или найдите правильное имя в Google и попробуйте еще раз в боте
 
     useful_links: |
       Secondary Dubai Only: https://t.me/secondary_dubai
@@ -134,13 +129,11 @@ strings:
     language_ru: "Русский"
 
   project_info_template: |
-      ## Project information:
-
-      Project: {project_name_id_buildings}
+      Project: **{project_name_id_buildings}**
       Developer: {developer_name_en}
       Master developer: {master_developer_name_en}
-      Area (Arabic): {area_name_en}
-      Area (English): {master_project_en}
+      Area \(Arabic\): {area_name_en}
+      Area \(English\): {master_project_en}
       Project registration date: {registration_date}
       Project start date: {project_start_date}
       Project end date: {project_end_date}

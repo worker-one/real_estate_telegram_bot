@@ -39,6 +39,27 @@ def upsert_user(
     db.merge(user)
     db.commit()
     db.close()
+    return user
+
+def update_user_language(user_id: int, new_language: str):
+    db: Session = get_session()
+    try:
+        # Query the user by user_id
+        user = db.query(User).filter(User.user_id == user_id).one()
+
+        # Update the language field
+        user.language = new_language
+
+        # Commit the transaction
+        db.commit()
+
+        logger.info(f"User {user_id} language updated to {new_language}")
+    except NoResultFound:
+        db.rollback()
+        logger.info(f"No user found with user_id {user_id}")
+    except Exception as e:
+        db.rollback()
+        logger.info(str(e))
 
 def upsert_project(project: Project):
     db: Session = get_session()

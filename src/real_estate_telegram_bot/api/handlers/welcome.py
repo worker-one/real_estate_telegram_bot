@@ -13,14 +13,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def register_handlers(bot):
-    @bot.message_handler(commands=['start'])
-    def start_handler(message):
-
-        user_id = message.from_user.id
-        username = message.from_user.username
-        upsert_user(user_id, username)
-
-        bot.reply_to(message, strings.start)
 
     @bot.message_handler(commands=['help'])
     def help_handler(message):
