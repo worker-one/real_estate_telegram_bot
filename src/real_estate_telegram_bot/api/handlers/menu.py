@@ -56,7 +56,6 @@ def register_handlers(bot):
         lang = user.language
         logger.info({"user_id": message.from_user.id, "message": message.text})
 
-        bot.send_message(message.chat.id, formatting.format_text("*Hello* world\!"), parse_mode="MarkdownV2")
         bot.send_message(
             message.chat.id, strings[lang].start,
             reply_markup=create_main_menu_markup(strings[lang])

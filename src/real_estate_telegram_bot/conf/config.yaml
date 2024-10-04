@@ -42,7 +42,8 @@ strings:
         - One or two words max
         - If name input is not accurate – bot will offer you similar options. Choose the one you need and repeat the search request
         - If name input is incorrect – try other name or search correct name in Google and then try again in bot
-    
+        You can also ask for an advice here: @hunkydory_uae
+
 
     useful_links: |
       Secondary Dubai Only: https://t.me/secondary_dubai
@@ -113,7 +114,7 @@ strings:
         - Если имя введено неточно — бот предложит вам
           похожие варианты. Выберите нужный и повторите поисковый запрос
         - Если имя введено неверно — попробуйте другое имя или найдите правильное имя в Google и попробуйте еще раз в боте
-
+        Можете также задать вопрос здесь: @hunkydory_uae
     useful_links: |
       Secondary Dubai Only: https://t.me/secondary_dubai
       Request Dubai Only: https://t.me/Request_dubai
