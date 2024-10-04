@@ -19,12 +19,9 @@ def register_handlers(bot):
 
         user_id = message.from_user.id
         username = message.from_user.username
-        user = upsert_user(user_id, username)
+        upsert_user(user_id, username)
 
-        bot.reply_to(
-            message, strings[user.language].start,
-            reply_markup=create_main_menu_markup(strings[user.language])
-        )
+        bot.reply_to(message, strings.start)
 
     @bot.message_handler(commands=['help'])
     def help_handler(message):
