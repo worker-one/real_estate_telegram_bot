@@ -76,17 +76,18 @@ def prepare_response(project) -> str:
         'webpage': project_json['webpage']
     }
 
-    # Apply escape_special_chars to each string value in the dictionary
-    for key, value in formatted_project_json.items():
-        print(key, value)
-        if isinstance(value, str):  # Ensure the value is a string
-            formatted_project_json[key] = escape_special_chars(value)
 
     # Append 'years' suffix where applicable
     if formatted_project_json['construction_duration'] != 'N/A':
         formatted_project_json['construction_duration'] += " years"
     if formatted_project_json['project_age'] != "Under construction":
         formatted_project_json['project_age'] += " years"
+
+    #      # Apply escape_special_chars to each string value in the dictionary
+    # for key, value in formatted_project_json.items():
+    #     print(key, value)
+    #     if isinstance(value, str):  # Ensure the value is a string
+    #         formatted_project_json[key] = escape_special_chars(value)
 
     return template.format(**formatted_project_json).strip()
 
@@ -157,7 +158,7 @@ def register_handlers(bot):
         project = query_projects_by_name(project_id)[0]
         bot.send_message(
             user_id, prepare_response(project).replace('_', " "),
-            parse_mode="MarkdownV2"
+            parse_mode="Markdown"
         )
         bot.send_message(
             user_id, strings[lang].query.result_positive_report,
