@@ -139,7 +139,7 @@ strings:
       Project registration date: *{registration_date}*
       Project start date: *{project_start_date}*
       Project end date: *{project_end_date}*
-      Construction duration (up to date): *{construction_duration}*
+      Construction duration: *{construction_duration}*
       How old is the building: *{project_age}*
       Project status: *{project_status}*
       Completion: *{percent_completed}% *
