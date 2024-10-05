@@ -1,6 +1,6 @@
 import logging
 
-from omegaconf import OmegaConf
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 
 from real_estate_telegram_bot.db.database import get_session

@@ -4,7 +4,6 @@ from omegaconf import OmegaConf
 from real_estate_telegram_bot.api.users import check_user_in_channel_sync
 from real_estate_telegram_bot.db import crud
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
-from telebot import formatting
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -67,13 +66,12 @@ def register_handlers(bot):
         username = call.from_user.username
 
         user = crud.read_user(user_id)
-        print(user.language, user.user_id)
         if not user:
             user = crud.upsert_user(user_id, username)
 
         lang = user.language
         logger.info({"user_id": user_id, "message": call.data})
-        
+
         bot.send_message(
             call.message.chat.id, strings[lang].start,
             reply_markup=create_main_menu_markup(strings[lang])
