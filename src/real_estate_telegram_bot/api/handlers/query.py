@@ -1,12 +1,13 @@
 import datetime
 import logging
-import math
+import os
 import re
+
 from omegaconf import OmegaConf
 from real_estate_telegram_bot.api.handlers.menu import create_main_menu_button
 from real_estate_telegram_bot.api.users import check_user_in_channel_sync
 from real_estate_telegram_bot.db.crud import query_projects_by_name, read_user
-from setuptools import Command
+from real_estate_telegram_bot.service.google import GoogleDriveAPI
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
@@ -14,6 +15,9 @@ strings = config.strings
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+google_drive_api = GoogleDriveAPI()
+google_drive_api.index()
 
 
 def format_date(date):
@@ -166,3 +170,36 @@ def register_handlers(bot):
             reply_markup=create_main_menu_button(strings[lang])
         )
 
+    @bot.message_handler(commands=["files"])
+    def search_file_handler(message):
+        user_id = message.from_user.id
+        user = read_user(user_id)
+        lang = user.language
+        dir_name = message.text.split(maxsplit=1)[1]  # Extract the file name from the message
+
+        logger.info(msg="User event", extra={"user_id": user_id, "user_message": message.text})
+        items = google_drive_api.dir_index.get(dir_name)
+
+        if items:
+
+            for item in items:
+                file_name = item['file_name']
+                file_id = item['id']
+
+                # Define the destination path for the downloaded file
+                destination = f"./downloads/{file_name}"
+                os.makedirs(os.path.dirname(destination), exist_ok=True)
+
+                # Download the file from Google Drive
+                google_drive_api.download_file(file_id, destination)
+
+                # Send the downloaded file to the user
+                with open(destination, 'rb') as file:
+                    bot.send_document(user_id, file)
+
+                bot.reply_to(message, f"File found and sent: {file_name} (ID: {file_id})")
+
+                bot.send_message(
+                    user_id, strings[lang].query.result_positive_report,
+                    reply_markup=create_main_menu_button(strings[lang])
+                )
