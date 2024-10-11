@@ -45,11 +45,11 @@ class GoogleDriveAPI:
 
     def __init__(self):
         self.keyfile_dict = create_keyfile_dict()
-        self.credentials = ServiceAccountCredentials.from_json_keyfile_dict(keyfile_dict=self.keyfile_dict, scopes=self.scope)
+        self.credentials = ServiceAccountCredentials.from_json_keyfile_dict(keyfile_dict=self.keyfile_dict, scopes=self.SCOPES)
         self.service = build("drive", "v3", credentials=self.credentials)
         self.file_index = {}
         self.dir_index = {}
-
+        
     def upload_file(self, file_path: str, mime_type: str) -> None:
         try:
             file_metadata = {'name': os.path.basename(file_path)}
