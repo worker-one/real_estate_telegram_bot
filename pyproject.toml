@@ -26,6 +26,7 @@ dependencies = [
     "psycopg2-binary",
     "python-dotenv",
     "Telethon",
+    "oauth2client",
     "apscheduler==3.10.4",
     "apscheduler",
     "pytz",
