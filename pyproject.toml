@@ -28,7 +28,10 @@ dependencies = [
     "Telethon",
     "apscheduler==3.10.4",
     "apscheduler",
-    "pytz"
+    "pytz",
+    "google-api-python-client",
+    "google-auth-httplib2",
+    "google-auth-oauthlib"
 ]
 
 [project.optional-dependencies]

@@ -34,6 +34,12 @@ def create_main_menu_button(strings):
     main_menu_button.add(InlineKeyboardButton(strings.main_menu, callback_data="_main_menu"))
     return main_menu_button
 
+def create_create_query_menu(strings):
+    query_menu = InlineKeyboardMarkup(row_width=2)
+    query_menu.add(InlineKeyboardButton(strings.menu.area_names, callback_data="_area_names"))
+    query_menu.add(InlineKeyboardButton(strings.main_menu, callback_data="_main_menu"))
+    return query_menu
+
 
 def register_handlers(bot):
     @bot.message_handler(commands=["start", "menu"])
@@ -150,5 +156,18 @@ def register_handlers(bot):
         lang = user.language
         bot.send_message(
             call.message.chat.id, strings[lang].query.ask_name,
-            reply_markup=create_main_menu_button(strings[lang])
+            reply_markup=create_create_query_menu(strings[lang])
+        )
+
+    # Query area names table
+    @bot.callback_query_handler(func=lambda call: call.data == "_area_names")
+    def get_area_names_table(call):
+        logger.info({"user_id": call.from_user.id, "message": call.data})
+        user_id = call.from_user.id
+        user = crud.read_user(user_id)
+        lang = user.language
+
+        # Send the downloaded file to the user
+        with open("./data/dubai_area_names.xlsx", 'rb') as file:
+            bot.send_document(user_id, file, reply_markup=create_main_menu_button(strings[lang])
         )

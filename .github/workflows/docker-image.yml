@@ -16,6 +16,16 @@ jobs:
     - uses: actions/checkout@v4
     - name: Create .env file
       run: |
+        echo "TYPE=${{ vars.TYPE }}" >> .env
+        echo "PROJECT_ID=${{ vars.PROJECT_ID }}" >> .env
+        echo "PRIVATE_KEY_ID=${{ vars.PRIVATE_KEY_ID }}" >> .env
+        echo "PRIVATE_KEY=${{ vars.PRIVATE_KEY }}" >> .env
+        echo "CLIENT_EMAIL=${{ vars.CLIENT_EMAIL }}" >> .env
+        echo "CLIENT_ID=${{ vars.CLIENT_ID }}" >> .env
+        echo "TOKEN_URI=${{ vars.TOKEN_URI }}" >> .env
+        echo "AUTH_URI=${{ vars.AUTH_URI }}" >> .env
+        echo "AUTH_PROVIDER_X509_CERT_URL=${{ vars.AUTH_PROVIDER_X509_CERT_URL }}" >> .env
+        echo "CLIENT_X509_CERT_URL=${{ vars.CLIENT_X509_CERT_URL }}" >> .env
         echo "BOT_TOKEN=${{ vars.BOT_TOKEN }}" >> .env
         echo "DB_HOST=${{ vars.DB_HOST }}" >> .env
         echo "DB_PORT=${{ vars.DB_PORT }}" >> .env

@@ -62,6 +62,7 @@ strings:
     menu:
       query: "Find building info 🔎"
       useful_links: "Useful links 🔗"
+      area_names: "Area names 🇦🇪->🇬🇧"
       support: "Support  🦸🏻‍♂️"
       language: "Select your language 🇬🇧🇷🇺"
 
@@ -87,6 +88,7 @@ strings:
     main_menu: "Главное меню 🏠"
     menu:
       query: "Найти информацию о здании 🔎"
+      area_names: "Названия районов 🇦🇪->🇬🇧"
       useful_links: "Полезные ссылки 🔗"
       support: "Поддержка 🦸🏻‍♂️"
       language: "Выбор языка 🇬🇧🇷🇺"

@@ -1,12 +1,13 @@
 import datetime
 import logging
-import math
+import os
 import re
+
 from omegaconf import OmegaConf
 from real_estate_telegram_bot.api.handlers.menu import create_main_menu_button
 from real_estate_telegram_bot.api.users import check_user_in_channel_sync
 from real_estate_telegram_bot.db.crud import query_projects_by_name, read_user
-from setuptools import Command
+from real_estate_telegram_bot.service.google import GoogleDriveAPI
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
@@ -14,6 +15,9 @@ strings = config.strings
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+google_drive_api = GoogleDriveAPI()
+google_drive_api.index()
 
 
 def format_date(date):
@@ -97,6 +101,33 @@ def create_query_results_buttons(results: list[str]) -> InlineKeyboardMarkup:
         buttons_markup.add(InlineKeyboardButton(result, callback_data=f"_select_{result}"))
     return buttons_markup
 
+
+def query_files(query: str, user_id: int, bot) -> None:
+    items = google_drive_api.dir_index.get(query.lower().strip())
+
+    if items:
+        logger.info(msg=f"{len(items)} files found for {query}")
+        for item in items:
+            file_name = item['file_name']
+            file_id = item['id']
+
+            # Define the destination path for the downloaded file
+            destination = f"./downloads/{file_name}"
+            os.makedirs(os.path.dirname(destination), exist_ok=True)
+
+            # Download the file from Google Drive
+            google_drive_api.download_file(file_id, destination)
+
+            # Send the downloaded file to the user
+            with open(destination, 'rb') as file:
+                bot.send_document(user_id, file)
+            
+            # Remove file
+            os.remove(destination)
+    else:
+        logger.info(msg=f"No files found for {query}")
+
+
 def register_handlers(bot):
     @bot.message_handler(Command="query")
     def query_handler(message):
@@ -137,6 +168,7 @@ def register_handlers(bot):
                     user_id, strings[lang].query.result_positive_report,
                     reply_markup=create_main_menu_button(strings[lang])
                     )
+                query_files(project_name, user_id, bot)
             else:
                 projects_buttons = create_query_results_buttons(
                     [project.project_name_id_buildings for project in projects]
@@ -161,8 +193,8 @@ def register_handlers(bot):
             user_id, prepare_response(project).replace('_', " "),
             parse_mode="Markdown"
         )
+        query_files(project_id, user_id, bot)
         bot.send_message(
             user_id, strings[lang].query.result_positive_report,
             reply_markup=create_main_menu_button(strings[lang])
         )
-
