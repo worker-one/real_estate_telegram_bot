@@ -168,7 +168,7 @@ def register_handlers(bot):
                     user_id, strings[lang].query.result_positive_report,
                     reply_markup=create_main_menu_button(strings[lang])
                     )
-                query_files(project_name, user_id, bot)
+                #query_files(project_name, user_id, bot)
             else:
                 projects_buttons = create_query_results_buttons(
                     [project.project_name_id_buildings for project in projects]
@@ -193,7 +193,7 @@ def register_handlers(bot):
             user_id, prepare_response(project).replace('_', " "),
             parse_mode="Markdown"
         )
-        query_files(project_id, user_id, bot)
+        #query_files(project_id, user_id, bot)
         bot.send_message(
             user_id, strings[lang].query.result_positive_report,
             reply_markup=create_main_menu_button(strings[lang])
