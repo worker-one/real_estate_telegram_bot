@@ -1,5 +1,7 @@
 import logging.config
-
+import pandas as pd
+from io import BytesIO
+import os
 from omegaconf import OmegaConf
 from real_estate_telegram_bot.api.users import check_user_in_channel_sync
 from real_estate_telegram_bot.db import crud
@@ -15,6 +17,8 @@ def create_main_menu_markup(strings):
     menu_markup = InlineKeyboardMarkup(row_width=1)
     menu_markup.add(
         InlineKeyboardButton(strings.menu.query, callback_data="_query"),
+        InlineKeyboardButton(strings.menu.areas, callback_data="_areas"),
+        InlineKeyboardButton(strings.menu.area_names, callback_data="_area_names"),
         InlineKeyboardButton(strings.menu.useful_links, callback_data="_useful_links"),
         InlineKeyboardButton(strings.menu.support, callback_data="_support"),
         InlineKeyboardButton(strings.menu.language, callback_data="_language"),
@@ -40,6 +44,18 @@ def create_create_query_menu(strings):
     query_menu.add(InlineKeyboardButton(strings.main_menu, callback_data="_main_menu"))
     return query_menu
 
+def create_areas_menu_markup(strings):
+    areas_menu_markup = InlineKeyboardMarkup(row_width=1)
+    areas_menu_markup.add(
+        InlineKeyboardButton(strings.areas.dubai_marina, callback_data="_dubai_marina"),
+        InlineKeyboardButton(strings.areas.business_bay, callback_data="_business_bay"),
+        InlineKeyboardButton(strings.areas.downtown, callback_data="_downtown"),
+        InlineKeyboardButton(strings.areas.creek_harbour, callback_data="_creek_harbour"),
+        InlineKeyboardButton(strings.areas.sobha_hartland, callback_data="_sobha_hartland"),
+        InlineKeyboardButton(strings.areas.city_walk, callback_data="_city_walk"),
+        InlineKeyboardButton(strings.areas.enter_own_area, callback_data="_enter_own_area")
+    )
+    return areas_menu_markup
 
 def register_handlers(bot):
     @bot.message_handler(commands=["start", "menu"])
@@ -156,7 +172,7 @@ def register_handlers(bot):
         lang = user.language
         bot.send_message(
             call.message.chat.id, strings[lang].query.ask_name,
-            reply_markup=create_create_query_menu(strings[lang])
+            reply_markup=create_main_menu_button(strings[lang])
         )
 
     # Query area names table
@@ -171,3 +187,79 @@ def register_handlers(bot):
         with open("./data/dubai_area_names.xlsx", 'rb') as file:
             bot.send_document(user_id, file, reply_markup=create_main_menu_button(strings[lang])
         )
+
+    # Areas menu handler
+    @bot.callback_query_handler(func=lambda call: call.data == "_areas")
+    def areas_menu_callback(call):
+        user_id = call.from_user.id
+        user = crud.read_user(user_id)
+        lang = user.language
+        
+        logger.info({"user_id": user_id, "message": call.data})
+        
+        bot.send_message(
+            call.message.chat.id, strings[lang].menu.select_area,
+            reply_markup=create_areas_menu_markup(strings[lang])
+        )
+
+    # Specific area handlers (e.g., for "Dubai Marina")
+    @bot.callback_query_handler(func=lambda call: call.data in ["_dubai_marina", "_business_bay", "_downtown", "_creek_harbour", "_sobha_hartland", "_city_walk"])
+    def area_callback(call):
+        user_id = call.from_user.id
+        user = crud.read_user(user_id)
+        lang = user.language
+
+        area_name = call.data[1:].replace("_", " ").title()  # Format the area name from the callback data
+        building_data = crud.get_buildings_by_area(area_name)
+
+        # Create a pandas DataFrame from the sorted data
+        df = pd.DataFrame(building_data)
+
+        # Define the filename for the Excel file
+        filename = f"{area_name}_buildings.xlsx"
+        filepath = os.path.join("/tmp", filename)  # Save it to a temporary directory
+
+
+        # Save the DataFrame to a local Excel file
+        df.to_excel(filepath, index=False)
+
+        # Send the Excel file to the user
+        with open(filepath, 'rb') as file:
+            bot.send_document(call.message.chat.id, file, reply_markup=create_main_menu_button(strings[lang]))
+
+        # Delete the Excel file after sending it
+        os.remove(filepath)
+
+    # Handle the option where the user enters their own area name
+    @bot.callback_query_handler(func=lambda call: call.data == "_enter_own_area")
+    def enter_own_area_callback(call):
+        msg = bot.send_message(call.message.chat.id, strings.en.areas.enter_own_area)
+        bot.register_next_step_handler(msg, process_area_name)
+
+    def process_area_name(message):
+        user_id = message.from_user.id
+        area_name = message.text
+        user = crud.read_user(user_id)
+        lang = user.language
+        print(area_name)
+        building_data = crud.get_buildings_by_area(area_name)
+        if building_data:
+            # Create a pandas DataFrame from the sorted data
+            df = pd.DataFrame(building_data)
+
+            # Define the filename for the Excel file
+            filename = f"{area_name}_buildings.xlsx"
+            filepath = os.path.join("/tmp", filename)  # Save it to a temporary directory
+
+
+            # Save the DataFrame to a local Excel file
+            df.to_excel(filepath, index=False)
+
+            # Send the Excel file to the user
+            with open(filepath, 'rb') as file:
+                bot.send_document(user_id, file, reply_markup=create_main_menu_button(strings[lang]))
+
+            # Delete the Excel file after sending it
+            os.remove(filepath)
+        else:
+            bot.send_message(message.chat.id, f"No buildings found for {area_name}.", reply_markup=create_main_menu_button(strings[lang]))

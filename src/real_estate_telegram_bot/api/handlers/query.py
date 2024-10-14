@@ -16,8 +16,8 @@ strings = config.strings
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-google_drive_api = GoogleDriveAPI()
-google_drive_api.index()
+# google_drive_api = GoogleDriveAPI()
+# google_drive_api.index()
 
 
 def format_date(date):

@@ -55,16 +55,26 @@ strings:
       Owner’s Telegram: @egorov_uae”
     
     support: "Please send your questions, offers and critics here @hunkydory_uae"
-
     language_en: "English"
     language_ru: "Russian"
     main_menu: "Main menu 🏠"
     menu:
       query: "Find building info 🔎"
+      areas: "All buildings in the area 📍"
       useful_links: "Useful links 🔗"
       area_names: "Area names 🇦🇪->🇬🇧"
       support: "Support  🦸🏻‍♂️"
       language: "Select your language 🇬🇧🇷🇺"
+      select_area: "Select an area"
+    areas:
+      dubai_marina: "Dubai Marina"
+      business_bay: "Business Bay"
+      downtown: "Downtown"
+      creek_harbour: "Creek Harbour"
+      sobha_hartland: "Sobha Hartland"
+      city_walk: "City Walk"
+      enter_own_area: "Enter your own area manually"
+
 
   ru:
     language_selected: "Вы выбрали русский язык."
@@ -88,10 +98,21 @@ strings:
     main_menu: "Главное меню 🏠"
     menu:
       query: "Найти информацию о здании 🔎"
+      areas: "Все здания на районе📍"
       area_names: "Названия районов 🇦🇪->🇬🇧"
       useful_links: "Полезные ссылки 🔗"
       support: "Поддержка 🦸🏻‍♂️"
       language: "Выбор языка 🇬🇧🇷🇺"
+      select_area: "Выберите район"
+    areas:
+      dubai_marina: "Dubai Marina"
+      business_bay: "Business Bay"
+      downtown: "Downtown"
+      creek_harbour: "Creek Harbour"
+      sobha_hartland: "Sobha Hartland"
+      city_walk: "City Walk"
+      enter_own_area: "Ввести название района вручную"
+
 
     query:
       ask_name: |
@@ -127,7 +148,6 @@ strings:
       Telegram основателя: @egorov_uae
 
     support: "Пожалуйста, отправляйте свои вопросы, предложения и критику сюда @hunkydory_uae"
-
     language_en: "Английский"
     language_ru: "Русский"
 

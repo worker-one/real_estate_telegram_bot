@@ -2,7 +2,7 @@ import logging
 
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
-
+from datetime import datetime
 from real_estate_telegram_bot.db.database import get_session
 from real_estate_telegram_bot.db.models import Project, User
 
@@ -73,3 +73,38 @@ def query_projects_by_name(project_name: str) -> list[Project]:
     db.close()
     return result
 
+def get_buildings_by_area(area_name: str) -> list[dict]:
+    """
+    Retrieves a list of buildings in the given area from the database and sorts them by age.
+    
+    :param area_name: Name of the area to filter projects.
+    :return: A list of dictionaries containing building name, construction end date, and age.
+    """
+    db: Session = get_session()
+
+    # Query the database for buildings in the given area (master_project_en)
+    projects = db.query(Project).filter(Project.master_project_en.ilike(f"%{area_name}%")).all()
+    
+    if not projects:
+        db.close()
+        return []
+
+    # Calculate building age
+    current_year = datetime.now().year
+    building_data = []
+    
+    for project in projects:
+        # Skip projects without an end date
+        if project.project_end_date:
+            building_age = current_year - project.project_end_date.year
+            building_data.append({
+                "Building name": project.project_name_id_buildings,
+                "Construction end date": project.project_end_date.strftime('%Y-%m-%d'),
+                "How old is the building": building_age
+            })
+
+    # Sort by building age (newest to oldest)
+    building_data = sorted(building_data, key=lambda x: x["How old is the building"])
+
+    db.close()
+    return building_data
