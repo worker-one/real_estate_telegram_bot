@@ -34,7 +34,6 @@ async def check_user_in_channel(channel_name: str, username: str):
     client = TelegramClient("user", API_ID, API_HASH)
     await client.start()
 
-
     # get all the channels that I can access
     channels = {d.entity.username: d.entity
                 for d in await client.get_dialogs()

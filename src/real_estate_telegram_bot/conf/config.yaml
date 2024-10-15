@@ -43,7 +43,9 @@ strings:
         - If name input is not accurate – bot will offer you similar options. Choose the one you need and repeat the search request
         - If name input is incorrect – try other name or search correct name in Google and then try again in bot
         You can also ask for an advice here: @hunkydory_uae
-
+      enter_own_area: "Enter your own area manually"
+    area_query:
+      result_negative: "The spelling of the area may be incorrect. You can use ’Find building info’ feature and find out correct area there:"
 
     useful_links: |
       Secondary Dubai Only: https://t.me/secondary_dubai
@@ -66,15 +68,6 @@ strings:
       support: "Support  🦸🏻‍♂️"
       language: "Select your language 🇬🇧🇷🇺"
       select_area: "Select an area"
-    areas:
-      dubai_marina: "Dubai Marina"
-      business_bay: "Business Bay"
-      downtown: "Downtown"
-      creek_harbour: "Creek Harbour"
-      sobha_hartland: "Sobha Hartland"
-      city_walk: "City Walk"
-      enter_own_area: "Enter your own area manually"
-
 
   ru:
     language_selected: "Вы выбрали русский язык."
@@ -104,17 +97,9 @@ strings:
       support: "Поддержка 🦸🏻‍♂️"
       language: "Выбор языка 🇬🇧🇷🇺"
       select_area: "Выберите район"
-    areas:
-      dubai_marina: "Dubai Marina"
-      business_bay: "Business Bay"
-      downtown: "Downtown"
-      creek_harbour: "Creek Harbour"
-      sobha_hartland: "Sobha Hartland"
-      city_walk: "City Walk"
-      enter_own_area: "Ввести название района вручную"
-
 
     query:
+      enter_own_area: "Ввести название района вручную"
       ask_name: |
         Введите название здания в строку поиска ниже.
 
@@ -150,6 +135,30 @@ strings:
     support: "Пожалуйста, отправляйте свои вопросы, предложения и критику сюда @hunkydory_uae"
     language_en: "Английский"
     language_ru: "Русский"
+    area_query:
+      result_negative: "Написание района может быть неверным. Вы можете использовать функцию «Найти информацию о здании» и узнать правильное написание района там:"
+  
+  areas:
+    dubai_marina: "Dubai Marina"
+    business_bay: "Business Bay"
+    downtown: "Downtown"
+    creek_harbour: "Creek Harbour"
+    sobha_hartland: "Sobha Hartland"
+    city_walk: "City Walk"
+    al_furjan: "Al Furjan"
+    arjan: "Arjan"
+    beachfront: "Beachfront"
+    bluewaters: "Bluewaters"
+    dubai_hills: "Dubai Hills"
+    dubai_islands: "Dubai Islands"
+    dubai_maritime_city: "Dubai Maritime City"
+    jlt: "JLT"
+    jvc: "JVC"
+    jvt: "JVT"
+    jbr: "JBR"
+    la_mer: "La Mer"
+    mina_rashid: "Mina Rashid"
+    palm_jumeirah: "Palm Jumeirah"
 
   project_info_template: |
       Project: *{project_name_id_buildings}*
