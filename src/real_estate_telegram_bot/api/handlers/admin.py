@@ -33,9 +33,15 @@ def create_admin_menu_markup(strings):
 
 
 # Function to send a scheduled message
-def send_scheduled_message(bot, chat_id, message_text):
-    bot.send_message(chat_id, message_text)
-
+def send_scheduled_message(bot, user_id, media_type, message_text: str = None, message_photo: str = None):
+    if media_type == 'text':
+        bot.send_message(chat_id=user_id, text=message_content)
+    elif media_type == 'photo':
+        # Fetch the photo by file ID
+        if message_text:
+            bot.send_photo(chat_id=user_id, caption=message_text, photo=message_photo)
+        else:
+            bot.send_photo(chat_id=user_id, photo=message_photo)
 
 # React to any text if not command
 def register_handlers(bot):
@@ -90,32 +96,43 @@ def register_handlers(bot):
         except ValueError:
             # Handle invalid date format
             bot.send_message(user_id, strings[lang].invalid_datetime_format)
-            # Prompt the user again
-            bot.register_next_step_handler(message, get_datetime_input, bot, user_id, lang)
-
+            
+            # Send the admin menu
+            bot.send_message(
+                user_id, strings[lang].admin_menu.title,
+                reply_markup=create_admin_menu_markup(strings[lang])
+            )
+    
     # Handler to capture the custom message from the user
     def get_message_content(message, bot, user_id, lang):
-        user_message = message.text
-
+        user_message = None
+        photo_file = None
+        if message.text:
+            user_message = message.text
+            media_type = 'text'
+        elif message.photo:
+            # Get the highest quality image (last item in the list)
+            photo_file = message.photo[-1].file_id
+            user_message = message.caption
+            media_type = 'photo'
+        
         # Retrieve the previously stored datetime
         scheduled_datetime = user_data[user_id]['datetime']
-
+        
         # Schedule the message for the specified datetime
-        # Schedule the message sending
         users = read_users()
         for user in users:
-            print(user.user_id)
             scheduler.add_job(
                 send_scheduled_message, 'date',
                 run_date=scheduled_datetime, 
-                args=[bot, user.user_id, user_message]
-        )
+                args=[bot, user.user_id, media_type, user_message, photo_file]
+            )
 
         # Inform the user that the message has been scheduled
         response = strings[lang].message_scheduled_confirmation.format(
-            n_users = len(users),
-            send_datetime = scheduled_datetime.strftime('%Y-%m-%d %H:%M'),
-            timezone = config.timezone
+            n_users=len(users),
+            send_datetime=scheduled_datetime.strftime('%Y-%m-%d %H:%M'),
+            timezone=config.timezone
         )
         bot.send_message(user_id, response)
 

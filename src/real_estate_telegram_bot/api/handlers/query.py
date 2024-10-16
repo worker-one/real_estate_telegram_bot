@@ -87,18 +87,12 @@ def prepare_response(project) -> str:
     if formatted_project_json['project_age'] != "Under construction":
         formatted_project_json['project_age'] += " years"
 
-    #      # Apply escape_special_chars to each string value in the dictionary
-    # for key, value in formatted_project_json.items():
-    #     print(key, value)
-    #     if isinstance(value, str):  # Ensure the value is a string
-    #         formatted_project_json[key] = escape_special_chars(value)
-
     return template.format(**formatted_project_json).strip()
 
 def create_query_results_buttons(results: list[str]) -> InlineKeyboardMarkup:
     buttons_markup = InlineKeyboardMarkup(row_width=1)
     for result in results:
-        buttons_markup.add(InlineKeyboardButton(result, callback_data=f"_select_{result}"))
+        buttons_markup.add(InlineKeyboardButton(result, callback_data=f"_select_{result}"[:64]))
     return buttons_markup
 
 
