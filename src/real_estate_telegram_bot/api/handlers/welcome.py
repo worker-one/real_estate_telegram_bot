@@ -18,7 +18,9 @@ def register_handlers(bot):
         username = message.from_user.username
         upsert_user(user_id, username)
 
-        bot.reply_to(message, strings.start)
+        lang = user.language
+
+        bot.reply_to(message, strings[lang].start)
 
     @bot.message_handler(commands=['help'])
     def help_handler(message):
