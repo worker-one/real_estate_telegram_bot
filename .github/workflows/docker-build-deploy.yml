@@ -2,9 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches: [ "develop" ]
 
 jobs:
 
@@ -47,8 +45,31 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ vars.DOCKERHUB_USERNAME }}/real_estate_telegram_bot:latest
+        tags: ${{ vars.DOCKERHUB_USERNAME }}/real_estate_telegram_bot:dev
   
     - name: Log out from DockerHub
       run: docker logout
-
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: logging
+        run: |
+          echo ${{ vars.SERVER_HOST }}
+      - name: SSH into server and pull image
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.SERVER_HOST }}
+          username: ${{ vars.SERVER_USER }}
+          password: ${{ vars.SSH_PASSWORD }}
+          script: |
+            current_container=$(docker ps --filter "ancestor=${{ vars.DOCKERHUB_USERNAME }}/${{ vars.project_name }}:dev" --format "{{.Names}}")
+            if [ -n "$current_container" ]; then
+              docker stop $current_container
+              docker rm $current_container
+            fi
+            docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.project_name }}:dev
+            docker stop current_container_name || true
+            docker rm current_container_name || true
+            docker run -d --name current_container_name -p 80:80 ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.project_name }}:dev
