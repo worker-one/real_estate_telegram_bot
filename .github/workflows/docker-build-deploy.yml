@@ -9,7 +9,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    environment: global
+    environment: dev
     steps:
     - uses: actions/checkout@v4
     - name: Create .env file
@@ -45,7 +45,7 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ vars.DOCKERHUB_USERNAME }}/real_estate_telegram_bot:dev
+        tags: ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:dev
   
     - name: Log out from DockerHub
       run: docker logout
@@ -64,12 +64,12 @@ jobs:
           username: ${{ vars.SERVER_USER }}
           password: ${{ vars.SSH_PASSWORD }}
           script: |
-            current_container=$(docker ps --filter "ancestor=${{ vars.DOCKERHUB_USERNAME }}/${{ vars.project_name }}:dev" --format "{{.Names}}")
+            current_container=$(docker ps --filter "ancestor=${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:dev" --format "{{.Names}}")
             if [ -n "$current_container" ]; then
               docker stop $current_container
               docker rm $current_container
             fi
-            docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.project_name }}:dev
+            docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:dev
             docker stop current_container_name || true
             docker rm current_container_name || true
-            docker run -d --name current_container_name -p ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.project_name }}:dev
+            docker run -d --name current_container_name -p ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:dev
