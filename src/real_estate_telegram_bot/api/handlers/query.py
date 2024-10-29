@@ -16,8 +16,8 @@ strings = config.strings
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# google_drive_api = GoogleDriveAPI()
-# google_drive_api.index()
+google_drive_api = GoogleDriveAPI()
+google_drive_api.index()
 
 
 def format_date(date):
@@ -162,7 +162,7 @@ def register_handlers(bot):
                     user_id, strings[lang].query.result_positive_report,
                     reply_markup=create_main_menu_button(strings[lang])
                     )
-                #query_files(project_name, user_id, bot)
+                query_files(project_name, user_id, bot)
             else:
                 projects_buttons = create_query_results_buttons(
                     [project.project_name_id_buildings for project in projects]
