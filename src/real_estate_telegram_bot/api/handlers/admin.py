@@ -2,23 +2,27 @@ import datetime
 import logging
 import logging.config
 from apscheduler.schedulers.blocking import BlockingScheduler
-
+from apscheduler.schedulers.background import BackgroundScheduler
 from omegaconf import OmegaConf
 from real_estate_telegram_bot.db.crud import read_user, read_users
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
-
+from datetime import datetime
+import pytz
 
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
 strings = config.strings
 
-# Load logging configuration with OmegaConf
-logging_config = OmegaConf.to_container(
-    OmegaConf.load("./src/real_estate_telegram_bot/conf/logging_config.yaml"),
-    resolve=True
-)
-#logging.config.dictConfig(logging_config)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Define Paris timezone
+timezone = pytz.timezone(config.timezone)
+
+# Initialize the scheduler
+scheduler = BackgroundScheduler()
+
+# Dictionary to store user data during message scheduling
+user_data = {}
 
 def create_admin_menu_markup(strings):
     menu_markup = InlineKeyboardMarkup(row_width=1)
@@ -28,7 +32,18 @@ def create_admin_menu_markup(strings):
     return menu_markup
 
 
-# react to any text if not command
+# Function to send a scheduled message
+def send_scheduled_message(bot, user_id, media_type, message_text: str = None, message_photo: str = None):
+    if media_type == 'text':
+        bot.send_message(chat_id=user_id, text=message_content)
+    elif media_type == 'photo':
+        # Fetch the photo by file ID
+        if message_text:
+            bot.send_photo(chat_id=user_id, caption=message_text, photo=message_photo)
+        else:
+            bot.send_photo(chat_id=user_id, photo=message_photo)
+
+# React to any text if not command
 def register_handlers(bot):
     @bot.message_handler(commands=["admin"])
     def admin_menu_command(message):
@@ -37,7 +52,7 @@ def register_handlers(bot):
         lang = user.language
 
         if user.username not in config.admins:
-            # inform that the user does not have rights
+            # Inform the user that they do not have admin rights
             bot.send_message(user_id, strings[lang].no_rights)
             return
 
@@ -48,94 +63,82 @@ def register_handlers(bot):
         )
 
     @bot.callback_query_handler(func=lambda call: call.data == "_public_message")
-    def query_handler(message):
-        user_id = message.from_user.id
+    def query_handler(call):
+        user_id = call.from_user.id
         user = read_user(user_id)
         lang = user.language
 
-        if user.username.lower() not in config.admins:
-            # inform that the user does not have rights
+        if user.username not in config.admins:
+            # Inform that the user does not have admin rights
             bot.send_message(user_id, strings[lang].no_rights)
             return
 
-        # Ask user to prerecord a message
-        sent_message = bot.send_message(user_id, strings[lang].record_message_prompt)
+        # Ask user to provide the date and time
+        sent_message = bot.send_message(user_id, strings[lang].enter_datetime_prompt)
+        # Move to the next step: receiving the datetime input
+        bot.register_next_step_handler(sent_message, get_datetime_input, bot, user_id, lang)
 
-        # Register next step for saving the message content
-        bot.register_next_step_handler(sent_message, get_message_content, bot, user_id, lang)
+    # Handler to capture the datetime input from the user
+    def get_datetime_input(message, bot, user_id, lang):
+        user_input = message.text
+        try:
+            # Parse the user's input into a datetime object
+            user_datetime_obj = datetime.strptime(user_input, '%Y-%m-%d %H:%M')
+            user_datetime_localized = timezone.localize(user_datetime_obj)
 
+            # Store the datetime and move to the next step (waiting for the message content)
+            user_data[user_id] = {'datetime': user_datetime_localized}
+            bot.send_message(user_id, strings[lang].record_message_prompt)
 
-def get_message_content(message, bot, user_id, lang):
-    prerecorded_message = message.text
+            # Move to the next step: receiving the custom message
+            bot.register_next_step_handler(message, get_message_content, bot, user_id, lang)
 
-    # Ask for datetime input
-    sent_message = bot.send_message(user_id, strings[lang].enter_datetime_prompt)
-
-    # Register next step for saving the datetime
-    bot.register_next_step_handler(sent_message, schedule_message, bot, user_id, lang, prerecorded_message)
-
-
-def send_scheduled_message(bot, prerecorded_message, user_id):
-    # Send the prerecorded message at the scheduled time
-    bot.send_message(user_id, prerecorded_message)
-
-
-def schedule_message(message, bot, user_id, lang, prerecorded_message):
-    # timezone paris with standard logger
-    sched = BlockingScheduler(timezone="Europe/Paris", logger=logging.getLogger(__name__))
-    try:
-        # Parse the input datetime
-        send_datetime = datetime.datetime.strptime(message.text, "%Y-%m-%d %H:%M:%S")
-        send_datetime = send_datetime.replace(tzinfo=datetime.timezone.utc).astimezone(datetime.timezone(datetime.timedelta(hours=2)))  # Convert to Paris time
-        current_datetime = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=2)))  # Current time in Paris time
-
-        # Calculate the delay (in seconds) to send the message
-        delay = (send_datetime - current_datetime).total_seconds()
-
-        if delay < 0:
-            bot.send_message(user_id, strings[lang].past_datetime_error)
-            return
-
-        # Confirm the message is scheduled
-        bot.send_message(
-            user_id,
-            strings[lang].message_scheduled_confirmation.format(send_datetime=send_datetime)
-        )
-
-        # Schedule the message sending
+        except ValueError:
+            # Handle invalid date format
+            bot.send_message(user_id, strings[lang].invalid_datetime_format)
+            
+            # Send the admin menu
+            bot.send_message(
+                user_id, strings[lang].admin_menu.title,
+                reply_markup=create_admin_menu_markup(strings[lang])
+            )
+    
+    # Handler to capture the custom message from the user
+    def get_message_content(message, bot, user_id, lang):
+        user_message = None
+        photo_file = None
+        if message.text:
+            user_message = message.text
+            media_type = 'text'
+        elif message.photo:
+            # Get the highest quality image (last item in the list)
+            photo_file = message.photo[-1].file_id
+            user_message = message.caption
+            media_type = 'photo'
+        
+        # Retrieve the previously stored datetime
+        scheduled_datetime = user_data[user_id]['datetime']
+        
+        # Schedule the message for the specified datetime
         users = read_users()
         for user in users:
-            logger.info(msg=f"Scheduling message for user {user.user_id} at {send_datetime}")
-            sched.add_job(
-                send_scheduled_message,
-                "date",
-                run_date=send_datetime,
-                args=[bot, prerecorded_message, user.user_id]
-            )
-            # every 5 minutes
-            sched.add_job(
-                send_scheduled_message,
-                "interval",
-                minutes=5,
-                start_date=send_datetime,
-                end_date=send_datetime,
-                args=[bot, prerecorded_message, user.user_id]
-            )
-            # with cron trigger
-            sched.add_job(
-                send_scheduled_message,
-                "cron",
-                day_of_week='mon-sun',
-                hour=send_datetime.hour,
-                minute=send_datetime.minute,
-                second=send_datetime.second,
-                args=[bot, prerecorded_message, user.user_id]
+            scheduler.add_job(
+                send_scheduled_message, 'date',
+                run_date=scheduled_datetime, 
+                args=[bot, user.user_id, media_type, user_message, photo_file]
             )
 
-        sched.start()
-        # list all jobs
-        sched.print_jobs()
+        # Inform the user that the message has been scheduled
+        response = strings[lang].message_scheduled_confirmation.format(
+            n_users=len(users),
+            send_datetime=scheduled_datetime.strftime('%Y-%m-%d %H:%M'),
+            timezone=config.timezone
+        )
+        bot.send_message(user_id, response)
 
-    except ValueError:
-        bot.send_message(user_id, strings[lang].invalid_datetime_format)
+        # Clear the user data to avoid confusion
+        del user_data[user_id]
+
+# Start the scheduler
+scheduler.start()
 

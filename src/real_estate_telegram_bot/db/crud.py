@@ -1,16 +1,14 @@
 import logging
+from datetime import datetime
 
-from omegaconf import OmegaConf
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 
 from real_estate_telegram_bot.db.database import get_session
 from real_estate_telegram_bot.db.models import Project, User
 
-# Load logging configuration with OmegaConf
-logging_config = OmegaConf.to_container(OmegaConf.load("./src/real_estate_telegram_bot/conf/logging_config.yaml"), resolve=True)
-logging.config.dictConfig(logging_config)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
 
 def read_user(user_id: int) -> User:
     db: Session = get_session()
@@ -28,8 +26,8 @@ def upsert_user(
         user_id: str,
         username: str,
         phone_number: str = None,
-        language: str = None
-    ):
+        language: str = "en"
+    ) -> User:
     user = User(
         user_id=user_id,
         username=username
@@ -42,6 +40,27 @@ def upsert_user(
     db.merge(user)
     db.commit()
     db.close()
+    return user
+
+def update_user_language(user_id: int, new_language: str):
+    db: Session = get_session()
+    try:
+        # Query the user by user_id
+        user = db.query(User).filter(User.user_id == user_id).one()
+
+        # Update the language field
+        user.language = new_language
+
+        # Commit the transaction
+        db.commit()
+
+        logger.info(f"User {user_id} language updated to {new_language}")
+    except NoResultFound:
+        db.rollback()
+        logger.info(f"No user found with user_id {user_id}")
+    except Exception as e:
+        db.rollback()
+        logger.info(str(e))
 
 def upsert_project(project: Project):
     db: Session = get_session()
@@ -55,3 +74,44 @@ def query_projects_by_name(project_name: str) -> list[Project]:
     db.close()
     return result
 
+def get_buildings_by_area(area_name: str) -> list[dict]:
+    """
+    Retrieves a list of buildings in the given area from the database and sorts them by age.
+
+    :param area_name: Name of the area to filter projects.
+    :return: A list of dictionaries containing building name, construction end date, and age.
+    """
+    db: Session = get_session()
+
+    # Query the database for buildings in the given area (master_project_en)
+    projects = db.query(Project).filter(Project.master_project_en.ilike(f"%{area_name}%")).all()
+
+    if not projects:
+        db.close()
+        return []
+
+    # # Sort by building age (newest to oldest)
+    # projects.sort(key=lambda x: x.project_end_date, reverse=True)
+
+    # Calculate building age
+    current_year = datetime.now().year
+    building_data = []
+
+    for project in projects:
+        if project.project_name_id_buildings:
+            if project.project_end_date:
+                building_age = current_year - project.project_end_date.year
+                project_end_date = project.project_end_date.strftime('%d-%m-%Y')
+                if building_age <= 0:
+                    building_age = project.project_status
+            else:
+                building_age = project.project_status
+                project_end_date = None
+            building_data.append({
+                "Building name": project.project_name_id_buildings,
+                "Construction end date": project_end_date,
+                "How old is the building (years)": building_age
+            })
+
+    db.close()
+    return building_data

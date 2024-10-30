@@ -26,7 +26,15 @@ dependencies = [
     "psycopg2-binary",
     "python-dotenv",
     "Telethon",
+    "oauth2client",
     "apscheduler==3.10.4",
+    "apscheduler",
+    "pytz",
+    "openpyxl",
+    "google-api-python-client",
+    "google-auth-httplib2",
+    "google-auth-oauthlib",
+    "pandas"
 ]
 
 [project.optional-dependencies]

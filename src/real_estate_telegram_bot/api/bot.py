@@ -4,14 +4,10 @@ import os
 
 import telebot
 from dotenv import find_dotenv, load_dotenv
-from omegaconf import OmegaConf
 
 from real_estate_telegram_bot.api.handlers import admin, menu, query, welcome
 
-logging_config = OmegaConf.to_container(
-    OmegaConf.load("./src/real_estate_telegram_bot/conf/logging_config.yaml"), resolve=True
-)
-logging.config.dictConfig(logging_config)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 load_dotenv(find_dotenv(usecwd=True))  # Load environment variables from .env file
