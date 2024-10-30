@@ -27,7 +27,6 @@ def create_main_menu_markup(strings):
     menu_markup = InlineKeyboardMarkup(row_width=1)
     menu_markup.add(
         InlineKeyboardButton(strings.menu.query, callback_data="_query"),
-        InlineKeyboardButton(strings.menu.files, callback_data="_files"),
         InlineKeyboardButton(strings.menu.areas, callback_data="_areas"),
         InlineKeyboardButton(strings.menu.area_names, callback_data="_area_names"),
         InlineKeyboardButton(strings.menu.useful_links, callback_data="_useful_links"),
