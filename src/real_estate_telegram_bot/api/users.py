@@ -41,7 +41,7 @@ async def check_user_in_channel(channel_name: str, username: str):
     # choose the one that I want list users from
     channel = channels[channel_name]
     participants = await client.get_participants(channel)
-    logger.info(f"Members of channel: {participants}")
+    logger.info(f"Members of channel: {len(participants)}")
     client.disconnect()
     return username in [member.username for member in participants]
 

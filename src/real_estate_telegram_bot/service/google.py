@@ -1,10 +1,10 @@
 import io
+import json
 import logging
 import os.path
 
-from google.oauth2 import service_account
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
+from googleapiclient.errors import HttpError # type: ignore
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 
 logging.basicConfig(level=logging.INFO)
@@ -44,12 +44,20 @@ class GoogleDriveAPI:
     SERVICE_ACCOUNT_FILE = './src/real_estate_telegram_bot/conf/credentials.json'
 
     def __init__(self):
-        self.keyfile_dict = create_keyfile_dict()
+        try:
+            self.keyfile_dict = json.load(open(self.SERVICE_ACCOUNT_FILE))
+        except FileNotFoundError:
+            logger.info("Credentials json file has not been found. Using environment variables instead.")
+            self.keyfile_dict = create_keyfile_dict()
         self.credentials = ServiceAccountCredentials.from_json_keyfile_dict(keyfile_dict=self.keyfile_dict, scopes=self.SCOPES)
         self.service = build("drive", "v3", credentials=self.credentials)
+
         self.file_index = {}
+        self._file_index = {}
+
         self.dir_index = {}
-        
+        self._dir_index = {}
+
     def upload_file(self, file_path: str, mime_type: str) -> None:
         try:
             file_metadata = {'name': os.path.basename(file_path)}
@@ -130,38 +138,65 @@ class GoogleDriveAPI:
           logger.info(f"An error occurred: {error}")
           return "Unknown"
 
+    def search(self, query: str, case_sensitive: bool = True) -> list[dict]:
+      if case_sensitive:
+        return self.dir_index.get(query, [])
+      else:
+        return self._dir_index.get(query.lower().strip(), [])
+
     def index(self) -> None:
-      """Indexes all files in Google Drive and saves their names and directories as attributes."""
-      try:
-          new_files_count = 0
-          page_token = None
-          while True:
-              response = (
-                  self.service.files()
-                  .list(
-                      spaces="drive",
-                      fields="nextPageToken, files(id, name, parents)",
-                      pageToken=page_token,
-                  )
-                  .execute()
-              )
-              for file in response.get("files", []):
-                  if file["id"] not in self.file_index.values():
-                      parent_id = file.get('parents', [None])[0]
-                      parent_name = self.get_folder_name(parent_id) if parent_id else "Root"
+        """Indexes all files in Google Drive and saves their names and directories as attributes."""
+        try:
+            new_files_count = 0
+            page_token = None
+            while True:
+                response = (
+                    self.service.files()
+                    .list(
+                        spaces="drive",
+                        fields="nextPageToken, files(id, name, parents)",
+                        pageToken=page_token,
+                    )
+                    .execute()
+                )
+                for file in response.get("files", []):
+                    if file["id"] not in self.file_index.values():
+                        parent_id = file.get('parents', [None])[0]
+                        parent_name = self.get_folder_name(parent_id) if parent_id else "Root"
 
-                      # Update file_index
-                      self.file_index[file['name']] = {'id': file.get("id"), 'parent_name': parent_name}
+                        # Update file_index
+                        self.file_index[file['name']] = {'id': file.get("id"), 'parent_name': parent_name}
 
-                      # Update dir_index
-                      if parent_name not in self.dir_index:
-                          self.dir_index[parent_name.lower().strip()] = []
-                      self.dir_index[parent_name.lower().strip()].append({'file_name': file['name'], 'id': file['id']})
+                        # Update dir_index
+                        if parent_name not in self.dir_index:
+                            self.dir_index[parent_name] = []
+                            self._dir_index[parent_name.lower().strip()] = []
 
-                      new_files_count += 1
-              page_token = response.get("nextPageToken", None)
-              if page_token is None:
-                  break
-          logger.info(f"New files have been indexed: {new_files_count}")
-      except HttpError as error:
-          logger.info(f"An error occurred: {error}")
+                        self.dir_index[parent_name].append({'file_name': file['name'], 'id': file['id']})
+                        self._dir_index[parent_name.lower().strip()].append({'file_name': file['name'], 'id': file['id']})
+
+                        new_files_count += 1
+                page_token = response.get("nextPageToken", None)
+                if page_token is None:
+                    break
+            logger.info(f"New files have been indexed: {new_files_count}")
+        except HttpError as error:
+            logger.info(f"An error occurred: {error}")
+            logger.info(f"Indexed directories {len(self.dir_index.keys())}.")
+        # Save the index to a file json
+        with open('./src/real_estate_telegram_bot/conf/google_drive_index.json', 'w') as f:
+            json.dump(self.dir_index, f)
+
+    def load_index(self) -> None:
+        try:
+            with open('./src/real_estate_telegram_bot/conf/google_drive_index.json', 'r') as f:
+                self.dir_index = json.load(f)
+                for parent_name, files in self.dir_index.items():
+                    for file in files:
+                        self._dir_index[file['file_name'].lower().strip()] = file
+        except FileNotFoundError:
+            logger.info("Index file has not been found. Indexing files.")
+            self.index()
+        except json.JSONDecodeError:
+            logger.info("Index file is empty. Indexing files.")
+            self.index()

@@ -17,20 +17,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 google_drive_api = GoogleDriveAPI()
-google_drive_api.index()
+google_drive_api.load_index()
 
 
 def format_date(date):
     return date.strftime('%d.%m.%Y') if date else 'N/A'
-
-def escape_special_chars(text):
-    # List of characters to escape
-    special_chars = r"_\*\[\]\(\)~`>#\+\-=|{}.!?"
-
-    # Use re.sub to replace any special character with a backslash followed by the character
-    escaped_text = re.sub(r'([{}])'.format(re.escape(special_chars)), r'\\\1', text)
-
-    return escaped_text
 
 def calculate_years_between(start_date, end_date) -> str:
     """Calculate the number of years between two dates, rounded to 1 decimal place."""
@@ -97,11 +88,14 @@ def create_query_results_buttons(results: list[str]) -> InlineKeyboardMarkup:
 
 
 def query_files(query: str, user_id: int, bot) -> None:
-    items = google_drive_api.dir_index.get(query.lower().strip())
-
+    # Use get_close_matches to find the closest matching keys
+    items = google_drive_api.search(query.lower().strip(), case_sensitive=False)
+    print(items)
     if items:
         logger.info(msg=f"{len(items)} files found for {query}")
+        bot.send_message(user_id, strings['en'].query.files_found.format(n=len(items)))
         for item in items:
+            print(item)
             file_name = item['file_name']
             file_id = item['id']
 
@@ -115,7 +109,7 @@ def query_files(query: str, user_id: int, bot) -> None:
             # Send the downloaded file to the user
             with open(destination, 'rb') as file:
                 bot.send_document(user_id, file)
-            
+
             # Remove file
             os.remove(destination)
     else:
@@ -187,7 +181,7 @@ def register_handlers(bot):
             user_id, prepare_response(project).replace('_', " "),
             parse_mode="Markdown"
         )
-        #query_files(project_id, user_id, bot)
+        query_files(project_id, user_id, bot)
         bot.send_message(
             user_id, strings[lang].query.result_positive_report,
             reply_markup=create_main_menu_button(strings[lang])
