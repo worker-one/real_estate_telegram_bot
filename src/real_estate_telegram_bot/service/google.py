@@ -4,7 +4,7 @@ import logging
 import os.path
 
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError # type: ignore
+from googleapiclient.errors import HttpError  # type: ignore
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 
 logging.basicConfig(level=logging.INFO)
@@ -192,8 +192,7 @@ class GoogleDriveAPI:
             with open('./src/real_estate_telegram_bot/conf/google_drive_index.json', 'r') as f:
                 self.dir_index = json.load(f)
                 for parent_name, files in self.dir_index.items():
-                    for file in files:
-                        self._dir_index[file['file_name'].lower().strip()] = file
+                    self._dir_index[parent_name.lower().strip()] = files
         except FileNotFoundError:
             logger.info("Index file has not been found. Indexing files.")
             self.index()

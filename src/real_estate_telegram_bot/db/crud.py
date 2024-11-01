@@ -71,6 +71,7 @@ def upsert_project(project: Project):
 def query_projects_by_name(project_name: str) -> list[Project]:
     db: Session = get_session()
     result = db.query(Project).filter(Project.project_name_id_buildings.ilike(f"%{project_name}%")).all()
+    print(result)
     db.close()
     return result
 

@@ -2,6 +2,7 @@ import datetime
 import logging
 import os
 import re
+from ast import List
 
 from omegaconf import OmegaConf
 from real_estate_telegram_bot.api.handlers.menu import create_main_menu_button
@@ -87,34 +88,36 @@ def create_query_results_buttons(results: list[str]) -> InlineKeyboardMarkup:
     return buttons_markup
 
 
-def query_files(query: str, user_id: int, bot) -> None:
-    # Use get_close_matches to find the closest matching keys
-    items = google_drive_api.search(query.lower().strip(), case_sensitive=False)
-    print(items)
-    if items:
-        logger.info(msg=f"{len(items)} files found for {query}")
-        bot.send_message(user_id, strings['en'].query.files_found.format(n=len(items)))
-        for item in items:
-            print(item)
-            file_name = item['file_name']
-            file_id = item['id']
+def query_files(query: str, case_sensitive: bool = False):
+    try:
+        return google_drive_api.search(query.lower().strip(), case_sensitive=case_sensitive)
+    except Exception as e:
+        logger.info(f"An error occurred: {e}")
+        return None
 
-            # Define the destination path for the downloaded file
-            destination = f"./downloads/{file_name}"
-            os.makedirs(os.path.dirname(destination), exist_ok=True)
 
-            # Download the file from Google Drive
-            google_drive_api.download_file(file_id, destination)
+def send_files(items: list[dict], user_id, bot) -> None:
+    for item in items:
+        file_name = item['file_name']
+        file_id = item['id']
 
-            # Send the downloaded file to the user
-            with open(destination, 'rb') as file:
-                bot.send_document(user_id, file)
+        # Check that file_name has a file extension
+        if not re.search(r"\.\w+$", file_name):
+            file_name += ".pdf"
 
-            # Remove file
-            os.remove(destination)
-    else:
-        logger.info(msg=f"No files found for {query}")
+        # Define the destination path for the downloaded file
+        destination = f"./downloads/{file_name}"
+        os.makedirs(os.path.dirname(destination), exist_ok=True)
 
+        # Download the file from Google Drive
+        google_drive_api.download_file(file_id, destination)
+
+        # Send the downloaded file to the user
+        with open(destination, 'rb') as file:
+            bot.send_document(user_id, file)
+
+        # Remove file
+        os.remove(destination)
 
 def register_handlers(bot):
     @bot.message_handler(Command="query")
@@ -156,7 +159,12 @@ def register_handlers(bot):
                     user_id, strings[lang].query.result_positive_report,
                     reply_markup=create_main_menu_button(strings[lang])
                     )
-                query_files(project_name, user_id, bot)
+                items = query_files(projects[0].project_name_id_buildings)
+                if items:
+                    bot.send_message(user_id, strings[lang].query.files_found.format(n=len(items)))
+                    send_files(items, user_id, bot)
+                else:
+                    bot.send_message(user_id, strings[lang].query.files_not_found)
             else:
                 projects_buttons = create_query_results_buttons(
                     [project.project_name_id_buildings for project in projects]
@@ -171,17 +179,23 @@ def register_handlers(bot):
 
     @bot.callback_query_handler(func=lambda call: "_select_" in call.data)
     def show_selected_project(call):
+        logger.info(msg="User event", extra={"user_id": call.from_user.id, "user_message": call.data})
         project_id = call.data.replace("_select_", "")
+        print(project_id)
         user_id = call.from_user.id
         user = read_user(user_id)
         lang = user.language
 
-        project = query_projects_by_name(project_id)[0]
+        projects = query_projects_by_name(project_id)
+        project = [project for project in projects if project.project_name_id_buildings == project_id][0]
         bot.send_message(
             user_id, prepare_response(project).replace('_', " "),
             parse_mode="Markdown"
         )
-        query_files(project_id, user_id, bot)
+        items = query_files(project_id)
+        if items:
+            bot.send_message(user_id, strings[lang].query.files_found.format(n=len(items)))
+            send_files(items, user_id, bot)
         bot.send_message(
             user_id, strings[lang].query.result_positive_report,
             reply_markup=create_main_menu_button(strings[lang])
