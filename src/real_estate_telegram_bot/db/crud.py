@@ -5,7 +5,7 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 
 from real_estate_telegram_bot.db.database import get_session
-from real_estate_telegram_bot.db.models import Project, User
+from real_estate_telegram_bot.db.models import Project, ProjectFile, User
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -116,3 +116,26 @@ def get_buildings_by_area(area_name: str) -> list[dict]:
 
     db.close()
     return building_data
+
+def get_project_file_by_name(file_name: str) -> Project:
+    db: Session = get_session()
+    result = db.query(ProjectFile).filter(ProjectFile.file_name.ilike(f"%{file_name}%")).first()
+    return result
+
+def get_project_files_by_project_id(project_id: int) -> list[ProjectFile]:
+    db: Session = get_session()
+    result = db.query(ProjectFile).filter(ProjectFile.project_id == project_id).all()
+    return result
+
+def add_project_file(file_name: str, file_type: str, file_telegram_id: str, project_id: int) -> ProjectFile:
+    project_file = ProjectFile(
+        file_name=file_name,
+        file_type=file_type,
+        project_id=project_id,
+        file_telegram_id=file_telegram_id
+    )
+    db: Session = get_session()
+    db.add(project_file)
+    db.commit()
+    db.close()
+    return project_file
