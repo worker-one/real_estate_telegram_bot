@@ -69,7 +69,8 @@ jobs:
               docker stop $current_container
               docker rm $current_container
             fi
-            docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:dev
-            docker stop current_container_name || true
-            docker rm current_container_name || true
-            docker run -d --name current_container_name -p ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:dev
+            if ! docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:dev; then
+              echo "Failed to pull the Docker image"
+              exit 1
+            fi
+            docker run -d --name ${{ vars.PROJECT_NAME }}_container ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:dev
