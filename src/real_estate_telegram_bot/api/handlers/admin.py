@@ -1,13 +1,14 @@
 import datetime
 import logging
 import logging.config
-from apscheduler.schedulers.blocking import BlockingScheduler
+from datetime import datetime
+
+import pytz
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.blocking import BlockingScheduler
 from omegaconf import OmegaConf
 from real_estate_telegram_bot.db.crud import read_user, read_users
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
-from datetime import datetime
-import pytz
 
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
 strings = config.strings
@@ -35,7 +36,7 @@ def create_admin_menu_markup(strings):
 # Function to send a scheduled message
 def send_scheduled_message(bot, user_id, media_type, message_text: str = None, message_photo: str = None):
     if media_type == 'text':
-        bot.send_message(chat_id=user_id, text=message_content)
+        bot.send_message(chat_id=user_id, text=message_text)
     elif media_type == 'photo':
         # Fetch the photo by file ID
         if message_text:
@@ -96,13 +97,13 @@ def register_handlers(bot):
         except ValueError:
             # Handle invalid date format
             bot.send_message(user_id, strings[lang].invalid_datetime_format)
-            
+
             # Send the admin menu
             bot.send_message(
                 user_id, strings[lang].admin_menu.title,
                 reply_markup=create_admin_menu_markup(strings[lang])
             )
-    
+
     # Handler to capture the custom message from the user
     def get_message_content(message, bot, user_id, lang):
         user_message = None
@@ -115,10 +116,10 @@ def register_handlers(bot):
             photo_file = message.photo[-1].file_id
             user_message = message.caption
             media_type = 'photo'
-        
+
         # Retrieve the previously stored datetime
         scheduled_datetime = user_data[user_id]['datetime']
-        
+
         # Schedule the message for the specified datetime
         users = read_users()
         for user in users:

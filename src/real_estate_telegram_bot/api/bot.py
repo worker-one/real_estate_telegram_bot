@@ -1,6 +1,7 @@
 import logging
 import logging.config
 import os
+import time
 
 import telebot
 from dotenv import find_dotenv, load_dotenv
@@ -26,5 +27,5 @@ admin.register_handlers(bot)
 
 def start_bot():
     logger.info(msg=f"Bot `{str(bot.get_me().username)}` has started")
-    bot.infinity_polling()
+    bot.infinity_polling(timeout=90)
     #bot.polling()

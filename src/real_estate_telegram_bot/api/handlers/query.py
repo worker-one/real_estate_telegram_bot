@@ -2,7 +2,6 @@ import datetime
 import logging
 import os
 import re
-from ast import List
 
 from omegaconf import OmegaConf
 from real_estate_telegram_bot.api.handlers.menu import create_main_menu_button
@@ -170,7 +169,7 @@ def register_handlers(bot):
                     [project.project_name_id_buildings for project in projects]
                 )
                 bot.reply_to(message, strings[lang].query.result_positive_nonunique, reply_markup=projects_buttons)
-                bot.register_next_step_handler(message, show_selected_project)
+                #bot.register_next_step_handler(message, show_selected_project)
         else:
             bot.reply_to(
                 message, strings[lang].query.result_negative,
@@ -181,7 +180,6 @@ def register_handlers(bot):
     def show_selected_project(call):
         logger.info(msg="User event", extra={"user_id": call.from_user.id, "user_message": call.data})
         project_id = call.data.replace("_select_", "")
-        print(project_id)
         user_id = call.from_user.id
         user = read_user(user_id)
         lang = user.language
