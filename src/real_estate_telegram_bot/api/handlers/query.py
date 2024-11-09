@@ -16,21 +16,12 @@ strings = config.strings
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# google_drive_api = GoogleDriveAPI()
-# google_drive_api.index()
+google_drive_api = GoogleDriveAPI()
+google_drive_api.load_index()
 
 
 def format_date(date):
     return date.strftime('%d.%m.%Y') if date else 'N/A'
-
-def escape_special_chars(text):
-    # List of characters to escape
-    special_chars = r"_\*\[\]\(\)~`>#\+\-=|{}.!?"
-
-    # Use re.sub to replace any special character with a backslash followed by the character
-    escaped_text = re.sub(r'([{}])'.format(re.escape(special_chars)), r'\\\1', text)
-
-    return escaped_text
 
 def calculate_years_between(start_date, end_date) -> str:
     """Calculate the number of years between two dates, rounded to 1 decimal place."""
@@ -96,31 +87,36 @@ def create_query_results_buttons(results: list[str]) -> InlineKeyboardMarkup:
     return buttons_markup
 
 
-def query_files(query: str, user_id: int, bot) -> None:
-    items = google_drive_api.dir_index.get(query.lower().strip())
+def query_files(query: str, case_sensitive: bool = False):
+    try:
+        return google_drive_api.search(query.lower().strip(), case_sensitive=case_sensitive)
+    except Exception as e:
+        logger.info(f"An error occurred: {e}")
+        return None
 
-    if items:
-        logger.info(msg=f"{len(items)} files found for {query}")
-        for item in items:
-            file_name = item['file_name']
-            file_id = item['id']
 
-            # Define the destination path for the downloaded file
-            destination = f"./downloads/{file_name}"
-            os.makedirs(os.path.dirname(destination), exist_ok=True)
+def send_files(items: list[dict], user_id, bot) -> None:
+    for item in items:
+        file_name = item['file_name']
+        file_id = item['id']
 
-            # Download the file from Google Drive
-            google_drive_api.download_file(file_id, destination)
+        # Check that file_name has a file extension
+        if not re.search(r"\.\w+$", file_name):
+            file_name += ".pdf"
 
-            # Send the downloaded file to the user
-            with open(destination, 'rb') as file:
-                bot.send_document(user_id, file)
-            
-            # Remove file
-            os.remove(destination)
-    else:
-        logger.info(msg=f"No files found for {query}")
+        # Define the destination path for the downloaded file
+        destination = f"./downloads/{file_name}"
+        os.makedirs(os.path.dirname(destination), exist_ok=True)
 
+        # Download the file from Google Drive
+        google_drive_api.download_file(file_id, destination)
+
+        # Send the downloaded file to the user
+        with open(destination, 'rb') as file:
+            bot.send_document(user_id, file)
+
+        # Remove file
+        os.remove(destination)
 
 def register_handlers(bot):
     @bot.message_handler(Command="query")
@@ -162,13 +158,18 @@ def register_handlers(bot):
                     user_id, strings[lang].query.result_positive_report,
                     reply_markup=create_main_menu_button(strings[lang])
                     )
-                #query_files(project_name, user_id, bot)
+                items = query_files(projects[0].project_name_id_buildings)
+                if items:
+                    bot.send_message(user_id, strings[lang].query.files_found.format(n=len(items)))
+                    send_files(items, user_id, bot)
+                else:
+                    bot.send_message(user_id, strings[lang].query.files_not_found)
             else:
                 projects_buttons = create_query_results_buttons(
                     [project.project_name_id_buildings for project in projects]
                 )
                 bot.reply_to(message, strings[lang].query.result_positive_nonunique, reply_markup=projects_buttons)
-                bot.register_next_step_handler(message, show_selected_project)
+                #bot.register_next_step_handler(message, show_selected_project)
         else:
             bot.reply_to(
                 message, strings[lang].query.result_negative,
@@ -177,17 +178,22 @@ def register_handlers(bot):
 
     @bot.callback_query_handler(func=lambda call: "_select_" in call.data)
     def show_selected_project(call):
+        logger.info(msg="User event", extra={"user_id": call.from_user.id, "user_message": call.data})
         project_id = call.data.replace("_select_", "")
         user_id = call.from_user.id
         user = read_user(user_id)
         lang = user.language
 
-        project = query_projects_by_name(project_id)[0]
+        projects = query_projects_by_name(project_id)
+        project = [project for project in projects if project.project_name_id_buildings == project_id][0]
         bot.send_message(
             user_id, prepare_response(project).replace('_', " "),
             parse_mode="Markdown"
         )
-        #query_files(project_id, user_id, bot)
+        items = query_files(project_id)
+        if items:
+            bot.send_message(user_id, strings[lang].query.files_found.format(n=len(items)))
+            send_files(items, user_id, bot)
         bot.send_message(
             user_id, strings[lang].query.result_positive_report,
             reply_markup=create_main_menu_button(strings[lang])

@@ -47,7 +47,7 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ vars.DOCKERHUB_USERNAME }}/real_estate_telegram_bot:main
+        tags: ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:main
   
     - name: Log out from DockerHub
       run: docker logout
@@ -75,4 +75,4 @@ jobs:
             docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.project_name }}:main
             docker stop current_container_name || true
             docker rm current_container_name || true
-            docker run -d --name current_container_name -p ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.project_name }}:main
+            docker run -d --name current_container_name -p ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:main

@@ -1,6 +1,7 @@
 lang: "en"
 channel_name: "centralparkandpdlm"
 timezone: "Asia/Dubai"
+version: "0.3.1"
 admins:
   - konverner
   - hunkydory_uae
@@ -44,6 +45,7 @@ strings:
         - If name input is incorrect – try other name or search correct name in Google and then try again in bot
         You can also ask for an advice here: @hunkydory_uae
       enter_own_area: "Enter your own area manually"
+      files_found: "{n} files found:"
     area_query:
       result_negative: "The spelling of the area may be incorrect. You can use ’Find building info’ feature and find out correct area there:"
 
@@ -123,6 +125,7 @@ strings:
           похожие варианты. Выберите нужный и повторите поисковый запрос
         - Если имя введено неверно — попробуйте другое имя или найдите правильное имя в Google и попробуйте еще раз в боте
         Можете также задать вопрос здесь: @hunkydory_uae
+      files_found: "{n} файлов найдено:"
     useful_links: |
       Secondary Dubai Only: https://t.me/secondary_dubai
       Request Dubai Only: https://t.me/Request_dubai
