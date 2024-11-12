@@ -36,14 +36,14 @@ strings:
         Enjoy the result and don’t forget to share this bot with your colleagues ;-)
       result_positive_unique: "Project found:"
       result_positive_nonunique: "Several projects found based on your query:"
-      result_positive_report: "If some information is inaccurate please report to @hunkydory_uae"
+      result_positive_report: "If some information is inaccurate please report to @kirill_egorov_dubai"
       result_negative: |
         No project found. Try again.
         Keep in mind search rules:
         - One or two words max
         - If name input is not accurate – bot will offer you similar options. Choose the one you need and repeat the search request
         - If name input is incorrect – try other name or search correct name in Google and then try again in bot
-        You can also ask for an advice here: @hunkydory_uae
+        You can also ask for an advice here: @kirill_egorov_dubai
       enter_own_area: "Enter your own area manually"
       files_found: "{n} files found:"
     area_query:
@@ -58,7 +58,7 @@ strings:
       Owner’s Instagram: https://www.instagram.com/kirill_egorov_uae
       Owner’s Telegram: @egorov_uae”
     
-    support: "Please send your questions, offers and critics here @hunkydory_uae"
+    support: "Please send your questions, offers and critics here @kirill_egorov_dubai"
     language_en: "English"
     language_ru: "Russian"
     main_menu: "Main menu 🏠"
@@ -115,7 +115,7 @@ strings:
         Наслаждайтесь результатом и не забудьте поделиться ссылкой на бот с коллегами ;-)
 
       result_positive_unique: "Здание найдено:"
-      result_positive_report: "Если вы нашли неточности в данных, просьба сообщить @hunkydory_uae"
+      result_positive_report: "Если вы нашли неточности в данных, просьба сообщить @kirill_egorov_dubai"
       result_positive_nonunique: "Несколько зданий найдено по вашему запросу:"
       result_negative: |
         Проект не найден. Попробуйте еще раз.
@@ -124,7 +124,7 @@ strings:
         - Если имя введено неточно — бот предложит вам
           похожие варианты. Выберите нужный и повторите поисковый запрос
         - Если имя введено неверно — попробуйте другое имя или найдите правильное имя в Google и попробуйте еще раз в боте
-        Можете также задать вопрос здесь: @hunkydory_uae
+        Можете также задать вопрос здесь: @kirill_egorov_dubai
       files_found: "{n} файлов найдено:"
     useful_links: |
       Secondary Dubai Only: https://t.me/secondary_dubai
@@ -135,7 +135,7 @@ strings:
       Instagram основателя: https://www.instagram.com/kirill_egorov_uae
       Telegram основателя: @egorov_uae
 
-    support: "Пожалуйста, отправляйте свои вопросы, предложения и критику сюда @hunkydory_uae"
+    support: "Пожалуйста, отправляйте свои вопросы, предложения и критику сюда @kirill_egorov_dubai"
     language_en: "Английский"
     language_ru: "Русский"
     area_query:
