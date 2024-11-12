@@ -6,7 +6,7 @@ import time
 import telebot
 from dotenv import find_dotenv, load_dotenv
 
-from real_estate_telegram_bot.api.handlers import admin, menu, query, welcome
+from real_estate_telegram_bot.api.handlers import admin, menu, query, welcome, areas
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,6 +24,7 @@ query.register_handlers(bot)
 welcome.register_handlers(bot)
 menu.register_handlers(bot)
 admin.register_handlers(bot)
+areas.register_handlers(bot)
 
 def start_bot():
     logger.info(msg=f"Bot `{str(bot.get_me().username)}` has started")

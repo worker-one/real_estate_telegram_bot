@@ -4,14 +4,15 @@ import os
 import re
 
 from omegaconf import OmegaConf
+from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
+
 from real_estate_telegram_bot.api.handlers.menu import create_main_menu_button
 from real_estate_telegram_bot.api.users import check_user_in_channel_sync
 from real_estate_telegram_bot.db import crud
 from real_estate_telegram_bot.service.google import GoogleDriveAPI
-from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
-strings = config.strings
+strings = OmegaConf.load("./src/real_estate_telegram_bot/conf/strings.yaml")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -160,32 +161,39 @@ def register_handlers(bot):
         project_name = message.text
 
         logger.info(msg="User event", extra={"user_id": user_id, "user_message": message.text})
-        projects = crud.query_projects_by_name(project_name)
+        try:
+            projects = crud.query_projects_by_name(project_name)
 
-        if projects:
-            if len(projects) == 1:
-                bot.reply_to(message, strings[lang].query.result_positive_unique)
-                bot.send_message(user_id, prepare_response(projects[0]), parse_mode="Markdown")
-                bot.send_message(
-                    user_id, strings[lang].query.result_positive_report,
-                    reply_markup=create_main_menu_button(strings[lang])
-                    )
-                items = query_files(projects[0].project_name_id_buildings)
-                if items:
-                    bot.send_message(user_id, strings[lang].query.files_found.format(n=len(items)))
-                    send_files(
-                        items, user_id=user_id, bot=bot,
-                        project_id=projects[0].project_id
-                    )
+            if projects:
+                if len(projects) == 1:
+                    bot.reply_to(message, strings[lang].query.result_positive_unique)
+                    bot.send_message(user_id, prepare_response(projects[0]), parse_mode="Markdown")
+                    bot.send_message(
+                        user_id, strings[lang].query.result_positive_report,
+                        reply_markup=create_main_menu_button(strings[lang])
+                        )
+                    items = query_files(projects[0].project_name_id_buildings)
+                    if items:
+                        bot.send_message(user_id, strings[lang].query.files_found.format(n=len(items)))
+                        send_files(
+                            items, user_id=user_id, bot=bot,
+                            project_id=projects[0].project_id
+                        )
+                    else:
+                        bot.send_message(user_id, strings[lang].query.files_not_found)
                 else:
-                    bot.send_message(user_id, strings[lang].query.files_not_found)
+                    projects_buttons = create_query_results_buttons(
+                        [project.project_name_id_buildings for project in projects]
+                    )
+                    bot.reply_to(message, strings[lang].query.result_positive_nonunique, reply_markup=projects_buttons)
+                    #bot.register_next_step_handler(message, show_selected_project)
             else:
-                projects_buttons = create_query_results_buttons(
-                    [project.project_name_id_buildings for project in projects]
+                bot.reply_to(
+                    message, strings[lang].query.result_negative,
+                    reply_markup=create_main_menu_button(strings[lang])
                 )
-                bot.reply_to(message, strings[lang].query.result_positive_nonunique, reply_markup=projects_buttons)
-                #bot.register_next_step_handler(message, show_selected_project)
-        else:
+        except Exception as e:
+            logger.error(f"An error occurred: {e}")
             bot.reply_to(
                 message, strings[lang].query.result_negative,
                 reply_markup=create_main_menu_button(strings[lang])
