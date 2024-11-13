@@ -74,8 +74,8 @@ def prepare_response(project) -> str:
 
 
     # Append 'years' suffix where applicable
-    if formatted_project_json['construction_duration'] != 'N/A':
-        formatted_project_json['construction_duration'] += " years"
+    # if formatted_project_json['construction_duration'] != 'N/A':
+    #     formatted_project_json['construction_duration'] += " years"
     if formatted_project_json['project_age'] != "Under construction":
         formatted_project_json['project_age'] += " years"
 
@@ -223,6 +223,7 @@ def register_handlers(bot):
         project = [project for project in projects if project.project_name_id_buildings == project_id][0]
         bot.send_message(
             user_id, prepare_response(project).replace('_', " "),
+            reply_markup=create_service_charge_button(strings[lang], project.area_name_en),
             parse_mode="Markdown"
         )
         items = query_files(project_id)

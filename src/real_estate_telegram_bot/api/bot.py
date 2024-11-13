@@ -29,5 +29,5 @@ service_charge.register_handlers(bot)
 
 def start_bot():
     logger.info(msg=f"Bot `{str(bot.get_me().username)}` has started")
-    bot.infinity_polling(timeout=90)
+    bot.infinity_polling(timeout=290)
     #bot.polling()

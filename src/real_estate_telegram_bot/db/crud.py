@@ -163,9 +163,12 @@ def get_project_service_charge_by_year(master_community_name_en: str) -> list[di
     # Fetching data from the query
     results = query.all()
 
+    if not results:
+        return pd.DataFrame()
+
     # Processing the results into a dictionary for pivoting
     data = defaultdict(lambda: {"project_name": "", "property_group_name_en": ""})
-    
+
     for project_name, property_group_name_en, budget_year, service_charge in results:
         if not data[(project_name, property_group_name_en)]["project_name"]:
             data[(project_name, property_group_name_en)]["project_name"] = project_name
@@ -174,11 +177,11 @@ def get_project_service_charge_by_year(master_community_name_en: str) -> list[di
 
     # Converting the dictionary to a DataFrame
     df = pd.DataFrame.from_dict(data, orient="index").reset_index(drop=True)
-    
+
     # Reordering columns to ensure years are in the correct order
     year_columns = sorted([col for col in df.columns if isinstance(col, int)])
     df = df[["project_name", "property_group_name_en"] + year_columns]
-    
+
     # Fill missing values with empty strings or NaN if needed
     df = df.fillna("")
     return df
