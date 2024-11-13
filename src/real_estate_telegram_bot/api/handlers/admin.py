@@ -5,13 +5,13 @@ from datetime import datetime
 
 import pytz
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.schedulers.blocking import BlockingScheduler
 from omegaconf import OmegaConf
-from real_estate_telegram_bot.db.crud import read_user, read_users
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
+from real_estate_telegram_bot.db.crud import read_user, read_users
+
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
-strings = config.strings
+strings = OmegaConf.load("./src/real_estate_telegram_bot/conf/strings.yaml")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -76,6 +76,7 @@ def register_handlers(bot):
 
         # Ask user to provide the date and time
         sent_message = bot.send_message(user_id, strings[lang].enter_datetime_prompt)
+
         # Move to the next step: receiving the datetime input
         bot.register_next_step_handler(sent_message, get_datetime_input, bot, user_id, lang)
 

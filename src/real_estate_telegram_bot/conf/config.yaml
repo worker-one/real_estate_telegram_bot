@@ -2,7 +2,7 @@ lang: "en"
 restrict_access: false
 channel_name: "centralparkandpdlm"
 timezone: "Asia/Dubai"
-version: "0.5.2"
+version: "0.5.1"
 admins:
   - konverner
   - hunkydory_uae

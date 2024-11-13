@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, DateTime, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -64,3 +64,33 @@ class Project(Base):
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class ProjectServiceCharge(Base):
+    __tablename__ = 'projects_service_charge'
+
+    id = Column(Integer, primary_key=True)
+    project_id = Column(Integer)
+    project_name = Column(String)
+    master_community_name_en_new = Column(String)
+    property_group_name_en = Column(String)
+    usage_name_en = Column(String)
+    budget_year = Column(Integer)
+    master_project_en = Column(String)
+    service_charge = Column(Integer)
+    unit_ac = Column(Integer)
+    meter_installation = Column(Integer)
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class ProjectFile(Base):
+
+    __tablename__ = 'project_files'
+
+    file_id = Column(Integer, primary_key=True)
+    project_id = Column(Integer, foreign_key='projects.project_id')
+    file_name = Column(String)
+    file_type = Column(String)
+    file_telegram_id = Column(String)

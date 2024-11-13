@@ -1,11 +1,13 @@
 import logging
 
 from omegaconf import OmegaConf
+
 from real_estate_telegram_bot.db.crud import upsert_user
 
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
 lang = config.lang
-strings = config.strings
+strings = config.stringsstrings = OmegaConf.load("./src/real_estate_telegram_bot/conf/strings.yaml")
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
