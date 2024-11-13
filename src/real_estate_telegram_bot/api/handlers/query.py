@@ -4,11 +4,12 @@ import os
 import re
 
 from omegaconf import OmegaConf
+from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
+
 from real_estate_telegram_bot.api.handlers.menu import create_main_menu_button
 from real_estate_telegram_bot.api.users import check_user_in_channel_sync
 from real_estate_telegram_bot.db.crud import query_projects_by_name, read_user
 from real_estate_telegram_bot.service.google import GoogleDriveAPI
-from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
 strings = config.strings
@@ -49,13 +50,13 @@ def prepare_response(project) -> str:
     formatted_project_json = {
         'project_name_id_buildings': project_json['project_name_id_buildings'],
         'developer_name_en': project_json['developer_name_en'],
-        'master_developer_name_en': project_json['master_developer_name_en'],
+        #'master_developer_name_en': project_json['master_developer_name_en'],
         'area_name_en': project_json['area_name_en'],
         'master_project_en': project_json['master_project_en'],
-        'registration_date': format_date(project_json.get('registration_date')),
+        #'registration_date': format_date(project_json.get('registration_date')),
         'project_start_date': format_date(project_json.get('project_start_date')),
         'project_end_date': format_date(project_json.get('project_end_date')),
-        'construction_duration': project_json.get('construction_duration', 'N/A'),
+        #'construction_duration': project_json.get('construction_duration', 'N/A'),
         'project_age': project_json.get('project_age', 'Under construction'),
         'project_status': project_json['project_status'],
         'percent_completed': project_json['percent_completed'],
@@ -63,12 +64,12 @@ def prepare_response(project) -> str:
         'no_of_units': project_json['no_of_units'],
         'floors': project_json['floors'],
         'is_free_hold': project_json['is_free_hold'],
-        'project_description_en': project_json['project_description_en'],
-        'license_source_en': project_json['license_source_en'],
-        'license_number': project_json['license_number'],
-        'license_issue_date': format_date(project_json.get('license_issue_date')),
-        'license_expiry_date': format_date(project_json.get('license_expiry_date')),
-        'webpage': project_json['webpage']
+        # 'project_description_en': project_json['project_description_en'],
+        # 'license_source_en': project_json['license_source_en'],
+        # 'license_number': project_json['license_number'],
+        # 'license_issue_date': format_date(project_json.get('license_issue_date')),
+        # 'license_expiry_date': format_date(project_json.get('license_expiry_date')),
+        # 'webpage': project_json['webpage']
     }
 
 
