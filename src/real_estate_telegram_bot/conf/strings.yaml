@@ -169,7 +169,6 @@ areas:
 project_info_template: |
     Project: *{project_name_id_buildings}*
     Developer: *{developer_name_en}*
-    Master developer: *{master_developer_name_en}*
 
     Area (Arabic): *{area_name_en}*
     Area (English): *{master_project_en}*
