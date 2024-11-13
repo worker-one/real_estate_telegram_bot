@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
-strings = config.strings
+strings = OmegaConf.load("./src/real_estate_telegram_bot/conf/strings.yaml")
 
 # Load environment variables
 load_dotenv(find_dotenv(usecwd=True))

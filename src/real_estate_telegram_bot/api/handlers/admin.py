@@ -5,13 +5,13 @@ from datetime import datetime
 
 import pytz
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.schedulers.blocking import BlockingScheduler
 from omegaconf import OmegaConf
-from real_estate_telegram_bot.db.crud import read_user, read_users
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
+from real_estate_telegram_bot.db.crud import read_user, read_users
+
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
-strings = config.strings
+strings = OmegaConf.load("./src/real_estate_telegram_bot/conf/strings.yaml")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

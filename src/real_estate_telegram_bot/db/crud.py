@@ -102,7 +102,7 @@ def get_buildings_by_area(area_name: str) -> list[dict]:
         if project.project_name_id_buildings:
             if project.project_end_date:
                 building_age = current_year - project.project_end_date.year
-                project_end_date = project.project_end_date.strftime('%d-%m-%Y')
+                project_end_date = project.project_end_date
                 if building_age <= 0:
                     building_age = project.project_status
             else:
@@ -111,6 +111,7 @@ def get_buildings_by_area(area_name: str) -> list[dict]:
             building_data.append({
                 "Building name": project.project_name_id_buildings,
                 "Construction end date": project_end_date,
+                "Completion %": project.percent_completed,
                 "How old is the building (years)": building_age
             })
 

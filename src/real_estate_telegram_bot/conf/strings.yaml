@@ -1,0 +1,186 @@
+en:
+  language_selected: "You have selected English language."
+  admin_menu:
+    title: "Admin menu 🔑"
+    send_message: "Send message"
+  no_rights: "The user {username} does not have admin rights."
+  record_message_prompt: "Enter a message:"
+  enter_datetime_prompt: "Enter the time and date ({timezone}) the message was sent in the following format %Y-%m-%d %H:%M . For example, 2024-10-02 12:00"
+  past_datetime_error: "The specified date has already passed"
+  message_scheduled_confirmation: "The message for {n_users} users has been scheduled for {send_datetime} ({timezone})"
+  invalid_datetime_format: "The datetime format is not correct."
+  start: |
+    Welcome to Building Finder Bot.
+    It’s a free and helpful bot for real estate agents and investors.
+    In a glance you will be able to find all available information about any registered building in Dubai: handover date, building configuration, developer information and many more.
+    All data is official from Dubai Land Department (DLD).
+  query:
+    ask_name: |
+      Please input building name in a search bar below.
+
+      For example:
+      La Sirene
+
+      Keep in mind search rules:
+      -	One or two words max
+      -	If name input is incorrect – bot will offer you similar options. Choose the one you need and repeat the search request.
+
+      Enjoy the result and don’t forget to share this bot with your colleagues ;-)
+    result_positive_unique: "Project found:"
+    result_positive_nonunique: "Several projects found based on your query:"
+    result_positive_report: "If some information is inaccurate please report to @kirill_egorov_dubai"
+    result_negative: |
+      No project found. Try again.
+      Keep in mind search rules:
+      - One or two words max
+      - If name input is not accurate – bot will offer you similar options. Choose the one you need and repeat the search request
+      - If name input is incorrect – try other name or search correct name in Google and then try again in bot
+      You can also ask for an advice here: @kirill_egorov_dubai
+    enter_own_area: "Enter your own area manually"
+    files_found: "{n} files found:"
+  area_query:
+    result_negative: "The spelling of the area may be incorrect. You can use ’Find building info’ feature and find out correct area there:"
+
+  useful_links: |
+    Secondary Dubai Only: https://t.me/secondary_dubai
+    Request Dubai Only: https://t.me/Request_dubai
+    Rent Dubai Only: https://t.me/rent_dubai1
+    Distress Dubai Only: https://t.me/distress_dubai1
+
+    Owner’s Instagram: https://www.instagram.com/kirill_egorov_uae
+    Owner’s Telegram: @egorov_uae”
+  
+  support: "Please send your questions, offers and critics here @kirill_egorov_dubai"
+  language_en: "English"
+  language_ru: "Russian"
+  main_menu: "Main menu 🏠"
+  menu:
+    query: "Find building info 🔎"
+    areas: "All buildings in the area 📍"
+    useful_links: "Useful links 🔗"
+    area_names: "Area names 🇦🇪->🇬🇧"
+    support: "Support  🦸🏻‍♂️"
+    language: "Select your language 🇬🇧🇷🇺"
+    select_area: "Select an area"
+
+ru:
+  language_selected: "Вы выбрали русский язык."
+  admin_menu:
+    title: "Меню администратора 🔑"
+    send_message: "Рассылка сообщения"
+  no_rights: "Пользователь {username} не имеет прав администратора."
+  record_message_prompt: "Введите сообщение:"
+  enter_datetime_prompt: "Введите время и дату ({timezone}) отправки сообщения в следующем формате %Y-%m-%d %H:%M . Например, 2024-10-02 12:00"
+  message_scheduled_confirmation: "Сообщение для {n_users} пользователей запланировано на {send_datetime} ({timezone})"
+  past_datetime_error: "Указанная дата уже прошла"
+  invalid_datetime_format: "Неверный формат даты и времени."
+  start: |
+    Привет всем участникам, любителям и профессионалам рынка недвижимости Дубая!
+
+    Вас приветствует совершенно бесплатный телеграм бот, который поможет вам быстро найти полезную информацию о недвижимости Дубая.
+
+    Вся информация основана на данных Земельного департамента Дубая (DLD).
+
+    Удачи и не забудьте поделиться с коллегами и друзьями!
+  main_menu: "Главное меню 🏠"
+  menu:
+    query: "Найти информацию о здании 🔎"
+    areas: "Все здания на районе📍"
+    area_names: "Названия районов 🇦🇪->🇬🇧"
+    useful_links: "Полезные ссылки 🔗"
+    support: "Поддержка 🦸🏻‍♂️"
+    language: "Выбор языка 🇬🇧🇷🇺"
+    select_area: "Выберите район"
+
+  query:
+    enter_own_area: "Ввести название района вручную"
+    ask_name: |
+      Введите название здания в строку поиска ниже.
+
+      Например:
+      La Sirene
+
+      Правила поиска:
+      - Максимум одно-два слова
+      - Если название введено неверно, то бот предложит вам похожие варианты. Выберите нужный и повторите поисковый запрос.
+
+      Наслаждайтесь результатом и не забудьте поделиться ссылкой на бот с коллегами ;-)
+
+    result_positive_unique: "Здание найдено:"
+    result_positive_report: "Если вы нашли неточности в данных, просьба сообщить @kirill_egorov_dubai"
+    result_positive_nonunique: "Несколько зданий найдено по вашему запросу:"
+    result_negative: |
+      Проект не найден. Попробуйте еще раз.
+      Помните о правилах поиска:
+      - Одно или два слова максимум
+      - Если имя введено неточно — бот предложит вам
+        похожие варианты. Выберите нужный и повторите поисковый запрос
+      - Если имя введено неверно — попробуйте другое имя или найдите правильное имя в Google и попробуйте еще раз в боте
+      Можете также задать вопрос здесь: @kirill_egorov_dubai
+    files_found: "{n} файлов найдено:"
+  useful_links: |
+    Secondary Dubai Only: https://t.me/secondary_dubai
+    Request Dubai Only: https://t.me/Request_dubai
+    Rent Dubai Only: https://t.me/rent_dubai1
+    Distress Dubai Only: https://t.me/distress_dubai1
+
+    Instagram основателя: https://www.instagram.com/kirill_egorov_uae
+    Telegram основателя: @egorov_uae
+
+  support: "Пожалуйста, отправляйте свои вопросы, предложения и критику сюда @kirill_egorov_dubai"
+  language_en: "Английский"
+  language_ru: "Русский"
+  area_query:
+    result_negative: "Написание района может быть неверным. Вы можете использовать функцию «Найти информацию о здании» и узнать правильное написание района там:"
+
+areas:
+  dubai_marina: "Dubai Marina"
+  business_bay: "Business Bay"
+  downtown: "Downtown"
+  creek_harbour: "Creek Harbour"
+  sobha_hartland: "Sobha Hartland"
+  city_walk: "City Walk"
+  al_furjan: "Al Furjan"
+  arjan: "Arjan"
+  beachfront: "Beachfront"
+  bluewaters: "Bluewaters"
+  dubai_hills: "Dubai Hills"
+  dubai_islands: "Dubai Islands"
+  dubai_maritime_city: "Dubai Maritime City"
+  jlt: "JLT"
+  jvc: "JVC"
+  jvt: "JVT"
+  jbr: "JBR"
+  la_mer: "La Mer"
+  mina_rashid: "Mina Rashid"
+  palm_jumeirah: "Palm Jumeirah"
+
+project_info_template: |
+    Project: *{project_name_id_buildings}*
+    Developer: *{developer_name_en}*
+    Master developer: *{master_developer_name_en}*
+
+    Area (Arabic): *{area_name_en}*
+    Area (English): *{master_project_en}*
+    
+    Project registration date: *{registration_date}*
+    Project start date: *{project_start_date}*
+    Project end date: *{project_end_date}*
+    Construction duration: *{construction_duration}*
+    How old is the building: *{project_age}*
+    Project status: *{project_status}*
+    Completion: *{percent_completed}% *
+    
+    Number of buildings: *{no_of_buildings}*
+    Number of units: *{no_of_units}*
+    Number of floors: *{floors}*
+    Freehold: *{is_free_hold}*
+    Project description: *{project_description_en}*
+
+    *Developer information*:
+    Developer registration date: {registration_date}
+    License source: {license_source_en}
+    Licence number: {license_number}
+    Issue date: {license_issue_date}
+    Expiry date: {license_expiry_date}
+    Web-site: {webpage}
