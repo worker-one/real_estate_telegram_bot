@@ -81,6 +81,13 @@ def prepare_response(project) -> str:
 
     return template.format(**formatted_project_json).strip()
 
+def create_service_charge_button(strings: dict, master_community_name_en: str):
+    service_charge_button = InlineKeyboardMarkup(row_width=1)
+    service_charge_button.add(
+        InlineKeyboardButton(strings.menu.service_charge, callback_data=f"_service_charge_{master_community_name_en}")
+    )
+    return service_charge_button
+
 def create_query_results_buttons(results: list[str]) -> InlineKeyboardMarkup:
     buttons_markup = InlineKeyboardMarkup(row_width=1)
     for result in results:
@@ -166,8 +173,13 @@ def register_handlers(bot):
 
             if projects:
                 if len(projects) == 1:
+                    print(projects)
                     bot.reply_to(message, strings[lang].query.result_positive_unique)
-                    bot.send_message(user_id, prepare_response(projects[0]), parse_mode="Markdown")
+                    bot.send_message(
+                        user_id, prepare_response(projects[0]),
+                        parse_mode="Markdown",
+                        reply_markup=create_service_charge_button(strings[lang], projects[0].area_name_en)
+                    )
                     bot.send_message(
                         user_id, strings[lang].query.result_positive_report,
                         reply_markup=create_main_menu_button(strings[lang])

@@ -2,7 +2,7 @@ import openpyxl
 from openpyxl.styles import Alignment, PatternFill
 
 
-def format_excel_file(filepath):
+def format_excel_file(filepath: str, header_color: str = "92d050"):
     # Load the Excel file to apply formatting
     wb = openpyxl.load_workbook(filepath)
     ws = wb.active
@@ -13,7 +13,7 @@ def format_excel_file(filepath):
             cell.alignment = Alignment(horizontal='center', vertical='center')
 
     # Apply green background to the header row
-    header_fill = PatternFill(start_color="92d050", end_color="92d050", fill_type="solid")
+    header_fill = PatternFill(start_color=header_color, end_color=header_color, fill_type="solid")
     for cell in ws[1]:
         cell.fill = header_fill
 

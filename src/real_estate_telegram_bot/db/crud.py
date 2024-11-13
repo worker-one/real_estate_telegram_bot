@@ -1,11 +1,13 @@
 import logging
 from datetime import datetime
+from collections import defaultdict
 
+import pandas as pd
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 
 from real_estate_telegram_bot.db.database import get_session
-from real_estate_telegram_bot.db.models import Project, ProjectFile, User
+from real_estate_telegram_bot.db.models import Project, ProjectServiceCharge, ProjectFile, User
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -71,7 +73,6 @@ def upsert_project(project: Project):
 def query_projects_by_name(project_name: str) -> list[Project]:
     db: Session = get_session()
     result = db.query(Project).filter(Project.project_name_id_buildings.ilike(f"%{project_name}%")).all()
-    print(result)
     db.close()
     return result
 
@@ -128,6 +129,7 @@ def get_project_files_by_project_id(project_id: int) -> list[ProjectFile]:
     result = db.query(ProjectFile).filter(ProjectFile.project_id == project_id).all()
     return result
 
+
 def add_project_file(file_name: str, file_type: str, file_telegram_id: str, project_id: int) -> ProjectFile:
     project_file = ProjectFile(
         file_name=file_name,
@@ -140,3 +142,43 @@ def add_project_file(file_name: str, file_type: str, file_telegram_id: str, proj
     db.commit()
     db.close()
     return project_file
+
+
+def get_project_service_charge_by_year(master_community_name_en: str) -> list[dict[str, any]]:
+    db: Session = get_session()
+
+    # Query to get the project service charge data
+    query = db.query(
+        ProjectServiceCharge.project_name,
+        ProjectServiceCharge.property_group_name_en,
+        ProjectServiceCharge.budget_year,
+        ProjectServiceCharge.service_charge
+    ).filter(
+        ProjectServiceCharge.master_community_name_en_new.ilike(f"%{master_community_name_en}%")
+    ).order_by(
+        ProjectServiceCharge.project_name,
+        ProjectServiceCharge.budget_year
+    )
+
+    # Fetching data from the query
+    results = query.all()
+
+    # Processing the results into a dictionary for pivoting
+    data = defaultdict(lambda: {"project_name": "", "property_group_name_en": ""})
+    
+    for project_name, property_group_name_en, budget_year, service_charge in results:
+        if not data[(project_name, property_group_name_en)]["project_name"]:
+            data[(project_name, property_group_name_en)]["project_name"] = project_name
+            data[(project_name, property_group_name_en)]["property_group_name_en"] = property_group_name_en
+        data[(project_name, property_group_name_en)][budget_year] = service_charge
+
+    # Converting the dictionary to a DataFrame
+    df = pd.DataFrame.from_dict(data, orient="index").reset_index(drop=True)
+    
+    # Reordering columns to ensure years are in the correct order
+    year_columns = sorted([col for col in df.columns if isinstance(col, int)])
+    df = df[["project_name", "property_group_name_en"] + year_columns]
+    
+    # Fill missing values with empty strings or NaN if needed
+    df = df.fillna("")
+    return df

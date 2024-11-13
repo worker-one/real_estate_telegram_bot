@@ -56,12 +56,17 @@ en:
   main_menu: "Main menu 🏠"
   menu:
     query: "Find building info 🔎"
+    service_charge: "Service charge"
     areas: "All buildings in the area 📍"
     useful_links: "Useful links 🔗"
     area_names: "Area names 🇦🇪->🇬🇧"
     support: "Support  🦸🏻‍♂️"
     language: "Select your language 🇬🇧🇷🇺"
     select_area: "Select an area"
+  
+  service_charge:
+    result_positive: "You can find service charges in the area in the following file."
+    result_negative: "Unfortunately, there has no service charge data been found for the selected area."
 
 ru:
   language_selected: "Вы выбрали русский язык."
@@ -86,6 +91,7 @@ ru:
   menu:
     query: "Найти информацию о здании 🔎"
     areas: "Все здания на районе📍"
+    service_charge: "Service charge"
     area_names: "Названия районов 🇦🇪->🇬🇧"
     useful_links: "Полезные ссылки 🔗"
     support: "Поддержка 🦸🏻‍♂️"
@@ -132,6 +138,11 @@ ru:
   language_ru: "Русский"
   area_query:
     result_negative: "Написание района может быть неверным. Вы можете использовать функцию «Найти информацию о здании» и узнать правильное написание района там:"
+
+  service_charge:
+    result_positive: "Вы можете найти таблицу service charge по зданиям в указанном районе."
+    result_negative: "К сожалению, данные по service charge не были найдены"
+  
 
 areas:
   dubai_marina: "Dubai Marina"
