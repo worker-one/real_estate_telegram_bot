@@ -5,6 +5,84 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+    - uses: actions/checkout@v4
+    - name: Create .env file
+      run: |
+        echo "TYPE=${{ vars.TYPE }}" >> .env
+        echo "PROJECT_ID=${{ vars.PROJECT_ID }}" >> .env
+        echo "PRIVATE_KEY_ID=${{ vars.PRIVATE_KEY_ID }}" >> .env
+        echo "PRIVATE_KEY=${{ vars.PRIVATE_KEY }}" >> .env
+        echo "CLIENT_EMAIL=${{ vars.CLIENT_EMAIL }}" >> .env
+        echo "CLIENT_ID=${{ vars.CLIENT_ID }}" >> .env
+        echo "TOKEN_URI=${{ vars.TOKEN_URI }}" >> .env
+        echo "AUTH_URI=${{ vars.AUTH_URI }}" >> .env
+        echo "AUTH_PROVIDER_X509_CERT_URL=${{ vars.AUTH_PROVIDER_X509_CERT_URL }}" >> .env
+        echo "CLIENT_X509_CERT_URL=${{ vars.CLIENT_X509_CERT_URL }}" >> .env
+        echo "BOT_TOKEN=${{ vars.BOT_TOKEN }}" >> .env
+        echo "DB_HOST=${{ vars.DB_HOST }}" >> .env
+        echo "DB_PORT=${{ vars.DB_PORT }}" >> .env
+        echo "DB_NAME=${{ vars.DB_NAME }}" >> .env
+        echo "DB_USER=${{ vars.DB_USER }}" >> .env
+        echo "DB_PASSWORD=${{ vars.DB_PASSWORD }}" >> .env
+        echo "PHONE=${{ vars.PHONE }}" >> .env
+        echo "API_HASH=${{ vars.API_HASH }}" >> .env
+        echo "API_ID=${{ vars.API_ID }}" >> .env
+  
+    - name: Login to DockerHub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ vars.DOCKERHUB_USERNAME }}
+        password: ${{ vars.DOCKERHUB_TOKEN }}
+  
+    - name: Build and push
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: true
+        tags: ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:dev
+  
+    - name: Log out from DockerHub
+      run: docker logout
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: logging
+        run: |
+          echo ${{ vars.SERVER_HOST }}
+      - name: SSH into server and pull image
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.SERVER_HOST }}
+          username: ${{ vars.SERVER_USER }}
+          password: ${{ vars.SSH_PASSWORD }}
+          script: |
+            current_container=$(docker ps --filter "ancestor=${{ vars.DOCKERHUB_USERNAME }}/${{ vars.project_name }}:dev" --format "{{.Names}}")
+            if [ -n "$current_container" ]; then
+              docker stop $current_container
+              docker rm $current_container
+            fi
+            docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.project_name }}:dev
+            docker stop current_container_name || true
+            docker rm current_container_name || true
+            docker run -d --name current_container_name -p ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:dev
 
 jobs:
 
