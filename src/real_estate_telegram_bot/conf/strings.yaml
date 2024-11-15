@@ -56,7 +56,7 @@ en:
   main_menu: "Main menu 🏠"
   menu:
     query: "Find building info 🔎"
-    service_charge: "Service charge"
+    service_charge: "Service charge 📊"
     areas: "All buildings in the area 📍"
     useful_links: "Useful links 🔗"
     area_names: "Area names 🇦🇪->🇬🇧"
@@ -91,7 +91,7 @@ ru:
   menu:
     query: "Найти информацию о здании 🔎"
     areas: "Все здания на районе📍"
-    service_charge: "Service charge"
+    service_charge: "Service charge 📊"
     area_names: "Названия районов 🇦🇪->🇬🇧"
     useful_links: "Полезные ссылки 🔗"
     support: "Поддержка 🦸🏻‍♂️"
