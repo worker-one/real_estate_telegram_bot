@@ -11,7 +11,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
+    environment: ${{ github.ref == 'refs/heads/main' && 'global' || 'dev' }}
     steps:
       - uses: actions/checkout@v4
       - name: Create .env file
@@ -46,7 +46,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
+    environment: ${{ github.ref == 'refs/heads/main' && 'global' || 'dev' }}
     steps:
       - name: logging
         run: |
@@ -67,4 +67,5 @@ jobs:
             docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.project_name }}:$image_tag
             docker stop current_container_name || true
             docker rm current_container_name || true
-            docker run -d --name current_container_name -p 80:80 ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.project_name }}:$image_tag
+            docker images -a | grep none | awk '{ print $3; }' | xargs docker rmi --force
+            docker run -d --name current_container_name ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.project_name }}:$image_tag
