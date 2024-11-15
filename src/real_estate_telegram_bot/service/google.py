@@ -4,13 +4,12 @@ import logging
 import os.path
 
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError  # type: ignore
+from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
+from oauth2client.service_account import ServiceAccountCredentials
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-from oauth2client.service_account import ServiceAccountCredentials
 
 
 def create_keyfile_dict() -> dict[str, str]:
@@ -190,6 +189,7 @@ class GoogleDriveAPI:
     def load_index(self) -> None:
         try:
             with open('./src/real_estate_telegram_bot/conf/google_drive_index.json', 'r') as f:
+                logger.info("Loading index file.")
                 self.dir_index = json.load(f)
                 for parent_name, files in self.dir_index.items():
                     self._dir_index[parent_name.lower().strip()] = files

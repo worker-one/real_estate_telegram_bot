@@ -1,7 +1,12 @@
-from sqlalchemy import Column, DateTime, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
+from networkx import project
+from sqlalchemy import Column, DateTime, Integer, String, ForeignKey
+from sqlalchemy.orm import DeclarativeBase, relationship
 
-Base = declarative_base()
+
+class Base(DeclarativeBase):
+    """Base model"""
+
+    pass
 
 class Message(Base):
     __tablename__ = 'messages'
@@ -62,6 +67,8 @@ class Project(Base):
     land_type_en = Column(String)
     floors = Column(Integer)
 
+    project_files = relationship("ProjectFile", back_populates="project", cascade="all, delete-orphan")
+
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
@@ -90,7 +97,9 @@ class ProjectFile(Base):
     __tablename__ = 'project_files'
 
     file_id = Column(Integer, primary_key=True)
-    project_id = Column(Integer, foreign_key='projects.project_id')
+    project_id = Column(Integer, ForeignKey('projects.project_id'))
     file_name = Column(String)
     file_type = Column(String)
     file_telegram_id = Column(String)
+
+    project = relationship("Project", back_populates="project_files")

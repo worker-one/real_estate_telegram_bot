@@ -143,6 +143,7 @@ runs
 /examples/rag/sweep
 
 # data
+*.pdf
 /data
 serialization_dir
 
