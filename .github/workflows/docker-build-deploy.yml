@@ -16,17 +16,25 @@ jobs:
       - uses: actions/checkout@v4
       - name: Create .env file
         run: |
-          echo "LLM_API=${{ vars.LLM_API }}" >> .env
+          echo "TYPE=${{ vars.TYPE }}" >> .env
+          echo "PROJECT_ID=${{ vars.PROJECT_ID }}" >> .env
+          echo "PRIVATE_KEY_ID=${{ vars.PRIVATE_KEY_ID }}" >> .env
+          echo "PRIVATE_KEY=${{ vars.PRIVATE_KEY }}" >> .env
+          echo "CLIENT_EMAIL=${{ vars.CLIENT_EMAIL }}" >> .env
+          echo "CLIENT_ID=${{ vars.CLIENT_ID }}" >> .env
+          echo "TOKEN_URI=${{ vars.TOKEN_URI }}" >> .env
+          echo "AUTH_URI=${{ vars.AUTH_URI }}" >> .env
+          echo "AUTH_PROVIDER_X509_CERT_URL=${{ vars.AUTH_PROVIDER_X509_CERT_URL }}" >> .env
+          echo "CLIENT_X509_CERT_URL=${{ vars.CLIENT_X509_CERT_URL }}" >> .env
           echo "BOT_TOKEN=${{ vars.BOT_TOKEN }}" >> .env
           echo "DB_HOST=${{ vars.DB_HOST }}" >> .env
           echo "DB_PORT=${{ vars.DB_PORT }}" >> .env
           echo "DB_NAME=${{ vars.DB_NAME }}" >> .env
           echo "DB_USER=${{ vars.DB_USER }}" >> .env
           echo "DB_PASSWORD=${{ vars.DB_PASSWORD }}" >> .env
-          echo "PROVIDER_TOKEN=${{ vars.PROVIDER_TOKEN }}" >> .env
-          echo "OPENAI_API_KEY=${{ vars.OPENAI_API_KEY }}" >> .env
-          echo "FIREWORKS_API_KEY=${{ vars.FIREWORKS_API_KEY }}" >> .env
-
+          echo "PHONE=${{ vars.PHONE }}" >> .env
+          echo "API_HASH=${{ vars.API_HASH }}" >> .env
+          echo "API_ID=${{ vars.API_ID }}" >> .env
       - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
