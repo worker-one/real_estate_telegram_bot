@@ -1,16 +1,10 @@
-import datetime
 import logging
 import os
-import re
 
-import pandas as pd
 from omegaconf import OmegaConf
-from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from real_estate_telegram_bot.api.handlers.menu import create_main_menu_button
-from real_estate_telegram_bot.api.users import check_user_in_channel_sync
 from real_estate_telegram_bot.db import crud
-from real_estate_telegram_bot.utils.file import format_excel_file
+from real_estate_telegram_bot.service import excel
 
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
 strings = OmegaConf.load("./src/real_estate_telegram_bot/conf/strings.yaml")
@@ -41,7 +35,7 @@ def register_handlers(bot):
             df.to_excel(filepath, index=False)
 
             # Format the Excel file
-            format_excel_file(filepath, header_color="ed7d31")
+            excel.format_service_charge(filepath, master_project_en=master_project_en, header_color="ed7d31")
 
             # Send the formatted Excel file to the user
             with open(filepath, 'rb') as file:

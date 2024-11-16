@@ -191,6 +191,8 @@ def register_handlers(bot):
                             items, user_id=user_id, bot=bot,
                             project_id=projects[0].project_id
                         )
+                    else:
+                        logger.info(f"No files found for project {projects[0].project_name_id_buildings}")
                 else:
                     projects_buttons = create_query_results_buttons(
                         [project.project_name_id_buildings for project in projects]

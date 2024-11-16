@@ -29,6 +29,7 @@ def create_admin_menu_markup(strings):
     menu_markup = InlineKeyboardMarkup(row_width=1)
     menu_markup.add(
         InlineKeyboardButton(strings.admin_menu.send_message, callback_data="_public_message"),
+        InlineKeyboardButton(strings.admin_menu.about, callback_data="_about"),
     )
     return menu_markup
 
@@ -62,6 +63,15 @@ def register_handlers(bot):
             user_id, strings[lang].admin_menu.title,
             reply_markup=create_admin_menu_markup(strings[lang])
         )
+
+    @bot.callback_query_handler(func=lambda call: call.data == "_about")
+    def about_handler(call):
+        user_id = call.from_user.id
+
+        config_str = OmegaConf.to_yaml(config)
+
+        # Send config
+        bot.send_message(user_id, f"```yaml\n{config_str}\n```", parse_mode="Markdown")
 
     @bot.callback_query_handler(func=lambda call: call.data == "_public_message")
     def query_handler(call):
