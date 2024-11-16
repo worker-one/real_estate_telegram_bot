@@ -3,7 +3,7 @@ restrict_access: false
 channel_name: "centralparkandpdlm"
 timezone: "Asia/Dubai"
 name: "real_estate_telegram_bot"
-version: "0.5.1"
+version: "0.5.2"
 admins:
   - konverner
   - hunkydory_uae

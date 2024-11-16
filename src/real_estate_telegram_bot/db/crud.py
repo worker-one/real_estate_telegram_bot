@@ -144,7 +144,7 @@ def add_project_file(file_name: str, file_type: str, file_telegram_id: str, proj
     return project_file
 
 
-def get_project_service_charge_by_year(master_community_name_en: str) -> list[dict[str, any]]:
+def get_project_service_charge_by_year(master_project_en: str) -> list[dict[str, any]]:
     db: Session = get_session()
 
     # Query to get the project service charge data
@@ -154,7 +154,7 @@ def get_project_service_charge_by_year(master_community_name_en: str) -> list[di
         ProjectServiceCharge.budget_year,
         ProjectServiceCharge.service_charge
     ).filter(
-        ProjectServiceCharge.master_community_name_en_new.ilike(f"%{master_community_name_en}%")
+        ProjectServiceCharge.master_project_en.ilike(f"%{master_project_en}%")
     ).order_by(
         ProjectServiceCharge.project_name,
         ProjectServiceCharge.budget_year

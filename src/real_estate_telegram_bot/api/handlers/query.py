@@ -178,7 +178,7 @@ def register_handlers(bot):
                     bot.send_message(
                         user_id, prepare_response(projects[0]),
                         parse_mode="Markdown",
-                        reply_markup=create_service_charge_button(strings[lang], projects[0].area_name_en)
+                        reply_markup=create_service_charge_button(strings[lang], projects[0].master_project_en)
                     )
                     bot.send_message(
                         user_id, strings[lang].query.result_positive_report,
@@ -191,8 +191,6 @@ def register_handlers(bot):
                             items, user_id=user_id, bot=bot,
                             project_id=projects[0].project_id
                         )
-                    else:
-                        bot.send_message(user_id, strings[lang].query.files_not_found)
                 else:
                     projects_buttons = create_query_results_buttons(
                         [project.project_name_id_buildings for project in projects]
