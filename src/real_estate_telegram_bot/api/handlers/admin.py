@@ -5,13 +5,13 @@ from datetime import datetime
 
 import pytz
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.schedulers.blocking import BlockingScheduler
 from omegaconf import OmegaConf
-from real_estate_telegram_bot.db.crud import read_user, read_users
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
+from real_estate_telegram_bot.db.crud import read_user, read_users
+
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
-strings = config.strings
+strings = OmegaConf.load("./src/real_estate_telegram_bot/conf/strings.yaml")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -29,6 +29,7 @@ def create_admin_menu_markup(strings):
     menu_markup = InlineKeyboardMarkup(row_width=1)
     menu_markup.add(
         InlineKeyboardButton(strings.admin_menu.send_message, callback_data="_public_message"),
+        InlineKeyboardButton(strings.admin_menu.about, callback_data="_about"),
     )
     return menu_markup
 
@@ -63,6 +64,15 @@ def register_handlers(bot):
             reply_markup=create_admin_menu_markup(strings[lang])
         )
 
+    @bot.callback_query_handler(func=lambda call: call.data == "_about")
+    def about_handler(call):
+        user_id = call.from_user.id
+
+        config_str = OmegaConf.to_yaml(config)
+
+        # Send config
+        bot.send_message(user_id, f"```yaml\n{config_str}\n```", parse_mode="Markdown")
+
     @bot.callback_query_handler(func=lambda call: call.data == "_public_message")
     def query_handler(call):
         user_id = call.from_user.id
@@ -76,6 +86,7 @@ def register_handlers(bot):
 
         # Ask user to provide the date and time
         sent_message = bot.send_message(user_id, strings[lang].enter_datetime_prompt)
+
         # Move to the next step: receiving the datetime input
         bot.register_next_step_handler(sent_message, get_datetime_input, bot, user_id, lang)
 

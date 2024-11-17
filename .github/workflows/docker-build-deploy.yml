@@ -2,60 +2,59 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "develop", "main" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "develop", "main" ]
 
 jobs:
 
   build:
 
     runs-on: ubuntu-latest
-    environment: global
+    environment: ${{ github.ref == 'refs/heads/main' && 'global' || 'dev' }}
     steps:
-    - uses: actions/checkout@v4
-    - name: Create .env file
-      run: |
-        echo "TYPE=${{ vars.TYPE }}" >> .env
-        echo "PROJECT_ID=${{ vars.PROJECT_ID }}" >> .env
-        echo "PRIVATE_KEY_ID=${{ vars.PRIVATE_KEY_ID }}" >> .env
-        echo "PRIVATE_KEY=${{ vars.PRIVATE_KEY }}" >> .env
-        echo "CLIENT_EMAIL=${{ vars.CLIENT_EMAIL }}" >> .env
-        echo "CLIENT_ID=${{ vars.CLIENT_ID }}" >> .env
-        echo "TOKEN_URI=${{ vars.TOKEN_URI }}" >> .env
-        echo "AUTH_URI=${{ vars.AUTH_URI }}" >> .env
-        echo "AUTH_PROVIDER_X509_CERT_URL=${{ vars.AUTH_PROVIDER_X509_CERT_URL }}" >> .env
-        echo "CLIENT_X509_CERT_URL=${{ vars.CLIENT_X509_CERT_URL }}" >> .env
-        echo "BOT_TOKEN=${{ vars.BOT_TOKEN }}" >> .env
-        echo "DB_HOST=${{ vars.DB_HOST }}" >> .env
-        echo "DB_PORT=${{ vars.DB_PORT }}" >> .env
-        echo "DB_NAME=${{ vars.DB_NAME }}" >> .env
-        echo "DB_USER=${{ vars.DB_USER }}" >> .env
-        echo "DB_PASSWORD=${{ vars.DB_PASSWORD }}" >> .env
-        echo "PHONE=${{ vars.PHONE }}" >> .env
-        echo "API_HASH=${{ vars.API_HASH }}" >> .env
-        echo "API_ID=${{ vars.API_ID }}" >> .env
-  
-    - name: Login to DockerHub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ vars.DOCKERHUB_USERNAME }}
-        password: ${{ vars.DOCKERHUB_TOKEN }}
-  
-    - name: Build and push
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        push: true
-        tags: ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:main
-  
-    - name: Log out from DockerHub
-      run: docker logout
+      - uses: actions/checkout@v4
+      - name: Create .env file
+        run: |
+          echo "TYPE=${{ vars.TYPE }}" >> .env
+          echo "PROJECT_ID=${{ vars.PROJECT_ID }}" >> .env
+          echo "PRIVATE_KEY_ID=${{ vars.PRIVATE_KEY_ID }}" >> .env
+          echo "PRIVATE_KEY=${{ vars.PRIVATE_KEY }}" >> .env
+          echo "CLIENT_EMAIL=${{ vars.CLIENT_EMAIL }}" >> .env
+          echo "CLIENT_ID=${{ vars.CLIENT_ID }}" >> .env
+          echo "TOKEN_URI=${{ vars.TOKEN_URI }}" >> .env
+          echo "AUTH_URI=${{ vars.AUTH_URI }}" >> .env
+          echo "AUTH_PROVIDER_X509_CERT_URL=${{ vars.AUTH_PROVIDER_X509_CERT_URL }}" >> .env
+          echo "CLIENT_X509_CERT_URL=${{ vars.CLIENT_X509_CERT_URL }}" >> .env
+          echo "BOT_TOKEN=${{ vars.BOT_TOKEN }}" >> .env
+          echo "DB_HOST=${{ vars.DB_HOST }}" >> .env
+          echo "DB_PORT=${{ vars.DB_PORT }}" >> .env
+          echo "DB_NAME=${{ vars.DB_NAME }}" >> .env
+          echo "DB_USER=${{ vars.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ vars.DB_PASSWORD }}" >> .env
+          echo "PHONE=${{ vars.PHONE }}" >> .env
+          echo "API_HASH=${{ vars.API_HASH }}" >> .env
+          echo "API_ID=${{ vars.API_ID }}" >> .env
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ vars.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.project_name }}:${{ github.ref == 'refs/heads/main' && 'main' || 'dev' }}
+
+      - name: Log out from DockerHub
+        run: docker logout
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    environment: global
+    environment: ${{ github.ref == 'refs/heads/main' && 'global' || 'dev' }}
     steps:
       - name: logging
         run: |
@@ -67,12 +66,14 @@ jobs:
           username: ${{ vars.SERVER_USER }}
           password: ${{ vars.SSH_PASSWORD }}
           script: |
-            current_container=$(docker ps --filter "ancestor=${{ vars.DOCKERHUB_USERNAME }}/${{ vars.project_name }}:main" --format "{{.Names}}")
+            image_tag=${{ github.ref == 'refs/heads/main' && 'main' || 'dev' }}
+            current_container=$(docker ps --filter "ancestor=${{ vars.DOCKERHUB_USERNAME }}/${{ vars.project_name }}:$image_tag" --format "{{.Names}}")
             if [ -n "$current_container" ]; then
               docker stop $current_container
               docker rm $current_container
             fi
-            docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.project_name }}:main
+            docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.project_name }}:$image_tag
             docker stop current_container_name || true
             docker rm current_container_name || true
-            docker run -d --name current_container_name -p ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:main
+            docker images -a | grep none | awk '{ print $3; }' | xargs docker rmi --force
+            docker run -d --name current_container_name ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.project_name }}:$image_tag

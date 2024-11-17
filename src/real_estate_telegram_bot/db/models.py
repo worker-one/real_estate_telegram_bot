@@ -1,15 +1,21 @@
-from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, DateTime, Integer, String, ForeignKey
+from sqlalchemy.orm import DeclarativeBase, relationship
 
-Base = declarative_base()
+
+class Base(DeclarativeBase):
+    """Base model"""
+
+    pass
 
 class Message(Base):
     __tablename__ = 'messages'
 
     id = Column(Integer, primary_key=True)
     timestamp = Column(DateTime)
-    user_id = Column(Integer)
+    user_id = Column(Integer, ForeignKey('users.user_id'))
     message_text = Column(String)
+
+    user = relationship("User", back_populates="message")
 
 
 class User(Base):
@@ -20,6 +26,8 @@ class User(Base):
     username = Column(String)
     phone_number = Column(String)
     language = Column(String, default='en')
+
+    message = relationship("Message", back_populates="user", cascade="all, delete-orphan")
 
 
 class Project(Base):
@@ -62,5 +70,42 @@ class Project(Base):
     land_type_en = Column(String)
     floors = Column(Integer)
 
+    project_files = relationship("ProjectFile", back_populates="project", cascade="all, delete-orphan")
+    project_service_charge = relationship("ProjectServiceCharge", back_populates="project", cascade="all, delete-orphan")
+
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class ProjectServiceCharge(Base):
+    __tablename__ = 'projects_service_charge'
+
+    id = Column(Integer, primary_key=True)
+    project_id = Column(Integer, ForeignKey('projects.project_id'))
+    project_name = Column(String)
+    master_community_name_en_new = Column(String)
+    property_group_name_en = Column(String)
+    usage_name_en = Column(String)
+    budget_year = Column(Integer)
+    master_project_en = Column(String)
+    service_charge = Column(Integer)
+    unit_ac = Column(Integer)
+    meter_installation = Column(Integer)
+
+    project = relationship("Project", back_populates="project_service_charge")
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class ProjectFile(Base):
+
+    __tablename__ = 'project_files'
+
+    file_id = Column(Integer, primary_key=True)
+    project_id = Column(Integer, ForeignKey('projects.project_id'))
+    file_name = Column(String)
+    file_type = Column(String)
+    file_telegram_id = Column(String)
+
+    project = relationship("Project", back_populates="project_files")
