@@ -143,6 +143,13 @@ def add_project_file(file_name: str, file_type: str, file_telegram_id: str, proj
     db.close()
     return project_file
 
+def update_project_file(file_name: str, file_type: str, file_telegram_id: str, project_id: int) -> ProjectFile:
+    # Replace file_telegram_id in project file with file_telegram_id
+    db: Session = get_session()
+    project_file = db.query(ProjectFile).filter(ProjectFile.file_name == file_name).first()
+    project_file.file_telegram_id = file_telegram_id
+    db.commit()
+    db.close()
 
 def get_project_service_charge_by_year(master_project_en: str) -> list[dict[str, any]]:
     db: Session = get_session()

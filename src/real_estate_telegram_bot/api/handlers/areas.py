@@ -113,6 +113,7 @@ def register_handlers(bot):
         send_area_buildings(bot, user_id, area_name, lang, user_entered=True)
 
     def send_area_buildings(bot, user_id, area_name, lang, user_entered=False):
+        logger.info(f"User {user_id} requested buildings in {area_name}")
         building_data = crud.get_buildings_by_area(area_name)
         if building_data:
             df = pd.DataFrame(building_data)
@@ -140,12 +141,11 @@ def register_handlers(bot):
 
                 os.remove(filepath)
         else:
-            if user_entered:
-                bot.send_message(
-                    user_id,
-                    strings[lang].area_query.result_negative,
-                    reply_markup=create_query_menu(strings[lang])
-                )
+            bot.send_message(
+                user_id,
+                strings[lang].area_query.result_negative,
+                reply_markup=create_query_menu(strings[lang])
+            )
 
     def get_valid_area_codes():
         return [
@@ -160,6 +160,6 @@ def register_handlers(bot):
             'jlt': 'Jumeirah Lakes Towers',
             'jvc': 'Jumeirah Village Circle',
             'jvt': 'Jumeirah Village Triangle',
-            'jbr': 'Jumeirah Beach Residence'
+            'jbr': 'Jumeriah Beach Residence'
         }
         return special_cases.get(area_code, area_code.replace('_', ' ').title())

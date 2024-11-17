@@ -104,7 +104,7 @@ class ProjectFile(Base):
 
     file_id = Column(Integer, primary_key=True)
     project_id = Column(Integer, ForeignKey('projects.project_id'))
-    file_name = Column(String)
+    file_name = Column(String, unique=True)
     file_type = Column(String)
     file_telegram_id = Column(String)
 

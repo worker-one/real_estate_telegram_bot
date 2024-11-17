@@ -135,7 +135,24 @@ def send_files(items: list[dict], project_id: int, user_id, bot) -> None:
             os.remove(file_name)
         else:
             logger.info(f"File {file_name} already exists in the database")
-            bot.send_document(user_id, project_file.file_telegram_id)
+            try:
+                bot.send_document(user_id, project_file.file_telegram_id)
+            except Exception as e:
+                logger.error(f"An error occurred: {e}")
+                # download file from google drive
+                google_drive_api.download_file(file_id, file_name)
+
+                # Send the downloaded file to the user
+                with open(file_name, 'rb') as file:
+                    sent_message = bot.send_document(user_id, file)
+                    # Add the file to the database
+                    crud.update_project_file(
+                        project_id=project_id,
+                        file_name=file_name,
+                        file_type="pdf",
+                        file_telegram_id=sent_message.document.file_id
+                    )
+                    logger.info(f"File {file_name} updated in the database")
 
 
 def register_handlers(bot):
