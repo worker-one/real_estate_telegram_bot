@@ -85,7 +85,7 @@ def register_handlers(bot):
             return
 
         # Ask user to provide the date and time
-        sent_message = bot.send_message(user_id, strings[lang].enter_datetime_prompt)
+        sent_message = bot.send_message(user_id, strings[lang].enter_datetime_prompt.format(timezone=config.timezone))
 
         # Move to the next step: receiving the datetime input
         bot.register_next_step_handler(sent_message, get_datetime_input, bot, user_id, lang)
