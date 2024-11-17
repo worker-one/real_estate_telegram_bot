@@ -55,7 +55,7 @@ def register_handlers(bot):
 
         if user.username not in config.admins:
             # Inform the user that they do not have admin rights
-            bot.send_message(user_id, strings[lang].no_rights)
+            bot.send_message(user_id, strings[lang].no_rights.format(username=user.name)
             return
 
         # Send the admin menu
