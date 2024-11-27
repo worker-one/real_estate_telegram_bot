@@ -5,6 +5,7 @@ from datetime import datetime
 import pandas as pd
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
+from sqlalchemy import cast, func, text, Text
 
 from real_estate_telegram_bot.db.database import get_session
 from real_estate_telegram_bot.db.models import Project, ProjectFile, ProjectServiceCharge, User
@@ -70,9 +71,25 @@ def upsert_project(project: Project):
     db.commit()
     db.close()
 
-def query_projects_by_name(project_name: str) -> list[Project]:
+def query_projects_by_name(project_name: str, mode: str = "ilike", similarity_threshold: float = 0.35) -> list[Project]:
     db: Session = get_session()
-    result = db.query(Project).filter(Project.project_name_id_buildings.ilike(f"%{project_name}%")).all()
+    if mode == "ilike":
+        result = db.query(Project).filter(Project.project_name_id_buildings.ilike(f"%{project_name}%")).all()
+    elif mode == "cosine":
+        result = db.query(
+            Project,
+            func.similarity(cast(Project.project_name_id_buildings, Text), cast(project_name, Text)).label("similarity_score")
+        ).filter(
+            func.similarity(cast(Project.project_name_id_buildings, Text), cast(project_name, Text)) >= similarity_threshold
+        ).order_by(
+            func.similarity(cast(Project.project_name_id_buildings, Text), cast(project_name, Text)).desc()
+        ).all()
+
+        # Extract project
+        result = [item[0] for item in result]
+    else:
+        raise ValueError(f"Query mode {mode} is not supported.")
+        return None
     db.close()
     return result
 
