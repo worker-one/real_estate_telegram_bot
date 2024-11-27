@@ -11,7 +11,8 @@ from real_estate_telegram_bot.api.users import check_user_in_channel_sync
 from real_estate_telegram_bot.db import crud
 from real_estate_telegram_bot.service.google import GoogleDriveAPI
 
-config = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
+config = OmegaConf.load("./src/real_estate_telegram_bot/conf/query.yaml")
+config_common = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
 strings = OmegaConf.load("./src/real_estate_telegram_bot/conf/strings.yaml")
 
 logging.basicConfig(level=logging.INFO)
@@ -173,10 +174,10 @@ def register_handlers(bot):
 
 
         # Check if user is in the channel
-        if check_user_in_channel_sync(config.channel_name, username) is False:
+        if check_user_in_channel_sync(config_common.channel_name, username) is False:
             bot.send_message(
                 message.chat.id,
-                f"You need to join the channel @{config.channel_name} to use the bot."
+                f"You need to join the channel @{config_common.channel_name} to use the bot."
             )
             return
 
@@ -186,11 +187,10 @@ def register_handlers(bot):
 
         logger.info(msg="User event", extra={"user_id": user_id, "user_message": message.text})
         try:
-            projects = crud.query_projects_by_name(project_name)
+            projects = crud.query_projects_by_name(project_name, mode="ilike")
 
             if projects:
                 if len(projects) == 1:
-                    print(projects)
                     bot.reply_to(message, strings[lang].query.result_positive_unique)
                     bot.send_message(
                         user_id, prepare_response(projects[0]),
@@ -217,10 +217,18 @@ def register_handlers(bot):
                     bot.reply_to(message, strings[lang].query.result_positive_nonunique, reply_markup=projects_buttons)
                     #bot.register_next_step_handler(message, show_selected_project)
             else:
-                bot.reply_to(
-                    message, strings[lang].query.result_negative,
-                    reply_markup=create_main_menu_button(strings[lang])
-                )
+
+                projects = crud.query_projects_by_name(project_name, mode="cosine", similarity_threshold=config.similarity_threshold)
+                if projects:
+                    projects_buttons = create_query_results_buttons(
+                        [project.project_name_id_buildings for project in projects][:config.top_k]
+                    )
+                    bot.reply_to(message, strings[lang].query.result_positive_suggestions, reply_markup=projects_buttons)
+                else:
+                    bot.reply_to(
+                        message, strings[lang].query.result_negative,
+                        reply_markup=create_main_menu_button(strings[lang])
+                    )
         except Exception as e:
             logger.error(f"An error occurred: {e}")
             bot.reply_to(
@@ -231,24 +239,24 @@ def register_handlers(bot):
     @bot.callback_query_handler(func=lambda call: "_select_" in call.data)
     def show_selected_project(call):
         logger.info(msg="User event", extra={"user_id": call.from_user.id, "user_message": call.data})
-        project_id = call.data.replace("_select_", "")
+        project_name = call.data.replace("_select_", "")
         user_id = call.from_user.id
         user = crud.read_user(user_id)
         lang = user.language
 
-        projects = crud.query_projects_by_name(project_id)
-        project = [project for project in projects if project.project_name_id_buildings == project_id][0]
+        projects = crud.query_projects_by_name(project_name)
+        project = [project for project in projects if project.project_name_id_buildings == project_name][0]
         bot.send_message(
             user_id, prepare_response(project).replace('_', " "),
             reply_markup=create_service_charge_button(strings[lang], project.area_name_en),
             parse_mode="Markdown"
         )
-        items = query_files(project_id)
+        items = query_files(project_name)
         if items:
             bot.send_message(user_id, strings[lang].query.files_found.format(n=len(items)))
             send_files(
                 items, user_id=user_id, bot=bot,
-                project_id=project_id
+                project_id=project.project_id
             )
         bot.send_message(
             user_id, strings[lang].query.result_positive_report,
