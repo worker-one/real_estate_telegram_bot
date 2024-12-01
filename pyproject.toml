@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]  # project’s basic metadata, such as the dependencies, your name, etc.
 name = "real_estate_telegram_bot"
-version = "0.0.0"  #
+version = "0.5.6"  #
 description = "This package is a sample"
 readme = "README.md"
 authors = [

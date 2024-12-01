@@ -4,13 +4,11 @@ import logging.config
 import os
 
 from dotenv import find_dotenv, load_dotenv
-from omegaconf import OmegaConf
-from requests import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 
-from .models import Base, Message, User
+from .models import Base, Event, User
 
 # Load logging configuration with OmegaConf
 logging.basicConfig(level=logging.INFO)
@@ -48,18 +46,6 @@ def create_tables():
 def get_session():
     engine = get_enginge()
     return sessionmaker(bind=engine)()
-
-def log_message(user_id, message_text):
-    session = get_session()
-    new_message = Message(
-        timestamp=datetime.datetime.now(),
-        user_id=user_id,
-        message_text=message_text
-    )
-    session.add(new_message)
-    session.commit()
-    session.close()
-
 
 def add_user(user_id, first_name, last_name, username, phone_number):
     session = get_session()

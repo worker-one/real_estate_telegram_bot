@@ -66,10 +66,10 @@ def register_handlers(bot):
                 f"You need to join the channel @{config.channel_name} to use the bot."
             )
             return
-        crud.upsert_user(user_id, username)
+        crud.upsert_user(user_id, username, role="user")
 
         user = crud.read_user(user_id)
-        lang = user.language
+        lang = user.lang
         logger.info({"user_id": message.from_user.id, "message": message.text})
 
         bot.send_message(
@@ -86,7 +86,7 @@ def register_handlers(bot):
         if not user:
             user = crud.upsert_user(user_id, username)
 
-        lang = user.language
+        lang = user.lang
         logger.info({"user_id": user_id, "message": call.data})
 
         bot.send_message(
@@ -99,7 +99,7 @@ def register_handlers(bot):
     def language(call):
         user_id = call.from_user.id
         user = crud.read_user(user_id)
-        lang = user.language
+        lang = user.lang
 
         logger.info({"user_id": call.from_user.id, "message": call.data})
 
@@ -140,7 +140,7 @@ def register_handlers(bot):
         logger.info({"user_id": call.from_user.id, "message": call.data})
         user_id = call.from_user.id
         user = crud.read_user(user_id)
-        lang = user.language
+        lang = user.lang
 
         bot.send_message(call.message.chat.id, strings[lang].useful_links,
             reply_markup=create_main_menu_button(strings[lang])
@@ -152,7 +152,7 @@ def register_handlers(bot):
         logger.info({"user_id": call.from_user.id, "message": call.data})
         user_id = call.from_user.id
         user = crud.read_user(user_id)
-        lang = user.language
+        lang = user.lang
 
         bot.send_message(call.message.chat.id, strings[lang].support,
             reply_markup=create_main_menu_button(strings[lang])
@@ -164,7 +164,7 @@ def register_handlers(bot):
         logger.info({"user_id": call.from_user.id, "message": call.data})
         user_id = call.from_user.id
         user = crud.read_user(user_id)
-        lang = user.language
+        lang = user.lang
         bot.send_message(
             call.message.chat.id, strings[lang].query.ask_name,
             reply_markup=create_main_menu_button(strings[lang])

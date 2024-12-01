@@ -161,7 +161,7 @@ def register_handlers(bot):
     def query_handler(message):
         user_id = message.from_user.id
         user = crud.read_user(user_id)
-        lang = user.language
+        lang = user.lang
         logger.info(msg="User event", extra={"user_id": user_id, "user_message": message.text})
         bot.reply_to(message, strings[lang].query.ask_name,
             reply_markup=create_main_menu_button(strings[lang]))
@@ -182,7 +182,7 @@ def register_handlers(bot):
             return
 
         user = crud.read_user(user_id)
-        lang = user.language
+        lang = user.lang
         project_name = message.text
 
         logger.info(msg="User event", extra={"user_id": user_id, "user_message": message.text})
@@ -242,7 +242,7 @@ def register_handlers(bot):
         project_name = call.data.replace("_select_", "")
         user_id = call.from_user.id
         user = crud.read_user(user_id)
-        lang = user.language
+        lang = user.lang
 
         projects = crud.query_projects_by_name(project_name)
         project = [project for project in projects if project.project_name_id_buildings == project_name][0]
