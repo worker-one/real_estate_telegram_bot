@@ -21,7 +21,7 @@ def register_handlers(bot):
 
         user_id = call.from_user.id
         user = crud.read_user(user_id)
-        lang = user.language
+        lang = user.lang
 
         df = crud.get_project_service_charge_by_year(master_project_en)
 

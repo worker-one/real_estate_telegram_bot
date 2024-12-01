@@ -1,23 +1,27 @@
+import csv
 import logging
+import os
 from collections import defaultdict
 from datetime import datetime
+from typing import Optional
 
 import pandas as pd
+from sqlalchemy import Text, cast, func, inspect, text
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
-from sqlalchemy import cast, func, text, Text
 
 from real_estate_telegram_bot.db.database import get_session
-from real_estate_telegram_bot.db.models import Project, ProjectFile, ProjectServiceCharge, User
+from real_estate_telegram_bot.db.models import Event, Project, ProjectFile, ProjectServiceCharge, User
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def read_user(user_id: int) -> User:
+def read_user(user_id: str) -> User:
     db: Session = get_session()
-    result = db.query(User).filter(User.user_id == user_id).first()
+    result = db.query(User).filter(User.id == user_id).first()
     db.close()
     return result
+
 
 def read_users() -> list[User]:
     db: Session = get_session()
@@ -25,25 +29,48 @@ def read_users() -> list[User]:
     db.close()
     return result
 
+
 def upsert_user(
-        user_id: str,
-        username: str,
-        phone_number: str = None,
-        language: str = "en"
-    ) -> User:
-    user = User(
-        user_id=user_id,
-        username=username
-    )
-    if phone_number:
-        user.phone_number = phone_number
-    if language:
-        user.language = language
+    id: int,
+    username: Optional[str] = None,
+    lang: Optional[str] = "en",
+    role: Optional[str] = None,
+):
+    """
+    Insert or update a user.
+
+    Args:
+        id (int): The user's ID.
+        name (str): The user's name.
+        lang (str): The user's language.
+        role (str): The user's role.
+
+    Returns:
+        User: The user object.
+    """
     db: Session = get_session()
-    db.merge(user)
-    db.commit()
-    db.close()
-    return user
+    db.expire_on_commit = False
+    try:
+        user = db.query(User).filter(User.id == id).first()
+        if user:
+            if username:
+                user.username = username
+            if role and user.role != "admin":
+                user.role = role
+        else:
+            user = User(
+                id=id, username=username,
+                lang=lang, role=role
+            )
+            db.add(user)
+            logger.info(f"User with name {user.username} added successfully.")
+        db.commit()
+        return user
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error adding user with name {username}: {e}")
+    finally:
+        db.close()
 
 def update_user_language(user_id: int, new_language: str):
     db: Session = get_session()
@@ -209,3 +236,48 @@ def get_project_service_charge_by_year(master_project_en: str) -> list[dict[str,
     # Fill missing values with empty strings or NaN if needed
     df = df.fillna("")
     return df
+
+
+def create_event(user_id: str, content: str, type: str) -> Event:
+    """Create an event for a user."""
+    event = Event(user_id=user_id, content=content, type=type, timestamp=datetime.now())
+    db: Session = get_session()
+    db.expire_on_commit = False
+    db.add(event)
+    db.commit()
+    db.close()
+    return event
+
+
+def read_event(event_id: int) -> Optional[Event]:
+    db: Session = get_session()
+    try:
+        return db.query(Event).filter(Event.id == event_id).first()
+    finally:
+        db.close()
+
+
+def read_events_by_user(user_id: str) -> list[Event]:
+    db: Session = get_session()
+    try:
+        return db.query(Event).filter(Event.user_id == user_id).all()
+    finally:
+        db.close()
+
+
+def export_all_tables(export_dir: str):
+    db = get_session()
+    inspector = inspect(db.get_bind())
+
+    for table_name in inspector.get_table_names():
+        file_path = os.path.join(export_dir, f"{table_name}.csv")
+        with open(file_path, mode="w", newline="", encoding="utf-8") as file:
+            writer = csv.writer(file)
+            columns = [col["name"] for col in inspector.get_columns(table_name)]
+            writer.writerow(columns)
+
+            records = db.execute(text(f"SELECT * FROM {table_name}")).fetchall()
+            for record in records:
+                writer.writerow(record)
+
+    db.close()

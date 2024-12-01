@@ -63,7 +63,7 @@ def register_handlers(bot):
     def get_area_names_table(call):
         user_id = call.from_user.id
         user = crud.read_user(user_id)
-        lang = user.language
+        lang = user.lang
 
         logger.info({"user_id": user_id, "message": call.data})
 
@@ -74,7 +74,7 @@ def register_handlers(bot):
     def areas_menu_callback(call):
         user_id = call.from_user.id
         user = crud.read_user(user_id)
-        lang = user.language
+        lang = user.lang
 
         logger.info({"user_id": user_id, "message": call.data})
 
@@ -88,7 +88,7 @@ def register_handlers(bot):
     def area_callback(call):
         user_id = call.from_user.id
         user = crud.read_user(user_id)
-        lang = user.language
+        lang = user.lang
 
         area_code = call.data[1:]
         area_name = map_area_code_to_name(area_code)
@@ -99,7 +99,7 @@ def register_handlers(bot):
     def enter_own_area_callback(call):
         user_id = call.from_user.id
         user = crud.read_user(user_id)
-        lang = user.language
+        lang = user.lang
 
         msg = bot.send_message(call.message.chat.id, strings[lang].query.enter_own_area)
         bot.register_next_step_handler(msg, process_area_name)
@@ -108,7 +108,7 @@ def register_handlers(bot):
         user_id = message.from_user.id
         area_name = message.text.strip()
         user = crud.read_user(user_id)
-        lang = user.language
+        lang = user.lang
 
         send_area_buildings(bot, user_id, area_name, lang, user_entered=True)
 
