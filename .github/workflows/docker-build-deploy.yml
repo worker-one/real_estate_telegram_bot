@@ -19,7 +19,7 @@ jobs:
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             echo "BOT_TOKEN=${{ vars.BOT_TOKEN }}" >> .env
           elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
-            echo "BOT_TOKEN_DEV=${{ vars.BOT_TOKEN }}" >> .env
+            echo "BOT_TOKEN=${{ vars.BOT_TOKEN_DEV }}" >> .env
           fi
 
           echo "TYPE=${{ vars.TYPE }}" >> .env
