@@ -1,2 +1,2 @@
-similarity_threshold: 0.35
-top_k: 5
+similarity_threshold: 0.25
+top_k: 10

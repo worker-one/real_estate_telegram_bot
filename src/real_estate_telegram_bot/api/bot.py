@@ -6,7 +6,7 @@ import telebot
 from dotenv import find_dotenv, load_dotenv
 from omegaconf import OmegaConf
 
-from real_estate_telegram_bot.api.handlers import admin, areas, menu, query, service_charge, welcome
+from real_estate_telegram_bot.api.handlers import admin, areas, common, menu, query, service_charge, welcome
 from real_estate_telegram_bot.api.middlewares.antiflood import AntifloodMiddleware
 from real_estate_telegram_bot.api.middlewares.user import UserCallbackMiddleware, UserMessageMiddleware
 
@@ -30,6 +30,7 @@ def start_bot():
     bot = telebot.TeleBot(BOT_TOKEN, use_class_middlewares=True)
 
     # Handlers
+    common.register_handlers(bot)
     query.register_handlers(bot)
     welcome.register_handlers(bot)
     menu.register_handlers(bot)
