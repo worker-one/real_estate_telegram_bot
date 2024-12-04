@@ -29,6 +29,7 @@ en:
       Enjoy the result and don’t forget to share this bot with your colleagues ;-)
     result_positive_unique: "Project found:"
     result_positive_nonunique: "Several projects found based on your query:"
+    result_positive_suggestions: "Maybe you meant ..."
     result_positive_report: "If some information is inaccurate please report to @kirill_egorov_dubai"
     result_negative: |
       No project found. Try again.
@@ -117,6 +118,7 @@ ru:
     result_positive_unique: "Здание найдено:"
     result_positive_report: "Если вы нашли неточности в данных, просьба сообщить @kirill_egorov_dubai"
     result_positive_nonunique: "Несколько зданий найдено по вашему запросу:"
+    result_positive_suggestions: "Возможно вы имели ввиду ..."
     result_negative: |
       Проект не найден. Попробуйте еще раз.
       Помните о правилах поиска:

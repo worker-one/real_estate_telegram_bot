@@ -168,3 +168,6 @@ tags
 
 # ruff
 .ruff_cache
+
+# credentials
+src/real_estate_telegram_bot/conf/credentials.json

@@ -20,7 +20,7 @@ def register_handlers(bot):
         username = message.from_user.username
         upsert_user(user_id, username)
 
-        #lang = user.language
+        #lang = user.lang
 
         bot.reply_to(message, strings["en"].start)
 

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Integer, String, ForeignKey
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import DeclarativeBase, relationship
 
 
@@ -7,27 +7,37 @@ class Base(DeclarativeBase):
 
     pass
 
-class Message(Base):
-    __tablename__ = 'messages'
+class Event(Base):
+    __tablename__ = "events"
 
     id = Column(Integer, primary_key=True)
     timestamp = Column(DateTime)
-    user_id = Column(Integer, ForeignKey('users.user_id'))
-    message_text = Column(String)
+    user_id = Column(BigInteger, ForeignKey("users.id"))
+    type = Column(String)
+    content = Column(String)
 
-    user = relationship("User", back_populates="message")
+    user = relationship("User", back_populates="events")
+
+    def dict(self) -> dict:
+        return {
+            "timestamp": self.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+            "user_id": self.user_id,
+            "type": self.type,
+            "content": self.content,
+        }
 
 
 class User(Base):
     __tablename__ = 'users'
 
-    user_id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
     first_message_timestamp = Column(DateTime)
     username = Column(String)
     phone_number = Column(String)
-    language = Column(String, default='en')
+    lang = Column(String, default='en')
+    role = Column(String, default='guest')
 
-    message = relationship("Message", back_populates="user", cascade="all, delete-orphan")
+    events = relationship("Event", back_populates="user", cascade="all, delete-orphan")
 
 
 class Project(Base):
