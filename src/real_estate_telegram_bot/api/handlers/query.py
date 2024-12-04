@@ -248,7 +248,7 @@ def register_handlers(bot):
         project = [project for project in projects if project.project_name_id_buildings == project_name][0]
         bot.send_message(
             user_id, prepare_response(project).replace('_', " "),
-            reply_markup=create_service_charge_button(strings[lang], project.area_name_en),
+            reply_markup=create_service_charge_button(strings[lang], project.master_project_en),
             parse_mode="Markdown"
         )
         items = query_files(project_name)

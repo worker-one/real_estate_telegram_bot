@@ -3,14 +3,13 @@ import logging.config
 import os
 from time import sleep
 
-from omegaconf import OmegaConf
 import telebot
 from dotenv import find_dotenv, load_dotenv
+from omegaconf import OmegaConf
 
 from real_estate_telegram_bot.api.handlers.query import send_files
-from real_estate_telegram_bot.service.google import GoogleDriveAPI
 from real_estate_telegram_bot.db import crud
-
+from real_estate_telegram_bot.service.google import GoogleDriveAPI
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
