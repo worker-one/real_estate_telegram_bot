@@ -76,7 +76,7 @@ def update_user_language(user_id: int, new_language: str):
     db: Session = get_session()
     try:
         # Query the user by user_id
-        user = db.query(User).filter(User.user_id == user_id).one()
+        user = db.query(User).filter(User.id == user_id).one()
 
         # Update the language field
         user.language = new_language
