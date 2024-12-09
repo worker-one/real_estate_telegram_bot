@@ -46,19 +46,3 @@ def create_tables():
 def get_session():
     engine = get_enginge()
     return sessionmaker(bind=engine)()
-
-def add_user(user_id, first_name, last_name, username, phone_number):
-    session = get_session()
-    new_user = User(
-        user_id=user_id,
-        first_message_timestamp=datetime.datetime.now(),
-        first_name=first_name,
-        last_name=last_name,
-        username=username,
-        phone_number=phone_number
-    )
-    # add only if the user is not already in the database
-    if not session.query(User).filter(User.user_id == user_id).first():
-        session.add(new_user)
-    session.commit()
-    session.close()
