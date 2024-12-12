@@ -181,6 +181,9 @@ def register_handlers(bot):
             )
             return
 
+        # Upload config
+        config = OmegaConf.load("./src/real_estate_telegram_bot/conf/query.yaml")
+
         user = crud.read_user(user_id)
         lang = user.lang
         project_name = message.text

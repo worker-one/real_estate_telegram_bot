@@ -30,47 +30,139 @@ def read_users() -> list[User]:
     return result
 
 
-def upsert_user(
+def create_user(
     id: int,
     username: Optional[str] = None,
-    lang: Optional[str] = "en",
-    role: Optional[str] = None,
-):
+    lang: Optional[str] = "ru",
+    role: Optional[str] = "user",
+    active_session_id: Optional[str] = None
+) -> User:
     """
-    Insert or update a user.
+    Create a new user.
 
     Args:
-        id (int): The user's ID.
-        name (str): The user's name.
-        lang (str): The user's language.
-        role (str): The user's role.
+        id: The user's ID.
+        name: The user's name.
+        first_name: The user's first name.
+        last_name: The user's last name.
+        lang: The user's language.
+        role: The user's role.
+        active_session_id: The user's active session ID.
 
     Returns:
-        User: The user object.
+        The created user object.
+    """
+    db: Session = get_session()
+    db.expire_on_commit = False
+    try:
+        user = User(
+            id=id,
+            username=username,
+            lang=lang,
+            role=role,
+            active_session_id=active_session_id
+        )
+        db.add(user)
+        db.commit()
+        logger.info(f"User with name {user.username} added successfully.")
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error adding user with name {username}: {e}")
+        raise
+    finally:
+        db.close()
+    return user
+
+
+def update_user(
+    id: int,
+    name: Optional[str] = None,
+    lang: Optional[str] = None,
+    role: Optional[str] = None
+) -> User:
+    """
+    Update an existing user.
+
+    Args:
+        id: The user's ID.
+        name: The user's name.
+        lang: The user's language.
+        role: The user's role.
+        active_session_id: The user's active session ID.
+
+    Returns:
+        The updated user object.
     """
     db: Session = get_session()
     db.expire_on_commit = False
     try:
         user = db.query(User).filter(User.id == id).first()
         if user:
-            if username:
-                user.username = username
-            if role and user.role != "admin":
+            if name is not None:
+                user.username = name
+            if lang is not None:
+                user.lang = lang
+            if role is not None:
                 user.role = role
+            db.commit()
+            logger.info(f"User with ID {user.id} updated successfully.")
         else:
-            user = User(
-                id=id, username=username,
-                lang=lang, role=role
-            )
-            db.add(user)
-            logger.info(f"User with name {user.username} added successfully.")
-        db.commit()
-        return user
+            logger.error(f"User with ID {id} not found.")
+            raise ValueError(f"User with ID {id} not found.")
     except Exception as e:
         db.rollback()
-        logger.error(f"Error adding user with name {username}: {e}")
+        logger.error(f"Error updating user with ID {id}: {e}")
+        raise
     finally:
         db.close()
+    return user
+
+
+def upsert_user(
+    id: int,
+    username: Optional[str] = None,
+    lang: Optional[str] = "ru",
+    role: Optional[str] = "user"
+) -> User:
+    """
+    Insert or update a user.
+
+    Args:
+        id: The user's ID.
+        username: The user's name.
+        lang: The user's language.
+        role: The user's role.
+        active_session_id: The user's active session ID.
+
+    Returns:
+        The user object.
+    """
+    db: Session = get_session()
+    db.expire_on_commit = False
+    try:
+        user = db.query(User).filter(User.id == id).first()
+        if user:
+            user = update_user(
+                id=id,
+                username=username,
+                lang=lang,
+                role=role
+            )
+        else:
+            user = create_user(
+                id=id,
+                username=username,
+                lang=lang,
+                role=role
+            )
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error upserting user with ID {id}: {e}")
+        raise
+    finally:
+        db.close()
+    return user
+
 
 def update_user_language(user_id: int, new_language: str):
     db: Session = get_session()
@@ -98,6 +190,7 @@ def upsert_project(project: Project):
     db.commit()
     db.close()
 
+
 def query_projects_by_name(project_name: str, mode: str = "ilike", similarity_threshold: float = 0.35) -> list[Project]:
     db: Session = get_session()
     if mode == "ilike":
@@ -116,7 +209,6 @@ def query_projects_by_name(project_name: str, mode: str = "ilike", similarity_th
         result = [item[0] for item in result]
     else:
         raise ValueError(f"Query mode {mode} is not supported.")
-        return None
     db.close()
     return result
 

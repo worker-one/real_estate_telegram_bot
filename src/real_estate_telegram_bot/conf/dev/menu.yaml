@@ -1,0 +1,19 @@
+en:
+  no_rights: "You do not have developer rights to access this application"
+  dev_menu:
+    title: "Developer menu"
+    options:
+      - label: "Get query app config"
+        value: "get_query_config"
+      - label: "Update query app config"
+        value: "update_query_config"
+
+ru:
+  no_rights: "У вас нет прав разработчика для доступа к этому приложению"
+  dev_menu:
+    title: "Меню разработчика"
+    options:
+      - label: "Get query app config"
+        value: "get_query_config"
+      - label: "Update query app config"
+        value: "update_query_config"
