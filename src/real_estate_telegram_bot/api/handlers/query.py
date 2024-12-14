@@ -11,9 +11,9 @@ from real_estate_telegram_bot.api.users import check_user_in_channel_sync
 from real_estate_telegram_bot.db import crud
 from real_estate_telegram_bot.service.google import GoogleDriveAPI
 
-config = OmegaConf.load("./src/real_estate_telegram_bot/conf/query.yaml")
+config = OmegaConf.load("./src/real_estate_telegram_bot/conf/apps/query.yaml").app
+strings = OmegaConf.load("./src/real_estate_telegram_bot/conf/apps/query.yaml").strings
 config_common = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
-strings = OmegaConf.load("./src/real_estate_telegram_bot/conf/strings.yaml")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -82,10 +82,13 @@ def prepare_response(project) -> str:
 
     return template.format(**formatted_project_json).strip()
 
-def create_service_charge_button(strings: dict, master_community_name_en: str):
-    service_charge_button = InlineKeyboardMarkup(row_width=1)
+def create_service_charge_button(lang: str, master_community_name_en: str):
+    service_charge_button = InlineKeyboardMarkup(row_width=2)
     service_charge_button.add(
-        InlineKeyboardButton(strings.menu.service_charge, callback_data=f"_service_charge_{master_community_name_en}")
+        InlineKeyboardButton(strings[lang].main_menu, callback_data=f"_main_menu")
+    )
+    service_charge_button.add(
+        InlineKeyboardButton(strings[lang].service_charge, callback_data=f"_service_charge_{master_community_name_en}")
     )
     return service_charge_button
 
@@ -163,8 +166,8 @@ def register_handlers(bot):
         user = crud.read_user(user_id)
         lang = user.lang
         logger.info(msg="User event", extra={"user_id": user_id, "user_message": message.text})
-        bot.reply_to(message, strings[lang].query.ask_name,
-            reply_markup=create_main_menu_button(strings[lang]))
+        bot.reply_to(message, strings[lang].ask_name,
+            reply_markup=create_main_menu_button(lang))
         bot.register_next_step_handler(message, perform_query)
 
     @bot.message_handler(func=lambda message: message.text[0] != '/')
@@ -191,19 +194,15 @@ def register_handlers(bot):
 
             if projects:
                 if len(projects) == 1:
-                    bot.reply_to(message, strings[lang].query.result_positive_unique)
+                    bot.reply_to(message, strings[lang].result_positive_unique)
                     bot.send_message(
                         user_id, prepare_response(projects[0]),
                         parse_mode="Markdown",
-                        reply_markup=create_service_charge_button(strings[lang], projects[0].master_project_en)
+                        reply_markup=create_service_charge_button(lang, projects[0].master_project_en)
                     )
-                    bot.send_message(
-                        user_id, strings[lang].query.result_positive_report,
-                        reply_markup=create_main_menu_button(strings[lang])
-                        )
                     items = query_files(projects[0].project_name_id_buildings)
                     if items:
-                        bot.send_message(user_id, strings[lang].query.files_found.format(n=len(items)))
+                        bot.send_message(user_id, strings[lang].files_found.format(n=len(items)))
                         send_files(
                             items, user_id=user_id, bot=bot,
                             project_id=projects[0].project_id
@@ -214,7 +213,7 @@ def register_handlers(bot):
                     projects_buttons = create_query_results_buttons(
                         [project.project_name_id_buildings for project in projects]
                     )
-                    bot.reply_to(message, strings[lang].query.result_positive_nonunique, reply_markup=projects_buttons)
+                    bot.reply_to(message, strings[lang].result_positive_nonunique, reply_markup=projects_buttons)
                     #bot.register_next_step_handler(message, show_selected_project)
             else:
 
@@ -223,17 +222,17 @@ def register_handlers(bot):
                     projects_buttons = create_query_results_buttons(
                         [project.project_name_id_buildings for project in projects][:config.top_k]
                     )
-                    bot.reply_to(message, strings[lang].query.result_positive_suggestions, reply_markup=projects_buttons)
+                    bot.reply_to(message, strings[lang].result_positive_suggestions, reply_markup=projects_buttons)
                 else:
                     bot.reply_to(
-                        message, strings[lang].query.result_negative,
-                        reply_markup=create_main_menu_button(strings[lang])
+                        message, strings[lang].result_negative,
+                        reply_markup=create_main_menu_button(lang)
                     )
         except Exception as e:
             logger.error(f"An error occurred: {e}")
             bot.reply_to(
-                message, strings[lang].query.result_negative,
-                reply_markup=create_main_menu_button(strings[lang])
+                message, strings[lang].result_negative,
+                reply_markup=create_main_menu_button(lang)
             )
 
     @bot.callback_query_handler(func=lambda call: "_select_" in call.data)
@@ -248,17 +247,13 @@ def register_handlers(bot):
         project = [project for project in projects if project.project_name_id_buildings == project_name][0]
         bot.send_message(
             user_id, prepare_response(project).replace('_', " "),
-            reply_markup=create_service_charge_button(strings[lang], project.master_project_en),
+            reply_markup=create_service_charge_button(lang, project.master_project_en),
             parse_mode="Markdown"
         )
         items = query_files(project_name)
         if items:
-            bot.send_message(user_id, strings[lang].query.files_found.format(n=len(items)))
+            bot.send_message(user_id, strings[lang].files_found.format(n=len(items)))
             send_files(
                 items, user_id=user_id, bot=bot,
                 project_id=project.project_id
             )
-        bot.send_message(
-            user_id, strings[lang].query.result_positive_report,
-            reply_markup=create_main_menu_button(strings[lang])
-        )

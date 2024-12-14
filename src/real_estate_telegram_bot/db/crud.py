@@ -30,56 +30,143 @@ def read_users() -> list[User]:
     return result
 
 
-def upsert_user(
+def create_user(
     id: int,
     username: Optional[str] = None,
-    lang: Optional[str] = "en",
-    role: Optional[str] = None,
-):
+    lang: Optional[str] = None,
+    role: Optional[str] = "user"
+) -> User:
     """
-    Insert or update a user.
+    Create a new user.
 
     Args:
-        id (int): The user's ID.
-        name (str): The user's name.
-        lang (str): The user's language.
-        role (str): The user's role.
+        id: The user's ID.
+        username: The user's name.
+        lang: The user's language.
+        role: The user's role.
 
     Returns:
-        User: The user object.
+        The created user object.
+    """
+    db: Session = get_session()
+    db.expire_on_commit = False
+    try:
+        user = User(
+            id=id,
+            username=username,
+            lang=lang,
+            role=role
+        )
+        db.add(user)
+        db.commit()
+        logger.info(f"User with name {user.username} added successfully.")
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error adding user with name {username}: {e}")
+        raise
+    finally:
+        db.close()
+    return user
+
+
+def update_user(
+    id: int,
+    username: Optional[str] = None,
+    lang: Optional[str] = None,
+    role: Optional[str] = None
+) -> User:
+    """
+    Update an existing user.
+
+    Args:
+        id: The user's ID.
+        username: The user's name.
+        lang: The user's language.
+        role: The user's role.
+
+    Returns:
+        The updated user object.
     """
     db: Session = get_session()
     db.expire_on_commit = False
     try:
         user = db.query(User).filter(User.id == id).first()
         if user:
-            if username:
+            if username is not None:
                 user.username = username
-            if role and user.role != "admin":
+            if lang is not None:
+                user.lang = lang
+            if role is not None:
                 user.role = role
+            db.commit()
+            logger.info(f"User with ID {user.id} updated successfully.")
         else:
-            user = User(
-                id=id, username=username,
-                lang=lang, role=role
-            )
-            db.add(user)
-            logger.info(f"User with name {user.username} added successfully.")
-        db.commit()
-        return user
+            logger.error(f"User with ID {id} not found.")
+            raise ValueError(f"User with ID {id} not found.")
     except Exception as e:
         db.rollback()
-        logger.error(f"Error adding user with name {username}: {e}")
+        logger.error(f"Error updating user with ID {id}: {e}")
+        raise
     finally:
         db.close()
+    return user
+
+
+def upsert_user(
+    id: int,
+    username: Optional[str] = None,
+    lang: Optional[str] = None,
+    role: Optional[str] = None
+) -> User:
+    """
+    Insert or update a user.
+
+    Args:
+        id: The user's ID.
+        username: The user's name.
+        lang: The user's language.
+        role: The user's role.
+        active_session_id: The user's active session ID.
+
+    Returns:
+        The user object.
+    """
+    db: Session = get_session()
+    db.expire_on_commit = False
+    try:
+        user = db.query(User).filter(User.id == id).first()
+        if user:
+            user = update_user(
+                id=id,
+                username=username,
+                lang=lang,
+                role=role
+            )
+        else:
+            user = create_user(
+                id=id,
+                username=username,
+                lang=lang,
+                role=role
+            )
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error upserting user with ID {id}: {e}")
+        raise
+    finally:
+        db.close()
+    return user
+
 
 def update_user_language(user_id: int, new_language: str):
+    """ Update the language for a user. """
     db: Session = get_session()
     try:
         # Query the user by user_id
         user = db.query(User).filter(User.id == user_id).one()
 
         # Update the language field
-        user.language = new_language
+        user.lang = new_language
 
         # Commit the transaction
         db.commit()
@@ -90,13 +177,16 @@ def update_user_language(user_id: int, new_language: str):
         logger.info(f"No user found with user_id {user_id}")
     except Exception as e:
         db.rollback()
-        logger.info(str(e))
+        logger.error(f"Error updating language for user {user_id}: {e}")
+    finally:
+        db.close()
 
 def upsert_project(project: Project):
     db: Session = get_session()
     db.merge(project)
     db.commit()
     db.close()
+
 
 def query_projects_by_name(project_name: str, mode: str = "ilike", similarity_threshold: float = 0.35) -> list[Project]:
     db: Session = get_session()
@@ -116,7 +206,6 @@ def query_projects_by_name(project_name: str, mode: str = "ilike", similarity_th
         result = [item[0] for item in result]
     else:
         raise ValueError(f"Query mode {mode} is not supported.")
-        return None
     db.close()
     return result
 
@@ -237,6 +326,48 @@ def get_project_service_charge_by_year(master_project_en: str) -> list[dict[str,
     df = df.fillna("")
     return df
 
+
+def get_area_service_charge_by_year(area_name: str) -> pd.DataFrame:
+    db: Session = get_session()
+
+    # Query to get the area service charge data
+    query = db.query(
+        ProjectServiceCharge.project_name,
+        ProjectServiceCharge.property_group_name_en,
+        ProjectServiceCharge.budget_year,
+        ProjectServiceCharge.service_charge
+    ).filter(
+        ProjectServiceCharge.master_project_en.ilike(f"%{area_name}%")
+    ).order_by(
+        ProjectServiceCharge.project_name,
+        ProjectServiceCharge.budget_year
+    )
+
+    # Fetching data from the query
+    results = query.all()
+
+    if not results:
+        return pd.DataFrame()
+
+    # Processing the results into a dictionary for pivoting
+    data = defaultdict(lambda: {"project_name": "", "property_group_name_en": ""})
+
+    for project_name, property_group_name_en, budget_year, service_charge in results:
+        if not data[(project_name, property_group_name_en)]["project_name"]:
+            data[(project_name, property_group_name_en)]["project_name"] = project_name
+            data[(project_name, property_group_name_en)]["property_group_name_en"] = property_group_name_en
+        data[(project_name, property_group_name_en)][budget_year] = service_charge
+
+    # Converting the dictionary to a DataFrame
+    df = pd.DataFrame.from_dict(data, orient="index").reset_index(drop=True)
+
+    # Reordering columns to ensure years are in the correct order
+    year_columns = sorted([col for col in df.columns if isinstance(col, int)])
+    df = df[["project_name", "property_group_name_en"] + year_columns]
+
+    # Fill missing values with empty strings or NaN if needed
+    df = df.fillna("")
+    return df
 
 def create_event(user_id: str, content: str, type: str) -> Event:
     """Create an event for a user."""
