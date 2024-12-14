@@ -1,0 +1,46 @@
+strings:
+  en:
+    menu:
+      title: "Menu"
+      options:
+        - label: "All buildings in the area"
+          value: "query"
+        - label: "Area names"
+          value: "area_names"
+    main_menu: "Main menu 🏠"
+    select_area: "Select an area"
+    enter_own_area: "Enter your own area manually"
+    query: "BUILDING INFO 🔎"
+  ru:
+    menu:
+      title: "Меню"
+      options:
+        - label: "Все здания на районе"
+          value: "buildings_area"
+        - label: "Названия районов"
+          value: "area_names"
+    main_menu: "Главное меню 🏠"
+    select_area: "Выберите район"
+    enter_own_area: "Ввести название района вручную"
+    query: "ЗДАНИЯ 🔎"
+  area_names:
+    dubai_marina: "Dubai Marina"
+    business_bay: "Business Bay"
+    downtown: "Downtown"
+    creek_harbour: "Creek Harbour"
+    sobha_hartland: "Sobha Hartland"
+    city_walk: "City Walk"
+    al_furjan: "Al Furjan"
+    arjan: "Arjan"
+    beachfront: "Beachfront"
+    bluewaters: "Bluewaters"
+    dubai_hills: "Dubai Hills"
+    dubai_islands: "Dubai Islands"
+    dubai_maritime_city: "Dubai Maritime City"
+    jlt: "JLT"
+    jvc: "JVC"
+    jvt: "JVT"
+    jbr: "JBR"
+    la_mer: "La Mer"
+    mina_rashid: "Mina Rashid"
+    palm_jumeirah: "Palm Jumeirah"

@@ -1,12 +1,13 @@
 import logging
 import logging.config
 import os
+import re
 from time import sleep
 
 import telebot
 from dotenv import find_dotenv, load_dotenv
 from omegaconf import OmegaConf
-import re
+
 from real_estate_telegram_bot.db import crud
 from real_estate_telegram_bot.service.google import GoogleDriveAPI
 

@@ -15,34 +15,8 @@ en:
     It’s a free and helpful bot for real estate agents and investors.
     In a glance you will be able to find all available information about any registered building in Dubai: handover date, building configuration, developer information and many more.
     All data is official from Dubai Land Department (DLD).
-  query:
-    ask_name: |
-      Please input building name in a search bar below.
-
-      For example:
-      La Sirene
-
-      Keep in mind search rules:
-      -	One or two words max
-      -	If name input is incorrect – bot will offer you similar options. Choose the one you need and repeat the search request.
-
-      Enjoy the result and don’t forget to share this bot with your colleagues ;-)
-    result_positive_unique: "Project found:"
-    result_positive_nonunique: "Several projects found based on your query:"
-    result_positive_suggestions: "Maybe you meant ..."
-    result_positive_report: "If some information is inaccurate please report to @kirill_egorov_dubai"
-    result_negative: |
-      No project found. Try again.
-      Keep in mind search rules:
-      - One or two words max
-      - If name input is not accurate – bot will offer you similar options. Choose the one you need and repeat the search request
-      - If name input is incorrect – try other name or search correct name in Google and then try again in bot
-      You can also ask for an advice here: @kirill_egorov_dubai
-    enter_own_area: "Enter your own area manually"
-    files_found: "{n} files found:"
   area_query:
     result_negative: "The spelling of the area may be incorrect. You can use ’Find building info’ feature and find out correct area there:"
-
   useful_links: |
     Secondary Dubai Only: https://t.me/secondary_dubai
     Request Dubai Only: https://t.me/Request_dubai
@@ -57,14 +31,14 @@ en:
   language_ru: "Russian"
   main_menu: "Main menu 🏠"
   menu:
-    query: "Find building info 🔎"
-    service_charge: "Service charge 📊"
-    areas: "All buildings in the area 📍"
-    useful_links: "Useful links 🔗"
-    area_names: "Area names 🇦🇪->🇬🇧"
-    support: "Support  🦸🏻‍♂️"
-    language: "Select your language 🇬🇧🇷🇺"
-    select_area: "Select an area"
+    query: "BUILDING INFO 🔎"
+    query_files: "BROCHURES 📚"
+    service_charge: "SERVICE CHARGE 📊"
+    areas: "AREA INFO 📍"
+    useful_links: "LINKS 🔗"
+    area_names: "РАЙОНЫ 📍"
+    support: "CONTACTS 💬"
+    language: LANGUAGE 🚩
   
   service_charge:
     result_positive: "You can find service charges in the area in the following file."
@@ -92,42 +66,15 @@ ru:
     Удачи и не забудьте поделиться с коллегами и друзьями!
   main_menu: "Главное меню 🏠"
   menu:
-    query: "Найти информацию о здании 🔎"
-    areas: "Все здания на районе📍"
-    service_charge: "Service charge 📊"
-    area_names: "Названия районов 🇦🇪->🇬🇧"
-    useful_links: "Полезные ссылки 🔗"
-    support: "Поддержка 🦸🏻‍♂️"
-    language: "Выбор языка 🇬🇧🇷🇺"
-    select_area: "Выберите район"
+    query: "ЗДАНИЯ 🔎"
+    query_files: "БРОШЮРЫ 📚"
+    areas: "РАЙОНЫ 📍"
+    service_charge: "SERVICE CHARGE 📊"
+    area_names: "РАЙОНЫ 📍"
+    useful_links: "ССЫЛКИ 🔗"
+    support: "КОНТАКТЫ 💬"
+    language: "ЯЗЫК 🚩"
 
-  query:
-    enter_own_area: "Ввести название района вручную"
-    ask_name: |
-      Введите название здания в строку поиска ниже.
-
-      Например:
-      La Sirene
-
-      Правила поиска:
-      - Максимум одно-два слова
-      - Если название введено неверно, то бот предложит вам похожие варианты. Выберите нужный и повторите поисковый запрос.
-
-      Наслаждайтесь результатом и не забудьте поделиться ссылкой на бот с коллегами ;-)
-
-    result_positive_unique: "Здание найдено:"
-    result_positive_report: "Если вы нашли неточности в данных, просьба сообщить @kirill_egorov_dubai"
-    result_positive_nonunique: "Несколько зданий найдено по вашему запросу:"
-    result_positive_suggestions: "Возможно вы имели ввиду ..."
-    result_negative: |
-      Проект не найден. Попробуйте еще раз.
-      Помните о правилах поиска:
-      - Одно или два слова максимум
-      - Если имя введено неточно — бот предложит вам
-        похожие варианты. Выберите нужный и повторите поисковый запрос
-      - Если имя введено неверно — попробуйте другое имя или найдите правильное имя в Google и попробуйте еще раз в боте
-      Можете также задать вопрос здесь: @kirill_egorov_dubai
-    files_found: "{n} файлов найдено:"
   useful_links: |
     Secondary Dubai Only: https://t.me/secondary_dubai
     Request Dubai Only: https://t.me/Request_dubai
@@ -146,45 +93,3 @@ ru:
   service_charge:
     result_positive: "Вы можете найти таблицу service charge по зданиям в указанном районе."
     result_negative: "К сожалению, данные по service charge не были найдены"
-  
-
-areas:
-  dubai_marina: "Dubai Marina"
-  business_bay: "Business Bay"
-  downtown: "Downtown"
-  creek_harbour: "Creek Harbour"
-  sobha_hartland: "Sobha Hartland"
-  city_walk: "City Walk"
-  al_furjan: "Al Furjan"
-  arjan: "Arjan"
-  beachfront: "Beachfront"
-  bluewaters: "Bluewaters"
-  dubai_hills: "Dubai Hills"
-  dubai_islands: "Dubai Islands"
-  dubai_maritime_city: "Dubai Maritime City"
-  jlt: "JLT"
-  jvc: "JVC"
-  jvt: "JVT"
-  jbr: "JBR"
-  la_mer: "La Mer"
-  mina_rashid: "Mina Rashid"
-  palm_jumeirah: "Palm Jumeirah"
-
-project_info_template: |
-    Project: *{project_name_id_buildings}*
-    Developer: *{developer_name_en}*
-
-    Area (Arabic): *{area_name_en}*
-    Area (English): *{master_project_en}*
-    
-    Project start date: *{project_start_date}*
-    Project end date: *{project_end_date}*
-
-    How old is the building: *{project_age}*
-    Project status: *{project_status}*
-    Completion: *{percent_completed}% *
-    
-    Number of buildings: *{no_of_buildings}*
-    Number of units: *{no_of_units}*
-    Number of floors: *{floors}*
-    Freehold: *{is_free_hold}*
