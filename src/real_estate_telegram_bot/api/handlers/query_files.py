@@ -174,6 +174,10 @@ def register_handlers(bot):
                         )
                     else:
                         logger.info(f"No files found for project {projects[0].project_name_id_buildings}")
+                        projects_buttons = create_query_results_buttons(
+                            [], lang=user.lang
+                        )
+                    bot.reply_to(message, strings[user.lang].result_positive_suggestions, reply_markup=projects_buttons)
                 else:
                     projects_buttons = create_query_results_buttons(
                         [project.project_name_id_buildings for project in projects],
