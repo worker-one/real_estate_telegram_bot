@@ -43,7 +43,7 @@ def create_areas_names_menu_markup(lang):
     return areas_menu_markup
 
 def create_main_menu_button(lang: str):
-    main_menu_button = ReplyKeyboardMarkup(row_width=1)
+    main_menu_button = ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
     main_menu_button.add(KeyboardButton(strings[lang].main_menu))
     return main_menu_button
 
