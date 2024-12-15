@@ -2,7 +2,7 @@ import logging
 import os
 
 from omegaconf import OmegaConf
-from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
+from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
 
 from real_estate_telegram_bot.db import crud
 from real_estate_telegram_bot.service import excel
@@ -42,9 +42,9 @@ def create_areas_names_menu_markup(lang):
     )
     return areas_menu_markup
 
-def create_main_menu_button(lang):
-    main_menu_button = InlineKeyboardMarkup(row_width=1)
-    main_menu_button.add(InlineKeyboardButton(strings[lang].main_menu, callback_data="_main_menu"))
+def create_main_menu_button(lang: str):
+    main_menu_button = ReplyKeyboardMarkup(row_width=1)
+    main_menu_button.add(KeyboardButton(strings[lang].main_menu))
     return main_menu_button
 
 def register_handlers(bot):
@@ -113,3 +113,5 @@ def register_handlers(bot):
             os.remove(filepath)
         else:
             bot.send_message(user.id, strings[lang].result_negative)
+            bot.send_message(user.id, strings[lang].enter_own_area)
+            bot.register_next_step_handler_by_chat_id(user.id, get_service_charge, user)

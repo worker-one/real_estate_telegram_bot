@@ -3,7 +3,7 @@ import os
 
 import pandas as pd
 from omegaconf import OmegaConf
-from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
+from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
 
 from real_estate_telegram_bot.db import crud
 from real_estate_telegram_bot.service import excel
@@ -23,16 +23,15 @@ def create_areas_menu_markup(lang: str) -> InlineKeyboardMarkup:
         )
     return query_menu
 
-def create_main_menu_button(strings):
-    main_menu_button = InlineKeyboardMarkup(row_width=1)
-    main_menu_button.add(InlineKeyboardButton(strings.main_menu, callback_data="_main_menu"))
+def create_main_menu_button(lang: str):
+    main_menu_button = ReplyKeyboardMarkup(row_width=1)
+    main_menu_button.add(KeyboardButton(strings[lang].main_menu))
     return main_menu_button
 
 def create_query_menu(lang: str) -> InlineKeyboardMarkup:
     query_menu = InlineKeyboardMarkup(row_width=2)
     query_menu.add(
-        InlineKeyboardButton(strings[lang].query, callback_data="_query"),
-        InlineKeyboardButton(strings[lang].main_menu, callback_data="_main_menu")
+        InlineKeyboardButton(strings[lang].query, callback_data="_query")
     )
     return query_menu
 
@@ -107,7 +106,7 @@ def register_handlers(bot):
         logger.info({"user_id": user_id, "message": call.data})
 
         with open("./data/dubai_area_names.xlsx", 'rb') as file:
-            bot.send_document(user_id, file, reply_markup=create_main_menu_button(strings[lang]))
+            bot.send_document(user_id, file, reply_markup=create_main_menu_button(lang))
 
     @bot.callback_query_handler(func=lambda call: call.data.startswith("_") and call.data[1:] in get_valid_area_codes())
     def area_callback(call):

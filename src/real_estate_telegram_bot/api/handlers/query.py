@@ -85,9 +85,6 @@ def prepare_response(project) -> str:
 def create_service_charge_button(lang: str, master_community_name_en: str):
     service_charge_button = InlineKeyboardMarkup(row_width=2)
     service_charge_button.add(
-        InlineKeyboardButton(strings[lang].main_menu, callback_data=f"_main_menu")
-    )
-    service_charge_button.add(
         InlineKeyboardButton(strings[lang].service_charge, callback_data=f"_service_charge_{master_community_name_en}")
     )
     return service_charge_button
@@ -97,6 +94,13 @@ def create_query_results_buttons(results: list[str]) -> InlineKeyboardMarkup:
     for result in results:
         buttons_markup.add(InlineKeyboardButton(result, callback_data=f"_select_{result}"[:64]))
     return buttons_markup
+
+def create_query_files_button(lang: str) -> InlineKeyboardMarkup:
+    query_files_button = InlineKeyboardMarkup(row_width=2)
+    query_files_button.add(
+        InlineKeyboardButton(strings[lang].query_files, callback_data=f"_query_files")
+    )
+    return query_files_button
 
 
 def query_files(query: str, case_sensitive: bool = False):
@@ -158,6 +162,13 @@ def send_files(items: list[dict], project_id: int, user_id, bot) -> None:
                     )
                     logger.info(f"File {file_name} updated in the database")
 
+def is_query(message):
+    is_command = message.text[0] == '/'
+    is_key_phrase = message.text in {
+        strings["en"].main_menu,
+        strings["ru"].main_menu
+    }
+    return not is_command and not is_key_phrase
 
 def register_handlers(bot):
     @bot.message_handler(Command="query")
@@ -170,11 +181,10 @@ def register_handlers(bot):
             reply_markup=create_main_menu_button(lang))
         bot.register_next_step_handler(message, perform_query)
 
-    @bot.message_handler(func=lambda message: message.text[0] != '/')
+    @bot.message_handler(func=lambda message: is_query(message))
     def perform_query(message):
         user_id = message.from_user.id
         username = message.from_user.username
-
 
         # Check if user is in the channel
         if check_user_in_channel_sync(config_common.channel_name, username) is False:
@@ -209,6 +219,10 @@ def register_handlers(bot):
                         )
                     else:
                         logger.info(f"No files found for project {projects[0].project_name_id_buildings}")
+                        bot.send_message(
+                            user_id, strings[lang].no_media_found,
+                            reply_markup=create_query_files_button(lang)
+                        )
                 else:
                     projects_buttons = create_query_results_buttons(
                         [project.project_name_id_buildings for project in projects]
@@ -256,4 +270,10 @@ def register_handlers(bot):
             send_files(
                 items, user_id=user_id, bot=bot,
                 project_id=project.project_id
+            )
+        else:
+            logger.info(f"No files found for project {project_name}")
+            bot.send_message(
+                user_id, strings[lang].no_media_found,
+                reply_markup=create_query_files_button(lang)
             )

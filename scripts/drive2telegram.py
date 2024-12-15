@@ -78,6 +78,8 @@ def send_files(items: list[dict], project_id: int, user_id, bot) -> None:
                         file_telegram_id=sent_message.document.file_id
                     )
                     logger.info(f"File {file_name} updated in the database")
+                # Remove file
+                os.remove(file_name)
 
 
 @bot.message_handler(commands=["start"])

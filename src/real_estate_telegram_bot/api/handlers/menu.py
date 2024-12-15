@@ -1,9 +1,8 @@
 import logging.config
 
 from omegaconf import OmegaConf
-from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
+from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, Message, ReplyKeyboardMarkup
 
-from real_estate_telegram_bot.api.middlewares import user
 from real_estate_telegram_bot.api.users import check_user_in_channel_sync
 from real_estate_telegram_bot.db import crud
 
@@ -43,8 +42,8 @@ def create_lang_menu_markup(lang: str) -> InlineKeyboardMarkup:
     return lang_menu_markup
 
 def create_main_menu_button(lang: str) -> InlineKeyboardMarkup:
-    main_menu_button = InlineKeyboardMarkup(row_width=1)
-    main_menu_button.add(InlineKeyboardButton(strings[lang].main_menu, callback_data="_main_menu"))
+    main_menu_button = ReplyKeyboardMarkup(resize_keyboard=True)
+    main_menu_button.add(KeyboardButton(strings[lang].main_menu))
     return main_menu_button
 
 def create_create_query_menu(lang: str) -> InlineKeyboardMarkup:
@@ -56,6 +55,27 @@ def create_create_query_menu(lang: str) -> InlineKeyboardMarkup:
 def register_handlers(bot):
     @bot.message_handler(commands=["start", "menu"])
     def menu_menu_command(message, data: dict):
+        user = data["user"]
+        # Check if user is in the channel
+        if check_user_in_channel_sync(config.channel_name, user.username) is False:
+            bot.send_message(
+                message.chat.id,
+                f"You need to join the channel @{config.channel_name} to use the bot."
+            )
+            return
+
+        lang = user.lang
+        logger.info({"user_id": message.from_user.id, "message": message.text})
+
+        bot.send_message(
+            message.chat.id, strings[lang].start,
+            reply_markup=create_main_menu_markup(lang)
+        )
+
+    @bot.message_handler(
+        func=lambda message: message.text in {strings["en"].main_menu, strings["ru"].main_menu}
+    )
+    def menu_menu_command(message: Message, data: dict):
         user = data["user"]
         # Check if user is in the channel
         if check_user_in_channel_sync(config.channel_name, user.username) is False:
