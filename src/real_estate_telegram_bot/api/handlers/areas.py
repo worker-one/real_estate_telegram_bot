@@ -3,7 +3,7 @@ import os
 
 import pandas as pd
 from omegaconf import OmegaConf
-from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
+from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
 
 from real_estate_telegram_bot.db import crud
 from real_estate_telegram_bot.service import excel
@@ -12,65 +12,78 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
-strings = OmegaConf.load("./src/real_estate_telegram_bot/conf/strings.yaml")
+strings = OmegaConf.load("./src/real_estate_telegram_bot/conf/apps/areas.yaml").strings
 
-def create_main_menu_button(strings):
-    main_menu_button = InlineKeyboardMarkup(row_width=1)
-    main_menu_button.add(InlineKeyboardButton(strings.main_menu, callback_data="_main_menu"))
+def create_areas_menu_markup(lang: str) -> InlineKeyboardMarkup:
+    query_menu = InlineKeyboardMarkup(row_width=2)
+    options = strings[lang].menu.options
+    for option in options:
+        query_menu.add(
+            InlineKeyboardButton(option.label, callback_data=option.value)
+        )
+    return query_menu
+
+def create_main_menu_button(lang: str):
+    main_menu_button = ReplyKeyboardMarkup(row_width=1)
+    main_menu_button.add(KeyboardButton(strings[lang].main_menu))
     return main_menu_button
 
-def create_query_menu(strings):
+def create_query_menu(lang: str) -> InlineKeyboardMarkup:
     query_menu = InlineKeyboardMarkup(row_width=2)
     query_menu.add(
-        InlineKeyboardButton(strings.menu.query, callback_data="_query"),
-        InlineKeyboardButton(strings.main_menu, callback_data="_main_menu")
+        InlineKeyboardButton(strings[lang].query, callback_data="_query")
     )
     return query_menu
 
-def create_areas_menu_markup(strings, lang):
+def create_areas_names_menu_markup(lang):
     areas = [
-        ('al_furjan', strings.areas.al_furjan),
-        ('arjan', strings.areas.arjan),
-        ('beachfront', strings.areas.beachfront),
-        ('bluewaters', strings.areas.bluewaters),
-        ('business_bay', strings.areas.business_bay),
-        ('city_walk', strings.areas.city_walk),
-        ('creek_harbour', strings.areas.creek_harbour),
-        ('downtown', strings.areas.downtown),
-        ('dubai_hills', strings.areas.dubai_hills),
-        ('dubai_islands', strings.areas.dubai_islands),
-        ('dubai_marina', strings.areas.dubai_marina),
-        ('dubai_maritime_city', strings.areas.dubai_maritime_city),
-        ('jlt', strings.areas.jlt),
-        ('jvc', strings.areas.jvc),
-        ('jvt', strings.areas.jvt),
-        ('jbr', strings.areas.jbr),
-        ('la_mer', strings.areas.la_mer),
-        ('mina_rashid', strings.areas.mina_rashid),
-        ('palm_jumeirah', strings.areas.palm_jumeirah),
-        ('sobha_hartland', strings.areas.sobha_hartland),
+        ('al_furjan', strings.area_names.al_furjan),
+        ('arjan', strings.area_names.arjan),
+        ('beachfront', strings.area_names.beachfront),
+        ('bluewaters', strings.area_names.bluewaters),
+        ('business_bay', strings.area_names.business_bay),
+        ('city_walk', strings.area_names.city_walk),
+        ('creek_harbour', strings.area_names.creek_harbour),
+        ('downtown', strings.area_names.downtown),
+        ('dubai_hills', strings.area_names.dubai_hills),
+        ('dubai_islands', strings.area_names.dubai_islands),
+        ('dubai_marina', strings.area_names.dubai_marina),
+        ('dubai_maritime_city', strings.area_names.dubai_maritime_city),
+        ('jlt', strings.area_names.jlt),
+        ('jvc', strings.area_names.jvc),
+        ('jvt', strings.area_names.jvt),
+        ('jbr', strings.area_names.jbr),
+        ('la_mer', strings.area_names.la_mer),
+        ('mina_rashid', strings.area_names.mina_rashid),
+        ('palm_jumeirah', strings.area_names.palm_jumeirah),
+        ('sobha_hartland', strings.area_names.sobha_hartland),
     ]
     areas_menu_markup = InlineKeyboardMarkup(row_width=2)
     for area_code, area_label in areas:
         areas_menu_markup.add(InlineKeyboardButton(area_label, callback_data=f"_{area_code}"))
     areas_menu_markup.add(
-        InlineKeyboardButton(strings[lang].query.enter_own_area, callback_data="_enter_own_area")
+        InlineKeyboardButton(strings[lang].enter_own_area, callback_data="_enter_own_area")
     )
     return areas_menu_markup
 
 def register_handlers(bot):
-    @bot.callback_query_handler(func=lambda call: call.data == "_area_names")
-    def get_area_names_table(call):
-        user_id = call.from_user.id
-        user = crud.read_user(user_id)
-        lang = user.lang
-
-        logger.info({"user_id": user_id, "message": call.data})
-
-        with open("./data/dubai_area_names.xlsx", 'rb') as file:
-            bot.send_document(user_id, file, reply_markup=create_main_menu_button(strings[lang]))
+    """ Register handlers for areas menu """
+    logger.info("Registering `areas` handlers")
 
     @bot.callback_query_handler(func=lambda call: call.data == "_areas")
+    def get_areas_menu(call, data: dict):
+        user = data["user"]
+        lang = user.lang
+
+        logger.info({"user_id": user.id, "message": call.data})
+
+        bot.send_message(
+            call.message.chat.id,
+            strings[lang].menu.title,
+            reply_markup=create_areas_menu_markup(lang)
+        )
+
+    @bot.callback_query_handler(func=lambda call: call.data == "area_names")
     def areas_menu_callback(call):
         user_id = call.from_user.id
         user = crud.read_user(user_id)
@@ -80,9 +93,20 @@ def register_handlers(bot):
 
         bot.send_message(
             call.message.chat.id,
-            strings[lang].menu.select_area,
-            reply_markup=create_areas_menu_markup(strings, lang)
+            strings[lang].select_area,
+            reply_markup=create_areas_names_menu_markup(lang)
         )
+
+    @bot.callback_query_handler(func=lambda call: call.data == "buildings_area")
+    def get_area_names_table(call):
+        user_id = call.from_user.id
+        user = crud.read_user(user_id)
+        lang = user.lang
+
+        logger.info({"user_id": user_id, "message": call.data})
+
+        with open("./data/dubai_area_names.xlsx", 'rb') as file:
+            bot.send_document(user_id, file, reply_markup=create_main_menu_button(lang))
 
     @bot.callback_query_handler(func=lambda call: call.data.startswith("_") and call.data[1:] in get_valid_area_codes())
     def area_callback(call):
@@ -101,7 +125,7 @@ def register_handlers(bot):
         user = crud.read_user(user_id)
         lang = user.lang
 
-        msg = bot.send_message(call.message.chat.id, strings[lang].query.enter_own_area)
+        msg = bot.send_message(call.message.chat.id, strings[lang].enter_own_area)
         bot.register_next_step_handler(msg, process_area_name)
 
     def process_area_name(message):
@@ -136,7 +160,7 @@ def register_handlers(bot):
                 excel.format_areas(filepath)
 
                 with open(filepath, 'rb') as file:
-                    reply_markup = create_query_menu(strings[lang]) if name == 'off_plan' else None
+                    reply_markup = create_query_menu(lang) if name == 'off_plan' else None
                     bot.send_document(user_id, file, reply_markup=reply_markup)
 
                 os.remove(filepath)
@@ -144,7 +168,7 @@ def register_handlers(bot):
             bot.send_message(
                 user_id,
                 strings[lang].area_query.result_negative,
-                reply_markup=create_query_menu(strings[lang])
+                reply_markup=create_query_menu(lang)
             )
 
     def get_valid_area_codes():

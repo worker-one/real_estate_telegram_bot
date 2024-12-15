@@ -1,0 +1,80 @@
+app:
+  similarity_threshold: 0.05
+  top_k: 10
+strings:
+  en:
+    main_menu: "Main menu 🏠"
+    ask_name: |
+      Please input building name in a search bar below.
+
+      For example:
+      La Sirene
+
+      Keep in mind search rules:
+      -	One or two words max
+      -	If name input is incorrect – bot will offer you similar options. Choose the one you need and repeat the search request.
+
+      Enjoy the result and don’t forget to share this bot with your colleagues ;-)
+    result_positive_unique: "Project found:"
+    result_positive_nonunique: "Several projects found based on your query:"
+    result_positive_suggestions: "Maybe you meant ..."
+    result_negative: |
+      No project found. Try again.
+      Keep in mind search rules:
+      - One or two words max
+      - If name input is not accurate – bot will offer you similar options. Choose the one you need and repeat the search request
+      - If name input is incorrect – try other name or search correct name in Google and then try again in bot
+      You can also ask for an advice here: @kirill_egorov_dubai
+    enter_own_area: "Enter your own area manually"
+    files_found: "{n} files found:"
+    service_charge: "SERVICE CHARGE 📊"
+    query_files: "BROCHURES 📚"
+    no_media_found: "No media found, try to search in the whole database"
+  ru:
+    main_menu: "Главное меню 🏠"
+    enter_own_area: "Ввести название района вручную"
+    ask_name: |
+      Введите название здания в строку поиска ниже.
+
+      Например:
+      La Sirene
+
+      Правила поиска:
+      - Максимум одно-два слова
+      - Если название введено неверно, то бот предложит вам похожие варианты. Выберите нужный и повторите поисковый запрос.
+
+      Наслаждайтесь результатом и не забудьте поделиться ссылкой на бот с коллегами ;-)
+
+    result_positive_unique: "Здание найдено:"
+    result_positive_nonunique: "Несколько зданий найдено по вашему запросу:"
+    result_positive_suggestions: "Возможно вы имели ввиду ..."
+    result_negative: |
+      Проект не найден. Попробуйте еще раз.
+      Помните о правилах поиска:
+      - Одно или два слова максимум
+      - Если имя введено неточно — бот предложит вам
+        похожие варианты. Выберите нужный и повторите поисковый запрос
+      - Если имя введено неверно — попробуйте другое имя или найдите правильное имя в Google и попробуйте еще раз в боте
+      Можете также задать вопрос здесь: @kirill_egorov_dubai
+    files_found: "{n} файлов найдено:"
+    service_charge: "SERVICE CHARGE 📊"
+    no_media_found: "Медиа файлы не найдены, попробуйте поискать по всей базе"
+
+  project_info_template: |
+    Project: *{project_name_id_buildings}*
+    Developer: *{developer_name_en}*
+
+    Area (Arabic): *{area_name_en}*
+    Area (English): *{master_project_en}*
+    
+    Project start date: *{project_start_date}*
+    Project end date: *{project_end_date}*
+
+    How old is the building: *{project_age}*
+    Project status: *{project_status}*
+    Completion: *{percent_completed}% *
+    
+    Number of buildings: *{no_of_buildings}*
+    Number of units: *{no_of_units}*
+    Number of floors: *{floors}*
+    Freehold: *{is_free_hold}*
