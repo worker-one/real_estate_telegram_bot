@@ -28,6 +28,8 @@ strings:
     enter_own_area: "Enter your own area manually"
     files_found: "{n} files found:"
     service_charge: "SERVICE CHARGE 📊"
+    query_files: "BROCHURES 📚"
+    no_media_found: "No media found, try to search in the whole database"
   ru:
     main_menu: "Главное меню 🏠"
     enter_own_area: "Ввести название района вручную"
@@ -56,6 +58,7 @@ strings:
       Можете также задать вопрос здесь: @kirill_egorov_dubai
     files_found: "{n} файлов найдено:"
     service_charge: "SERVICE CHARGE 📊"
+    no_media_found: "Медиа файлы не найдены, попробуйте поискать по всей базе"
 
   project_info_template: |
     Project: *{project_name_id_buildings}*

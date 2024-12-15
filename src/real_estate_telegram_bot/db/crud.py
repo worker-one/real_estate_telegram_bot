@@ -181,6 +181,12 @@ def update_user_language(user_id: int, new_language: str):
     finally:
         db.close()
 
+def read_project(project_id: int) -> Project:
+    db: Session = get_session()
+    result = db.query(Project).filter(Project.project_id == project_id).first()
+    db.close()
+    return result
+
 def upsert_project(project: Project):
     db: Session = get_session()
     db.merge(project)
@@ -283,6 +289,13 @@ def update_project_file(file_name: str, file_type: str, file_telegram_id: str, p
     project_file.file_telegram_id = file_telegram_id
     db.commit()
     db.close()
+
+# Get project file by `file_name`
+def get_project_files_by_name(keyword: str, top_k: int = 10) -> ProjectFile:
+    db: Session = get_session()
+    result = db.query(ProjectFile).filter(ProjectFile.file_name.ilike(f"%{keyword}%")).limit(top_k).all()
+    db.close()
+    return result
 
 def get_project_service_charge_by_year(master_project_en: str) -> list[dict[str, any]]:
     db: Session = get_session()
