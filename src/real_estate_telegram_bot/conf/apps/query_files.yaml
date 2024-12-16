@@ -8,7 +8,7 @@ strings:
     result_negative: "К сожалению, данные не найдены"
     result_positive_suggestions: "Возможно вы имели ввиду ..."
     no_files_found: "Брошуры не найдены"
-    keyword_search: "Поиск по ключевым словам"
+    keyword_search: "ПОИСК ПО КЛЮЧЕВОМУ СЛОВУ 📎"
     enter_keyword: "Введите ключевое слово"
   en:
     enter_project_name: "Enter project name"
@@ -16,5 +16,5 @@ strings:
     result_negative: "Unfortunately, there has no data"
     result_positive_suggestions: "Maybe you meant ..."
     no_files_found: "No brochure found"
-    keyword_search: "Keyword search"
+    keyword_search: "KEYWORD SEARCH 📎"
     enter_keyword: "Enter keyword"
