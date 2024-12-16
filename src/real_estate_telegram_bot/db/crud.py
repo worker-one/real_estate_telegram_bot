@@ -33,21 +33,17 @@ def read_users() -> list[User]:
 def create_user(
     id: int,
     username: Optional[str] = None,
-    lang: Optional[str] = "ru",
-    role: Optional[str] = "user",
-    active_session_id: Optional[str] = None
+    lang: Optional[str] = None,
+    role: Optional[str] = "user"
 ) -> User:
     """
     Create a new user.
 
     Args:
         id: The user's ID.
-        name: The user's name.
-        first_name: The user's first name.
-        last_name: The user's last name.
+        username: The user's name.
         lang: The user's language.
         role: The user's role.
-        active_session_id: The user's active session ID.
 
     Returns:
         The created user object.
@@ -59,8 +55,7 @@ def create_user(
             id=id,
             username=username,
             lang=lang,
-            role=role,
-            active_session_id=active_session_id
+            role=role
         )
         db.add(user)
         db.commit()
@@ -85,10 +80,9 @@ def update_user(
 
     Args:
         id: The user's ID.
-        name: The user's name.
+        username: The user's name.
         lang: The user's language.
         role: The user's role.
-        active_session_id: The user's active session ID.
 
     Returns:
         The updated user object.
@@ -121,8 +115,8 @@ def update_user(
 def upsert_user(
     id: int,
     username: Optional[str] = None,
-    lang: Optional[str] = "ru",
-    role: Optional[str] = "user"
+    lang: Optional[str] = None,
+    role: Optional[str] = None
 ) -> User:
     """
     Insert or update a user.
@@ -165,13 +159,14 @@ def upsert_user(
 
 
 def update_user_language(user_id: int, new_language: str):
+    """ Update the language for a user. """
     db: Session = get_session()
     try:
         # Query the user by user_id
         user = db.query(User).filter(User.id == user_id).one()
 
         # Update the language field
-        user.language = new_language
+        user.lang = new_language
 
         # Commit the transaction
         db.commit()
@@ -182,7 +177,15 @@ def update_user_language(user_id: int, new_language: str):
         logger.info(f"No user found with user_id {user_id}")
     except Exception as e:
         db.rollback()
-        logger.info(str(e))
+        logger.error(f"Error updating language for user {user_id}: {e}")
+    finally:
+        db.close()
+
+def read_project(project_id: int) -> Project:
+    db: Session = get_session()
+    result = db.query(Project).filter(Project.project_id == project_id).first()
+    db.close()
+    return result
 
 def upsert_project(project: Project):
     db: Session = get_session()
@@ -287,6 +290,13 @@ def update_project_file(file_name: str, file_type: str, file_telegram_id: str, p
     db.commit()
     db.close()
 
+# Get project file by `file_name`
+def get_project_files_by_name(keyword: str, top_k: int = 10) -> ProjectFile:
+    db: Session = get_session()
+    result = db.query(ProjectFile).filter(ProjectFile.file_name.ilike(f"%{keyword}%")).limit(top_k).all()
+    db.close()
+    return result
+
 def get_project_service_charge_by_year(master_project_en: str) -> list[dict[str, any]]:
     db: Session = get_session()
 
@@ -329,6 +339,48 @@ def get_project_service_charge_by_year(master_project_en: str) -> list[dict[str,
     df = df.fillna("")
     return df
 
+
+def get_area_service_charge_by_year(area_name: str) -> pd.DataFrame:
+    db: Session = get_session()
+
+    # Query to get the area service charge data
+    query = db.query(
+        ProjectServiceCharge.project_name,
+        ProjectServiceCharge.property_group_name_en,
+        ProjectServiceCharge.budget_year,
+        ProjectServiceCharge.service_charge
+    ).filter(
+        ProjectServiceCharge.master_project_en.ilike(f"%{area_name}%")
+    ).order_by(
+        ProjectServiceCharge.project_name,
+        ProjectServiceCharge.budget_year
+    )
+
+    # Fetching data from the query
+    results = query.all()
+
+    if not results:
+        return pd.DataFrame()
+
+    # Processing the results into a dictionary for pivoting
+    data = defaultdict(lambda: {"project_name": "", "property_group_name_en": ""})
+
+    for project_name, property_group_name_en, budget_year, service_charge in results:
+        if not data[(project_name, property_group_name_en)]["project_name"]:
+            data[(project_name, property_group_name_en)]["project_name"] = project_name
+            data[(project_name, property_group_name_en)]["property_group_name_en"] = property_group_name_en
+        data[(project_name, property_group_name_en)][budget_year] = service_charge
+
+    # Converting the dictionary to a DataFrame
+    df = pd.DataFrame.from_dict(data, orient="index").reset_index(drop=True)
+
+    # Reordering columns to ensure years are in the correct order
+    year_columns = sorted([col for col in df.columns if isinstance(col, int)])
+    df = df[["project_name", "property_group_name_en"] + year_columns]
+
+    # Fill missing values with empty strings or NaN if needed
+    df = df.fillna("")
+    return df
 
 def create_event(user_id: str, content: str, type: str) -> Event:
     """Create an event for a user."""

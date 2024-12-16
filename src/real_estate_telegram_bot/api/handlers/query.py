@@ -11,9 +11,9 @@ from real_estate_telegram_bot.api.users import check_user_in_channel_sync
 from real_estate_telegram_bot.db import crud
 from real_estate_telegram_bot.service.google import GoogleDriveAPI
 
-config = OmegaConf.load("./src/real_estate_telegram_bot/conf/query.yaml")
+config = OmegaConf.load("./src/real_estate_telegram_bot/conf/apps/query.yaml").app
+strings = OmegaConf.load("./src/real_estate_telegram_bot/conf/apps/query.yaml").strings
 config_common = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
-strings = OmegaConf.load("./src/real_estate_telegram_bot/conf/strings.yaml")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -82,10 +82,10 @@ def prepare_response(project) -> str:
 
     return template.format(**formatted_project_json).strip()
 
-def create_service_charge_button(strings: dict, master_community_name_en: str):
-    service_charge_button = InlineKeyboardMarkup(row_width=1)
+def create_service_charge_button(lang: str, master_community_name_en: str):
+    service_charge_button = InlineKeyboardMarkup(row_width=2)
     service_charge_button.add(
-        InlineKeyboardButton(strings.menu.service_charge, callback_data=f"_service_charge_{master_community_name_en}")
+        InlineKeyboardButton(strings[lang].service_charge, callback_data=f"_service_charge_{master_community_name_en}")
     )
     return service_charge_button
 
@@ -94,6 +94,13 @@ def create_query_results_buttons(results: list[str]) -> InlineKeyboardMarkup:
     for result in results:
         buttons_markup.add(InlineKeyboardButton(result, callback_data=f"_select_{result}"[:64]))
     return buttons_markup
+
+def create_query_files_button(lang: str) -> InlineKeyboardMarkup:
+    query_files_button = InlineKeyboardMarkup(row_width=2)
+    query_files_button.add(
+        InlineKeyboardButton(strings[lang].query_files, callback_data=f"_query_files")
+    )
+    return query_files_button
 
 
 def query_files(query: str, case_sensitive: bool = False):
@@ -155,6 +162,13 @@ def send_files(items: list[dict], project_id: int, user_id, bot) -> None:
                     )
                     logger.info(f"File {file_name} updated in the database")
 
+def is_query(message):
+    is_command = message.text[0] == '/'
+    is_key_phrase = message.text in {
+        strings["en"].main_menu,
+        strings["ru"].main_menu
+    }
+    return not is_command and not is_key_phrase
 
 def register_handlers(bot):
     @bot.message_handler(Command="query")
@@ -163,15 +177,14 @@ def register_handlers(bot):
         user = crud.read_user(user_id)
         lang = user.lang
         logger.info(msg="User event", extra={"user_id": user_id, "user_message": message.text})
-        bot.reply_to(message, strings[lang].query.ask_name,
-            reply_markup=create_main_menu_button(strings[lang]))
+        bot.reply_to(message, strings[lang].ask_name,
+            reply_markup=create_main_menu_button(lang))
         bot.register_next_step_handler(message, perform_query)
 
-    @bot.message_handler(func=lambda message: message.text[0] != '/')
+    @bot.message_handler(func=lambda message: is_query(message))
     def perform_query(message):
         user_id = message.from_user.id
         username = message.from_user.username
-
 
         # Check if user is in the channel
         if check_user_in_channel_sync(config_common.channel_name, username) is False:
@@ -180,9 +193,6 @@ def register_handlers(bot):
                 f"You need to join the channel @{config_common.channel_name} to use the bot."
             )
             return
-
-        # Upload config
-        config = OmegaConf.load("./src/real_estate_telegram_bot/conf/query.yaml")
 
         user = crud.read_user(user_id)
         lang = user.lang
@@ -194,30 +204,30 @@ def register_handlers(bot):
 
             if projects:
                 if len(projects) == 1:
-                    bot.reply_to(message, strings[lang].query.result_positive_unique)
+                    bot.reply_to(message, strings[lang].result_positive_unique)
                     bot.send_message(
                         user_id, prepare_response(projects[0]),
                         parse_mode="Markdown",
-                        reply_markup=create_service_charge_button(strings[lang], projects[0].master_project_en)
+                        reply_markup=create_service_charge_button(lang, projects[0].master_project_en)
                     )
-                    bot.send_message(
-                        user_id, strings[lang].query.result_positive_report,
-                        reply_markup=create_main_menu_button(strings[lang])
-                        )
                     items = query_files(projects[0].project_name_id_buildings)
                     if items:
-                        bot.send_message(user_id, strings[lang].query.files_found.format(n=len(items)))
+                        bot.send_message(user_id, strings[lang].files_found.format(n=len(items)))
                         send_files(
                             items, user_id=user_id, bot=bot,
                             project_id=projects[0].project_id
                         )
                     else:
                         logger.info(f"No files found for project {projects[0].project_name_id_buildings}")
+                        bot.send_message(
+                            user_id, strings[lang].no_media_found,
+                            reply_markup=create_query_files_button(lang)
+                        )
                 else:
                     projects_buttons = create_query_results_buttons(
                         [project.project_name_id_buildings for project in projects]
                     )
-                    bot.reply_to(message, strings[lang].query.result_positive_nonunique, reply_markup=projects_buttons)
+                    bot.reply_to(message, strings[lang].result_positive_nonunique, reply_markup=projects_buttons)
                     #bot.register_next_step_handler(message, show_selected_project)
             else:
 
@@ -226,17 +236,17 @@ def register_handlers(bot):
                     projects_buttons = create_query_results_buttons(
                         [project.project_name_id_buildings for project in projects][:config.top_k]
                     )
-                    bot.reply_to(message, strings[lang].query.result_positive_suggestions, reply_markup=projects_buttons)
+                    bot.reply_to(message, strings[lang].result_positive_suggestions, reply_markup=projects_buttons)
                 else:
                     bot.reply_to(
-                        message, strings[lang].query.result_negative,
-                        reply_markup=create_main_menu_button(strings[lang])
+                        message, strings[lang].result_negative,
+                        reply_markup=create_main_menu_button(lang)
                     )
         except Exception as e:
             logger.error(f"An error occurred: {e}")
             bot.reply_to(
-                message, strings[lang].query.result_negative,
-                reply_markup=create_main_menu_button(strings[lang])
+                message, strings[lang].result_negative,
+                reply_markup=create_main_menu_button(lang)
             )
 
     @bot.callback_query_handler(func=lambda call: "_select_" in call.data)
@@ -251,17 +261,19 @@ def register_handlers(bot):
         project = [project for project in projects if project.project_name_id_buildings == project_name][0]
         bot.send_message(
             user_id, prepare_response(project).replace('_', " "),
-            reply_markup=create_service_charge_button(strings[lang], project.master_project_en),
+            reply_markup=create_service_charge_button(lang, project.master_project_en),
             parse_mode="Markdown"
         )
         items = query_files(project_name)
         if items:
-            bot.send_message(user_id, strings[lang].query.files_found.format(n=len(items)))
+            bot.send_message(user_id, strings[lang].files_found.format(n=len(items)))
             send_files(
                 items, user_id=user_id, bot=bot,
                 project_id=project.project_id
             )
-        bot.send_message(
-            user_id, strings[lang].query.result_positive_report,
-            reply_markup=create_main_menu_button(strings[lang])
-        )
+        else:
+            logger.info(f"No files found for project {project_name}")
+            bot.send_message(
+                user_id, strings[lang].no_media_found,
+                reply_markup=create_query_files_button(lang)
+            )

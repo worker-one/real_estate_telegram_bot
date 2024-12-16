@@ -1,12 +1,13 @@
 import logging
 import logging.config
 import os
+import re
 from time import sleep
 
 import telebot
 from dotenv import find_dotenv, load_dotenv
 from omegaconf import OmegaConf
-import re
+
 from real_estate_telegram_bot.db import crud
 from real_estate_telegram_bot.service.google import GoogleDriveAPI
 
@@ -77,6 +78,8 @@ def send_files(items: list[dict], project_id: int, user_id, bot) -> None:
                         file_telegram_id=sent_message.document.file_id
                     )
                     logger.info(f"File {file_name} updated in the database")
+                # Remove file
+                os.remove(file_name)
 
 
 @bot.message_handler(commands=["start"])
