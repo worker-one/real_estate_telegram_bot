@@ -82,9 +82,10 @@ def send_files(items: list[dict], project_id: int, user_id, bot) -> None:
                 os.remove(file_name)
 
 
-@bot.message_handler(commands=["start"])
-def start(message):
-    for file_id, _ in google_drive_api.dir_index.items():
+@bot.message_handler(commands=["drive2telegram"])
+def drive2telegram(message):
+    offset = message.text.split(" ")[1]
+    for file_id, _ in google_drive_api.dir_index.items()[:offset]:
         try:
             project = crud.query_projects_by_name(file_id)[0]
             print(f"File ID: {file_id}, Project ID: {project.project_id}")
