@@ -76,7 +76,7 @@ def create_user(
 
 def update_user(
     id: int,
-    name: Optional[str] = None,
+    username: Optional[str] = None,
     lang: Optional[str] = None,
     role: Optional[str] = None
 ) -> User:
@@ -98,8 +98,8 @@ def update_user(
     try:
         user = db.query(User).filter(User.id == id).first()
         if user:
-            if name is not None:
-                user.username = name
+            if username is not None:
+                user.username = username
             if lang is not None:
                 user.lang = lang
             if role is not None:
