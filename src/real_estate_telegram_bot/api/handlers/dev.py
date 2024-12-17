@@ -6,6 +6,8 @@ from time import sleep
 
 from omegaconf import OmegaConf
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
+from real_estate_telegram_bot.db import crud
+from real_estate_telegram_bot.service.google import GoogleDriveAPI
 
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/dev/menu.yaml")
 
@@ -13,9 +15,6 @@ config = OmegaConf.load("./src/real_estate_telegram_bot/conf/dev/menu.yaml")
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
-from real_estate_telegram_bot.db import crud
-from real_estate_telegram_bot.service.google import GoogleDriveAPI
 
 google_drive_api = GoogleDriveAPI()
 google_drive_api.load_index()
@@ -89,7 +88,7 @@ def register_handlers(bot):
     def drive2telegram(message):
         offset = int(message.text.split(" ")[1])
         items = list(google_drive_api.dir_index.items())
-        for file_id, _ in items[:offset]:
+        for file_id, _ in items[offset:]:
             try:
                 project = crud.query_projects_by_name(file_id)[0]
                 print(f"File ID: {file_id}, Project ID: {project.project_id}")

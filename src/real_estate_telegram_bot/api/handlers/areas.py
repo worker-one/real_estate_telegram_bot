@@ -24,7 +24,7 @@ def create_areas_menu_markup(lang: str) -> InlineKeyboardMarkup:
     return query_menu
 
 def create_main_menu_button(lang: str):
-    main_menu_button = ReplyKeyboardMarkup(row_width=1)
+    main_menu_button = ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
     main_menu_button.add(KeyboardButton(strings[lang].main_menu))
     return main_menu_button
 
@@ -83,7 +83,7 @@ def register_handlers(bot):
             reply_markup=create_areas_menu_markup(lang)
         )
 
-    @bot.callback_query_handler(func=lambda call: call.data == "area_names")
+    @bot.callback_query_handler(func=lambda call: call.data == "buildings_area")
     def areas_menu_callback(call):
         user_id = call.from_user.id
         user = crud.read_user(user_id)
@@ -97,7 +97,7 @@ def register_handlers(bot):
             reply_markup=create_areas_names_menu_markup(lang)
         )
 
-    @bot.callback_query_handler(func=lambda call: call.data == "buildings_area")
+    @bot.callback_query_handler(func=lambda call: call.data == "area_names")
     def get_area_names_table(call):
         user_id = call.from_user.id
         user = crud.read_user(user_id)
