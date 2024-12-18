@@ -205,10 +205,6 @@ def register_handlers(bot):
                     )
         except Exception as e:
             logger.error(f"An error occurred: {e}")
-            bot.reply_to(
-                message, strings[user.lang].result_negative,
-                reply_markup=create_main_menu_button(user.lang)
-            )
 
     @bot.callback_query_handler(func=lambda call: "_files_" in call.data)
     def show_selected_project(call, data):
@@ -240,13 +236,21 @@ def register_handlers(bot):
         logger.info(msg="User event", extra={"user_id": user_id, "user_message": message.text})
         project_files = crud.get_project_files_by_name(keyword)
         if project_files:
+            bot.send_message(user_id, strings[user.lang].files_found.format(n=len(project_files)))
             for project_file in project_files:
 
                 google_file_id = google_drive_api.find_file_id(project_file.file_name)
 
                 if google_file_id is None:
                     logger.info(f"File {project_file.file_name} not found in Google Drive")
-                    continue
+
+                    # try without extension
+                    google_file_id = google_drive_api.find_file_id(project_file.file_name.split(".")[0])
+
+                    if google_file_id is None:
+                        logger.info(f"File {project_file.file_name.split('.')[0]} not found in Google Drive")
+                        continue
+
                 # Download the file from Google Drive
                 google_drive_api.download_file(google_file_id, project_file.file_name)
 

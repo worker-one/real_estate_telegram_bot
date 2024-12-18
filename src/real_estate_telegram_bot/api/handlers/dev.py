@@ -88,6 +88,8 @@ def register_handlers(bot):
     def drive2telegram(message):
         offset = int(message.text.split(" ")[1])
         items = list(google_drive_api.dir_index.items())
+        logger.info(f"Processing {len(items)} directories")
+        bot.send_message(message.from_user.id, f"Processing {len(items)} directories")
         for file_id, _ in items[offset:]:
             try:
                 project = crud.query_projects_by_name(file_id)[0]
