@@ -59,6 +59,7 @@ strings:
     files_found: "{n} файлов найдено:"
     service_charge: "SERVICE CHARGE 📊"
     no_media_found: "Медиа файлы не найдены, попробуйте поискать по всей базе"
+    query_files: "BROCHURES 📚"
 
   project_info_template: |
     Project: *{project_name_id_buildings}*
