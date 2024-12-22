@@ -32,6 +32,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     first_message_timestamp = Column(DateTime)
+    last_message_timestamp = Column(DateTime)
     username = Column(String)
     phone_number = Column(String)
     lang = Column(String, default='en')

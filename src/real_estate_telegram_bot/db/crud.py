@@ -54,6 +54,8 @@ def create_user(
         user = User(
             id=id,
             username=username,
+            first_message_timestamp=datetime.now(),
+            last_message_timestamp=datetime.now(),
             lang=lang,
             role=role
         )
@@ -93,11 +95,12 @@ def update_user(
         user = db.query(User).filter(User.id == id).first()
         if user:
             if username is not None:
-                user.username = username
+                user.username = username 
             if lang is not None:
                 user.lang = lang
             if role is not None:
                 user.role = role
+            user.last_message_timestamp = datetime.now()
             db.commit()
             logger.info(f"User with ID {user.id} updated successfully.")
         else:
