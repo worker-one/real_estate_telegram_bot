@@ -2,14 +2,15 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "develop", "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "develop", "main" ]
+    branches: ["main"]
+  schedule:
+    - cron: "*/10 * * * *" # Runs every 10 minutes to check container status
 
 jobs:
 
   build:
-
     runs-on: ubuntu-latest
     environment: ${{ github.ref == 'refs/heads/main' && 'global' || 'dev' }}
     steps:
@@ -72,13 +73,48 @@ jobs:
           password: ${{ vars.SSH_PASSWORD }}
           script: |
             image_tag=${{ github.ref == 'refs/heads/main' && 'main' || 'dev' }}
-            current_container=$(docker ps --filter "ancestor=${{ vars.DOCKERHUB_USERNAME }}/${{ vars.project_name }}:$image_tag" --format "{{.Names}}")
+            current_container=$(docker ps --filter "ancestor=${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:$image_tag" --format "{{.Names}}")
             if [ -n "$current_container" ]; then
               docker stop $current_container
               docker rm $current_container
             fi
-            docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.project_name }}:$image_tag
-            docker stop current_container_name || true
-            docker rm current_container_name || true
+            docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:$image_tag
+            docker stop real_estate_telegram_bot_container || true
+            docker rm real_estate_telegram_bot_container || true
             docker images -a | grep none | awk '{ print $3; }' | xargs docker rmi --force
-            docker run -d --name current_container_name ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.project_name }}:$image_tag
+            docker run -d --name real_estate_telegram_bot_container
+
+  monitor:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref == 'refs/heads/main' && 'global' || 'dev' }}
+    steps:
+      - name: SSH into server and check container status
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.SERVER_HOST }}
+          username: ${{ vars.SERVER_USER }}
+          password: ${{ vars.SSH_PASSWORD }}
+          script: |
+            if ! docker ps | grep -q "real_estate_telegram_bot_container"; then
+              image_tag=${{ github.ref == 'refs/heads/main' && 'main' || 'dev' }}
+              echo "status=unhealthy" >> $GITHUB_ENV
+              echo "Restarting container..."
+              docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:$image_tag
+              docker stop real_estate_telegram_bot_container || true
+              docker rm real_estate_telegram_bot_container || true
+              docker run -d --name real_estate_telegram_bot_container ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:$image_tag
+            else
+              echo "status=healthy" >> $GITHUB_ENV
+
+      - name: Send notification if container was restarted
+        if: env.status == 'unhealthy'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: dubaibuildingbot@gmail.com
+          password: ${{ vars.EMAIL_PASSWORD }}
+          subject: "Alert: Docker Container Restarted!"
+          body: "The Docker container 'real_estate_telegram_bot_container' was down and has been restarted on the server."
+          to: dubaibuildingbot@gmail.com
+          from: dubaibuildingbot@gmail.com
