@@ -4,12 +4,13 @@ import os
 import re
 
 from omegaconf import OmegaConf
+from pydrive2.drive import GoogleDriveFile
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from real_estate_telegram_bot.api.handlers.menu import create_main_menu_button
 from real_estate_telegram_bot.api.users import check_user_in_channel_sync
+from real_estate_telegram_bot.core.google import GoogleDriveService
 from real_estate_telegram_bot.db import crud
-from real_estate_telegram_bot.service.google import GoogleDriveAPI
 
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/apps/query.yaml").app
 strings = OmegaConf.load("./src/real_estate_telegram_bot/conf/apps/query.yaml").strings
@@ -18,9 +19,7 @@ config_common = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml"
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-google_drive_api = GoogleDriveAPI()
-google_drive_api.load_index()
-
+google_drive_service = GoogleDriveService()
 
 def format_date(date):
     return date.strftime('%d.%m.%Y') if date else 'N/A'
@@ -103,33 +102,37 @@ def create_query_files_button(lang: str) -> InlineKeyboardMarkup:
     return query_files_button
 
 
-def query_files(query: str, case_sensitive: bool = False):
-    try:
-        return google_drive_api.search(query.lower().strip(), case_sensitive=case_sensitive)
-    except Exception as e:
-        logger.info(f"An error occurred: {e}")
-        return None
+def query_files_from_folder(folder_name: str) -> list[GoogleDriveFile]:
+    """   Query files from a specific folder in Google Drive.
+
+    Args:
+        folder_name (str): The name of the folder in Google Drive.
+    Returns:
+        A list of files in the folder.
+    """
+    folder_id = google_drive_service.get_folder_id(folder_name.strip())
+    drive_files = google_drive_service.list_files_in_folder(folder_id)
+    return drive_files
 
 
-def send_files(items: list[dict], project_id: int, user_id, bot) -> None:
+def send_files(items: list[GoogleDriveFile], project_id: int, user_id, bot) -> None:
     for item in items:
-        file_name = item['file_name']
-        file_id = item['id']
+        file_name = item['title']
 
         # Check that file_name has a file extension
         if not re.search(r"\.\w+$", file_name):
             file_name += ".pdf"
 
         # Check if the file is already in the database
-        project_file = crud.get_project_file_by_name(item["file_name"])
+        project_file = crud.get_project_file_by_name(file_name)
         if not project_file:
             logger.info(f"Downloading file {file_name} from Google Drive")
 
             # Download the file from Google Drive
-            google_drive_api.download_file(file_id, file_name)
+            google_drive_service.download_files(item, "./tmp")
 
             # Send the downloaded file to the user
-            with open(file_name, 'rb') as file:
+            with open(f"./tmp/{file_name}", 'rb') as file:
                 sent_message = bot.send_document(user_id, file)
                 # Add the file to the database
                 crud.add_project_file(
@@ -140,18 +143,19 @@ def send_files(items: list[dict], project_id: int, user_id, bot) -> None:
                 )
 
             # Remove file
-            os.remove(file_name)
+            os.remove(f"./tmp/{file_name}")
         else:
             logger.info(f"File {file_name} already exists in the database")
             try:
                 bot.send_document(user_id, project_file.file_telegram_id)
             except Exception as e:
                 logger.error(f"An error occurred: {e}")
-                # download file from google drive
-                google_drive_api.download_file(file_id, file_name)
+
+                # Download the file from Google Drive
+                google_drive_service.download_files(item, "./tmp")
 
                 # Send the downloaded file to the user
-                with open(file_name, 'rb') as file:
+                with open(f"./tmp/{file_name}", 'rb') as file:
                     sent_message = bot.send_document(user_id, file)
                     # Add the file to the database
                     crud.update_project_file(
@@ -161,6 +165,9 @@ def send_files(items: list[dict], project_id: int, user_id, bot) -> None:
                         file_telegram_id=sent_message.document.file_id
                     )
                     logger.info(f"File {file_name} updated in the database")
+
+                # Remove file
+                os.remove(f"./tmp/{file_name}")
 
 def is_query(message):
     is_command = message.text[0] == '/'
@@ -176,7 +183,6 @@ def register_handlers(bot):
         user_id = message.from_user.id
         user = crud.read_user(user_id)
         lang = user.lang
-        logger.info(msg="User event", extra={"user_id": user_id, "user_message": message.text})
         bot.reply_to(message, strings[lang].ask_name,
             reply_markup=create_main_menu_button(lang))
         bot.register_next_step_handler(message, perform_query)
@@ -210,7 +216,7 @@ def register_handlers(bot):
                         parse_mode="Markdown",
                         reply_markup=create_service_charge_button(lang, projects[0].master_project_en)
                     )
-                    items = query_files(projects[0].project_name_id_buildings)
+                    items = query_files_from_folder(projects[0].project_name_id_buildings)
                     if items:
                         bot.send_message(user_id, strings[lang].files_found.format(n=len(items)))
                         send_files(
@@ -264,7 +270,7 @@ def register_handlers(bot):
             reply_markup=create_service_charge_button(lang, project.master_project_en),
             parse_mode="Markdown"
         )
-        items = query_files(project_name)
+        items = query_files_from_folder(project_name)
         if items:
             bot.send_message(user_id, strings[lang].files_found.format(n=len(items)))
             send_files(

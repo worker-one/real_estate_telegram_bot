@@ -184,6 +184,8 @@ def update_user_language(user_id: int, new_language: str):
     finally:
         db.close()
 
+# Projects
+
 def read_project(project_id: int) -> Project:
     db: Session = get_session()
     result = db.query(Project).filter(Project.project_id == project_id).first()
@@ -384,6 +386,13 @@ def get_area_service_charge_by_year(area_name: str) -> pd.DataFrame:
     # Fill missing values with empty strings or NaN if needed
     df = df.fillna("")
     return df
+
+def upsert_project_service_charge(project_service_charge: ProjectServiceCharge):
+    """ Upsert a project service charge record. """
+    db: Session = get_session()
+    db.merge(project_service_charge)
+    db.commit()
+    db.close()
 
 def create_event(user_id: str, content: str, type: str) -> Event:
     """Create an event for a user."""

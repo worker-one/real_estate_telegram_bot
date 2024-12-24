@@ -35,7 +35,8 @@ dependencies = [
     "google-auth-httplib2",
     "google-auth-oauthlib",
     "pandas",
-    "cryptg"
+    "cryptg",
+    "pydrive2"
 ]
 
 [project.optional-dependencies]

@@ -6,7 +6,7 @@ from omegaconf import OmegaConf
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
 
 from real_estate_telegram_bot.db import crud
-from real_estate_telegram_bot.service import excel
+from real_estate_telegram_bot.core import excel
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

@@ -9,7 +9,7 @@ from dotenv import find_dotenv, load_dotenv
 from omegaconf import OmegaConf
 
 from real_estate_telegram_bot.db import crud
-from real_estate_telegram_bot.service.google import GoogleDriveAPI
+from real_estate_telegram_bot.core.google import GoogleDriveAPI
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
