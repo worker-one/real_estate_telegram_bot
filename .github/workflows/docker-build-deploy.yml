@@ -87,6 +87,11 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ github.ref == 'refs/heads/main' && 'global' || 'dev' }}
     steps:
+      - name: Set environment variables
+        run: |
+          echo "IMAGE_TAG=${{ github.ref == 'refs/heads/main' && 'main' || 'dev' }}" >> $GITHUB_ENV
+          echo "DOCKER_IMAGE=${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:${IMAGE_TAG}" >> $GITHUB_ENV
+    
       - name: SSH into server and check container status
         uses: appleboy/ssh-action@master
         with:
@@ -95,16 +100,15 @@ jobs:
           password: ${{ vars.SSH_PASSWORD }}
           script: |
             if ! docker ps | grep -q "real_estate_telegram_bot_container"; then
-              image_tag=${{ github.ref == 'refs/heads/main' && 'main' || 'dev' }}
               echo "status=unhealthy" >> $GITHUB_ENV
               echo "Restarting container..."
-              docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:$image_tag
+              docker pull $DOCKER_IMAGE
               docker stop real_estate_telegram_bot_container || true
               docker rm real_estate_telegram_bot_container || true
-              docker run -d --name real_estate_telegram_bot_container ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:$image_tag
+              docker run -d --name real_estate_telegram_bot_container $DOCKER_IMAGE
             else
               echo "status=healthy" >> $GITHUB_ENV
-
+  
       - name: Send notification if container was restarted
         if: env.status == 'unhealthy'
         uses: dawidd6/action-send-mail@v3
