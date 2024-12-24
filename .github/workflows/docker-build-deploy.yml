@@ -99,6 +99,8 @@ jobs:
           username: ${{ vars.SERVER_USER }}
           password: ${{ vars.SSH_PASSWORD }}
           script: |
+            set -e
+            set -x
             if ! docker ps | grep -q "real_estate_telegram_bot_container"; then
               echo "status=unhealthy" >> $GITHUB_ENV
               echo "Restarting container..."
@@ -108,6 +110,7 @@ jobs:
               docker run -d --name real_estate_telegram_bot_container $DOCKER_IMAGE
             else
               echo "status=healthy" >> $GITHUB_ENV
+            fi
   
       - name: Send notification if container was restarted
         if: env.status == 'unhealthy'
