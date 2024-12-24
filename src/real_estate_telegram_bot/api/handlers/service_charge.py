@@ -5,7 +5,7 @@ from omegaconf import OmegaConf
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
 
 from real_estate_telegram_bot.db import crud
-from real_estate_telegram_bot.service import excel
+from real_estate_telegram_bot.core import excel
 
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/apps/service_charge.yaml")
 strings = config.strings
