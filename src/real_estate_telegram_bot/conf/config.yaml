@@ -1,5 +1,5 @@
 lang: "en"
-restrict_access: true
+restrict_access: false
 channel_name: "centralparkandpdlm"
 timezone: "Asia/Dubai"
 app:
