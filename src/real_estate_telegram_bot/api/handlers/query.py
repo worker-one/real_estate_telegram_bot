@@ -193,12 +193,13 @@ def register_handlers(bot):
         username = message.from_user.username
 
         # Check if user is in the channel
-        if check_user_in_channel_sync(config_common.channel_name, username) is False:
-            bot.send_message(
-                message.chat.id,
-                f"You need to join the channel @{config_common.channel_name} to use the bot."
-            )
-            return
+        if config_common.app.restrict_access:
+            if check_user_in_channel_sync(config_common.channel_name, username) is False:
+                bot.send_message(
+                    message.chat.id,
+                    f"You need to join the channel @{config_common.channel_name} to use the bot."
+                )
+                return
 
         user = crud.read_user(user_id)
         lang = user.lang
