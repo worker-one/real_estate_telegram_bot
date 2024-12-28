@@ -57,7 +57,7 @@ def register_handlers(bot):
     def menu_menu_command(message, data: dict):
         user = data["user"]
         # Check if user is in the channel
-        if config.app.restrict_access:
+        if config.restrict_access:
             if check_user_in_channel_sync(config.channel_name, user.username) is False:
                 bot.send_message(
                     message.chat.id,
