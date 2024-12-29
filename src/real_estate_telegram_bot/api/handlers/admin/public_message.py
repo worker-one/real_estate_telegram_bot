@@ -1,6 +1,6 @@
 import logging
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, Optional
 
 import pytz  # type: ignore
@@ -111,6 +111,10 @@ def get_message_content(message, bot: TeleBot, user: User):
         }
         target_users = crud.read_users()
         for target_user in target_users:
+
+            # add random delay to avoid spamming
+            scheduled_datetime += timedelta(seconds=random.randint(10, 60))
+            
             job = scheduler.add_job(
                 send_scheduled_message,
                 "date",
