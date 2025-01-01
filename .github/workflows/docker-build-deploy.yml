@@ -2,9 +2,9 @@ name: Docker Image CI
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "develop"]
   pull_request:
-    branches: ["main"]
+    branches: ["main", "develop"]
 
 jobs:
 
@@ -71,13 +71,6 @@ jobs:
           password: ${{ vars.SSH_PASSWORD }}
           script: |
             image_tag=${{ github.ref == 'refs/heads/main' && 'main' || 'dev' }}
-            if [ -n "real_estate_telegram_bot_container" ]; then
-              docker stop real_estate_telegram_bot_container
-              docker rm real_estate_telegram_bot_container
-            fi
             docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:$image_tag
-            docker stop real_estate_telegram_bot_container || true
-            docker rm real_estate_telegram_bot_container || true
-            docker images -a | grep none | awk '{ print $3; }' | xargs docker rmi --force
-            docker run -d --name real_estate_telegram_bot_container
+            docker run -d ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:$image_tag
 
