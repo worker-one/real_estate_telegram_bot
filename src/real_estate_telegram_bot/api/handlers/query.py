@@ -6,6 +6,7 @@ import re
 from omegaconf import OmegaConf
 from pydrive2.drive import GoogleDriveFile
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
+from dotenv import find_dotenv, load_dotenv
 
 from real_estate_telegram_bot.api.handlers.menu import create_main_menu_button
 from real_estate_telegram_bot.api.users import check_user_in_channel_sync
@@ -19,6 +20,7 @@ config_common = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml"
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+load_dotenv(find_dotenv(usecwd=True, raise_error_if_not_found=True), override=True)
 google_drive_service = GoogleDriveService()
 
 def format_date(date):

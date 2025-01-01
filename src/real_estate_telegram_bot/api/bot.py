@@ -3,8 +3,8 @@ import logging.config
 import os
 
 import telebot
-from dotenv import find_dotenv, load_dotenv
 from omegaconf import OmegaConf
+from telebot.states.sync.middleware import StateMiddleware
 
 from real_estate_telegram_bot.api.handlers import (
     admin,
@@ -23,7 +23,6 @@ from real_estate_telegram_bot.api.middlewares.user import UserCallbackMiddleware
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-load_dotenv(find_dotenv(usecwd=True))  # Load environment variables from .env file
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 if BOT_TOKEN is None:
@@ -56,6 +55,7 @@ def start_bot():
         bot.setup_middleware(AntifloodMiddleware(bot, config.antiflood.time_window_seconds))
     bot.setup_middleware(UserMessageMiddleware())
     bot.setup_middleware(UserCallbackMiddleware())
+    bot.setup_middleware(StateMiddleware(bot))
 
     logger.info(msg=f"Bot `{str(bot.get_me().username)}` has started")
     bot.infinity_polling(timeout=290)

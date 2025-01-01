@@ -1,0 +1,15 @@
+strings:
+  ru:
+    no_rights: "У вас нет прав для выполнения этого действия."
+    select_table_to_import: "Выберите таблицу для импорта:"
+    please_upload_excel_file: "Пожалуйста, загрузите файл Excel"
+    please_wait: "Пожалуйста, подождите обработки данных ⌛"
+    processed_records: "Обработано {total} записей:\n🆕{created} создано\n🔄{updated} обновлено\n⚠️{errors} ошибок"
+    error_importing_data: "Ошибка импорта данных: {error}"
+  en:
+    no_rights: "You do not have the rights to perform this action."
+    select_table_to_import: "Select table to import:"
+    please_upload_excel_file: "Please upload Excel file"
+    please_wait: "Please wait while processing data ⌛"
+    processed_records: "Processed {total} records: \n 🆕 {created} created\n🔄{updated} updated\n⚠️{errors} errors"
+    error_importing_data: "Error importing data: {error}"
