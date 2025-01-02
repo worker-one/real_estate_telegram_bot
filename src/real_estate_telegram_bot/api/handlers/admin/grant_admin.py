@@ -25,7 +25,7 @@ def register_handlers(bot):
 
         # Ask for the username
         sent_message = bot.send_message(
-            user.id, strings.enter_username[user.lang], reply_markup=create_cancel_button(user.lang)
+            user.id, strings[user.lang].enter_username, reply_markup=create_cancel_button(user.lang)
         )
 
         # Move to the next step: receiving the custom message
@@ -36,7 +36,7 @@ def register_handlers(bot):
 
         # Send prompt to enter user id
         sent_message = bot.send_message(
-            user.id, strings.enter_user_id[user.lang], reply_markup=create_cancel_button(user.lang)
+            user.id, strings[user.lang].enter_user_id, reply_markup=create_cancel_button(user.lang)
         )
 
         # Move to the next step
@@ -48,5 +48,5 @@ def register_handlers(bot):
         new_admin = crud.upsert_user(id=admin_user_id, name=admin_username, role="admin")
 
         bot.send_message(
-            user.id, strings.add_admin_confirm[user.lang].format(user_id=int(new_admin.id), username=new_admin.name)
+            user.id, strings[user.lang].add_admin_confirm.format(user_id=int(new_admin.id), username=new_admin.name)
         )
