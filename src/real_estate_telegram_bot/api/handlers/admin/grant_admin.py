@@ -45,7 +45,7 @@ def register_handlers(bot):
     def read_user_id(message, bot, user, admin_username):
         admin_user_id = message.text
 
-        new_admin = crud.upsert_user(id=admin_user_id, name=admin_username, role="admin")
+        new_admin = crud.upsert_user(id=admin_user_id, username=admin_username, role="admin")
 
         bot.send_message(
             user.id, strings[user.lang].add_admin_confirm.format(user_id=int(new_admin.id), username=new_admin.name)
