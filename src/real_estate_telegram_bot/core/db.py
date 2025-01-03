@@ -58,7 +58,7 @@ def import_service_charges_from_excel(excel_file_path: str):
 
             # Check if service charge exists
             existing = read_service_charge(service_charge.charge_id)
-            
+
             if existing:
                 diffs = compare_service_charges(service_charge, existing)
                 if not diffs:
@@ -69,12 +69,12 @@ def import_service_charges_from_excel(excel_file_path: str):
                     status = "updated"
                     message = diffs
                     upsert_project_service_charge(service_charge)
-                    
+
             else:
                 upsert_project_service_charge(service_charge)
                 status = "created"
                 message = " "
-                
+
             results.append({
                 "charge_id": service_charge.charge_id,
                 "status": status,
