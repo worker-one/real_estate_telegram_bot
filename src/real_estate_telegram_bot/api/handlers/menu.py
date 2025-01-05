@@ -27,6 +27,7 @@ def create_main_menu_markup(lang: str) -> InlineKeyboardMarkup:
         InlineKeyboardButton(strings[lang].menu.areas, callback_data="_areas"),
         InlineKeyboardButton(strings[lang].menu.query_files, callback_data="_query_files"),
         InlineKeyboardButton(strings[lang].menu.service_charge, callback_data="_service_charge"),
+        InlineKeyboardButton(strings[lang].menu.calculator, callback_data="_calculator"),
         InlineKeyboardButton(strings[lang].menu.language, callback_data="_language"),
         InlineKeyboardButton(strings[lang].menu.support, callback_data="_support"),
         InlineKeyboardButton(strings[lang].menu.useful_links, callback_data="_useful_links"),
