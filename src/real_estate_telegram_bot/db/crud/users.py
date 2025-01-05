@@ -1,17 +1,13 @@
-import csv
 import logging
-import os
-from collections import defaultdict
 from datetime import datetime
 from typing import Optional
 
 import pandas as pd
-from sqlalchemy import Text, cast, func, inspect, text
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 
 from real_estate_telegram_bot.db.database import get_session
-from real_estate_telegram_bot.db.models import Event, Project, ProjectFile, ProjectServiceCharge, User
+from real_estate_telegram_bot.db.models import User
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -19,6 +15,14 @@ logger = logging.getLogger(__name__)
 def read_user(user_id: str) -> User:
     db: Session = get_session()
     result = db.query(User).filter(User.id == user_id).first()
+    db.close()
+    return result
+
+
+def read_user_by_username(username: str) -> User:
+    """Read user by username"""
+    db: Session = get_session()
+    result = db.query(User).filter(User.username == username).first()
     db.close()
     return result
 

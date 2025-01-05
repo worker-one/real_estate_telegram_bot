@@ -8,6 +8,7 @@ from telebot.states.sync.middleware import StateMiddleware
 
 from real_estate_telegram_bot.api.handlers import (
     admin,
+    apps,
     areas,
     common,
     dev,
@@ -40,6 +41,7 @@ def start_bot():
 
     # Handlers
     common.register_handlers(bot)
+    apps.calculator.register_handlers(bot)
     query.register_handlers(bot)
     query_files.register_handlers(bot)
     welcome.register_handlers(bot)

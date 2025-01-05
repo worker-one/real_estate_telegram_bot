@@ -1,0 +1,7 @@
+app:
+  base_url: "https://cae7-209-38-205-173.ngrok-free.app"
+strings:
+  en:
+    start: "Calculator"
+  ru:
+    start: "Калькулятор"
