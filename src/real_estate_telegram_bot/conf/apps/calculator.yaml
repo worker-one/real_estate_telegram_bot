@@ -1,5 +1,5 @@
 app:
-  base_url: "https://cae7-209-38-205-173.ngrok-free.app"
+  base_url: "https://causal-early-swine.ngrok-free.app"
 strings:
   en:
     start: "Calculator"
