@@ -1,5 +1,5 @@
 app:
-  base_url: "happy-carrot.duckdns.org"
+  base_url: "https://happy-carrot.duckdns.org"
 strings:
   en:
     start: "Calculator"
