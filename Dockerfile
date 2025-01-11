@@ -22,7 +22,7 @@ RUN pip install --no-cache-dir ".[all]"
 COPY . /app
 
 # Make port 80 available to the world outside this container
-EXPOSE 80
+EXPOSE 8001
 
 # Run the application when the container launches
 CMD ["python", "src/real_estate_telegram_bot/main.py"]
