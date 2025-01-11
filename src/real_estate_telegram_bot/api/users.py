@@ -14,7 +14,7 @@ config = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
 strings = OmegaConf.load("./src/real_estate_telegram_bot/conf/strings.yaml")
 
 # Load environment variables
-load_dotenv(find_dotenv(usecwd=True))
+load_dotenv(find_dotenv(usecwd=True, raise_error_if_not_found=True), override=True)
 API_ID = os.getenv("API_ID")
 API_HASH = os.getenv("API_HASH")
 if API_ID is None:

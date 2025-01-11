@@ -1,0 +1,7 @@
+app:
+  base_url: "https://happy-carrot.duckdns.org"
+strings:
+  en:
+    start: "Calculator"
+  ru:
+    start: "Калькулятор"

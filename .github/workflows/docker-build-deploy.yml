@@ -2,9 +2,9 @@ name: Docker Image CI
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "develop"]
   pull_request:
-    branches: ["main"]
+    branches: ["main", "develop"]
 
 jobs:
 
@@ -58,7 +58,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    environment: ${{ github.ref == 'refs/heads/main' && 'global' || 'dev' }}
+    environment: dev
     steps:
       - name: logging
         run: |
@@ -70,14 +70,15 @@ jobs:
           username: ${{ vars.SERVER_USER }}
           password: ${{ vars.SSH_PASSWORD }}
           script: |
-            image_tag=${{ github.ref == 'refs/heads/main' && 'main' || 'dev' }}
-            if [ -n "real_estate_telegram_bot_container" ]; then
-              docker stop real_estate_telegram_bot_container
-              docker rm real_estate_telegram_bot_container
+            current_container=$(docker ps --filter "ancestor=${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:dev" --format "{{.Names}}")
+            
+            if [ -n "$current_container" ]; then
+              echo "Stopping and removing current container: $current_container"
+              docker stop "$current_container" || true
+              docker rm "$current_container" || true
             fi
-            docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:$image_tag
-            docker stop real_estate_telegram_bot_container || true
-            docker rm real_estate_telegram_bot_container || true
-            docker images -a | grep none | awk '{ print $3; }' | xargs docker rmi --force
-            docker run -d --name real_estate_telegram_bot_container
+            docker pull ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:dev
+            docker stop current_container_name || true
+            docker rm current_container_name || true
+            docker run -d --name current_container_name -p ${{ vars.HOST_PORT }}:${{ vars.HOST_PORT }} ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME }}:dev
 

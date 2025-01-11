@@ -49,24 +49,24 @@ def register_handlers(bot):
         # Send the config
         bot.send_message(call.from_user.id, f"```yaml{config.pretty()}```", parse_mode="Markdown")
 
-    @bot.callback_query_handler(func=lambda call: call.data == "update_query_config")
-    def update_query_config(call):
-        """Handler to update the query config."""
-        # Inform the user
-        bot.send_message(call.from_user.id, "Please send the new query config as a YAML file.")
+    # @bot.callback_query_handler(func=lambda call: call.data == "update_query_config")
+    # def update_query_config(call):
+    #     """Handler to update the query config."""
+    #     # Inform the user
+    #     bot.send_message(call.from_user.id, "Please send the new query config as a YAML file.")
 
-        bot.register_next_step_handler(call.message, receive_query_config)
+    #     bot.register_next_step_handler(call.message, receive_query_config)
 
-    @bot.message_handler(content_types=["document"])
-    def receive_query_config(message):
-        """Handler to receive the query config."""
-        # Download the file
-        file_info = bot.get_file(message.document.file_id)
-        downloaded_file = bot.download_file(file_info.file_path)
+    # @bot.message_handler(content_types=["document"])
+    # def receive_query_config(message):
+    #     """Handler to receive the query config."""
+    #     # Download the file
+    #     file_info = bot.get_file(message.document.file_id)
+    #     downloaded_file = bot.download_file(file_info.file_path)
 
-        # Save the file
-        with open("./src/real_estate_telegram_bot/conf/query.yaml", "wb") as new_file:
-            new_file.write(downloaded_file)
+    #     # Save the file
+    #     with open("./src/real_estate_telegram_bot/conf/query.yaml", "wb") as new_file:
+    #         new_file.write(downloaded_file)
 
-        # Inform the user
-        bot.send_message(message.from_user.id, "Query config updated.")
+    #     # Inform the user
+    #     bot.send_message(message.from_user.id, "Query config updated.")
