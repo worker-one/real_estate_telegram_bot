@@ -1,5 +1,5 @@
 app:
-  base_url: "https://causal-early-swine.ngrok-free.app"
+  base_url: "happy-carrot.duckdns.org"
 strings:
   en:
     start: "Calculator"
