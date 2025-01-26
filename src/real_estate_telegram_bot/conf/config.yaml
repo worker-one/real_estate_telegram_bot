@@ -2,9 +2,18 @@ lang: "en"
 restrict_access: false
 channel_name: "centralparkandpdlm"
 timezone: "Asia/Dubai"
-app:
-  name: "real_estate_telegram_bot"
-  version: "0.7.0"
+name: "real_estate_telegram_bot"
+version: "0.9.0"
+apps:
+  - areas
+  - menu
+  - calculator
+  - query_files
+  - query
+  - service_charge
+routes:
+  - health
+  - calculator
 antiflood:
   enabled: true
   time_window_seconds: 2
@@ -13,3 +22,4 @@ db:
   tables:
     - users
     - events
+port: 8001

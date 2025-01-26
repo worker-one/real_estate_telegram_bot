@@ -80,12 +80,13 @@ def register_handlers(bot):
     def menu_menu_command(message: Message, data: dict):
         user = data["user"]
         # Check if user is in the channel
-        if check_user_in_channel_sync(config.channel_name, user.username) is False:
-            bot.send_message(
-                message.chat.id,
-                f"You need to join the channel @{config.channel_name} to use the bot."
-            )
-            return
+        if config.restrict_access:
+            if check_user_in_channel_sync(config.channel_name, user.username) is False:
+                bot.send_message(
+                    message.chat.id,
+                    f"You need to join the channel @{config.channel_name} to use the bot."
+                )
+                return
 
         lang = user.lang
         logger.info({"user_id": message.from_user.id, "message": message.text})
@@ -99,6 +100,15 @@ def register_handlers(bot):
     def main_menu_callback(call, data: dict):
         user = data["user"]
         lang = user.lang
+
+        # Check if user is in the channel
+        if config.restrict_access:
+            if check_user_in_channel_sync(config.channel_name, user.username) is False:
+                bot.send_message(
+                    call.message.chat.id,
+                    f"You need to join the channel @{config.channel_name} to use the bot."
+                )
+                return
         bot.send_message(
             call.message.chat.id, strings[lang].start,
             reply_markup=create_main_menu_markup(lang)
