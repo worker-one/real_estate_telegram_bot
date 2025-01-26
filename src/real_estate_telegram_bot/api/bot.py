@@ -54,8 +54,7 @@ def start_bot():
     app.include_router(health_routes.create_router(bot))
 
     # Run app in parallel
-    threading.Thread(target=uvicorn.run, kwargs={"app": app, "host": "0.0.0.0", "port": config.port}).start()
-    logger.info(f"API started on port {config.port}")
+    threading.Thread(target=uvicorn.run, kwargs={"app": app, "host": config.host, "port": config.port}).start()
 
     # Middlewares
     if config.antiflood.enabled:
