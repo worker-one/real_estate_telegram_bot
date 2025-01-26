@@ -22,4 +22,5 @@ db:
   tables:
     - users
     - events
+host: "209.38.205.173"
 port: 8001
