@@ -13,6 +13,18 @@ COPY tests ./tests
 COPY .env /app/
 
 # Install build dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    python3-pip \
+    libpango-1.0-0 \
+    libpangoft2-1.0-0 \
+    libjpeg-dev \
+    libopenjp2-7-dev \
+    libffi-dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip and install Python build tools
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel
 
 # Install optional dependencies if needed
