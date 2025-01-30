@@ -6,7 +6,7 @@ from omegaconf import OmegaConf
 from pydrive2.drive import GoogleDriveFile
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from real_estate_telegram_bot.api.handlers.menu import create_main_menu_button
+from real_estate_telegram_bot.api.handlers.apps.menu import create_main_menu_button
 from real_estate_telegram_bot.core.google import GoogleDriveService
 from real_estate_telegram_bot.db import crud
 from real_estate_telegram_bot.db.models import ProjectFile

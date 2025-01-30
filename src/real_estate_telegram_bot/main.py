@@ -1,6 +1,7 @@
 import os
 import logging
 
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -11,7 +12,7 @@ def init_db():
     from real_estate_telegram_bot.db.database import create_tables
     # Create tables
     create_tables()
-    
+
     ADMIN_USERNAME = os.getenv("ADMIN_USERNAME")
     ADMIN_USER_ID = os.getenv("ADMIN_USER_ID")
 
@@ -30,6 +31,6 @@ if __name__ == "__main__":
 
     # Initialize the database
     init_db()
-    
+
     from real_estate_telegram_bot.api.bot import start_bot
     start_bot()

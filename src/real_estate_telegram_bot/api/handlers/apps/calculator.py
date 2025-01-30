@@ -9,6 +9,7 @@ strings = config.strings
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def create_main_menu_button(lang: str):
     main_menu_button = ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
     main_menu_button.add(KeyboardButton(strings[lang].main_menu))

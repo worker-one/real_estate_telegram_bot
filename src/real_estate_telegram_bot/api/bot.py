@@ -1,25 +1,20 @@
 import logging
 import logging.config
 import os
+import threading
 
 import telebot
+import uvicorn
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from omegaconf import OmegaConf
 from telebot.states.sync.middleware import StateMiddleware
 
-from real_estate_telegram_bot.api.handlers import (
-    admin,
-    apps,
-    areas,
-    common,
-    dev,
-    menu,
-    query,
-    query_files,
-    service_charge,
-    welcome,
-)
+from real_estate_telegram_bot.api.handlers import admin, apps
 from real_estate_telegram_bot.api.middlewares.antiflood import AntifloodMiddleware
 from real_estate_telegram_bot.api.middlewares.user import UserCallbackMiddleware, UserMessageMiddleware
+from real_estate_telegram_bot.api.routes import calculator as calculator_routes
+from real_estate_telegram_bot.api.routes import health as health_routes
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -35,21 +30,31 @@ config = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
 bot = telebot.TeleBot(BOT_TOKEN, parse_mode=None)
 
 def start_bot():
-    logger.info(f"{config.app.name} v{config.app.version}")
+    logger.info(f"{config.name} v{config.version}")
 
     bot = telebot.TeleBot(BOT_TOKEN, use_class_middlewares=True)
 
     # Handlers
-    common.register_handlers(bot)
-    apps.calculator.register_handlers(bot)
-    query.register_handlers(bot)
-    query_files.register_handlers(bot)
-    welcome.register_handlers(bot)
-    menu.register_handlers(bot)
+    apps.register_handlers(bot)
     admin.register_handlers(bot)
-    areas.register_handlers(bot)
-    dev.register_handlers(bot)
-    service_charge.register_handlers(bot)
+
+    # Routes
+    app = FastAPI()
+    origins = ["*"]
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    app.include_router(calculator_routes.create_router(bot))
+    app.include_router(health_routes.create_router(bot))
+
+    # Run app in parallel
+    threading.Thread(target=uvicorn.run, kwargs={"app": app, "host": config.host, "port": config.port}).start()
 
     # Middlewares
     if config.antiflood.enabled:
