@@ -54,14 +54,13 @@ def create_router(bot: TeleBot) -> APIRouter:
     @router.post("/download/pdf")
     def download_pdf(data: RealEstateTransaction):
 
-        #initData = data.initData
-        #print(initData)
-        #if validate_web_app_data(bot.token, initData):
-        if True:
-            # web_app_data = parse_web_app_data(bot.token, initData)
+        initData = data.initData
+        print(initData)
+        if validate_web_app_data(bot.token, initData):
+            web_app_data = parse_web_app_data(bot.token, initData)
 
-            # user_id = web_app_data['user']['id']
-            user_id = data.user_id
+            user_id = web_app_data['user']['id']
+            # user_id = data.user_id
             user_dir = f"data/{user_id}"
 
             # Download file as a excel
@@ -80,13 +79,13 @@ def create_router(bot: TeleBot) -> APIRouter:
 
     @router.post("/download/excel")
     def download_excel(data: RealEstateTransaction):
-        #initData = data.initData
-        #if validate_web_app_data(bot.token, initData):
-        if True:
-            #web_app_data = parse_web_app_data(bot.token, initData)
+        initData = data.initData
+        if validate_web_app_data(bot.token, initData):
+        #if True:
+            web_app_data = parse_web_app_data(bot.token, initData)
 
-            #user_id = web_app_data['user']['id']
-            user_id = data.user_id
+            user_id = web_app_data['user']['id']
+            #user_id = data.user_id
             user_dir = f"data/{user_id}"
             filepath = f"{user_dir}/calculator.xlsx"
 
