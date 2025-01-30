@@ -42,6 +42,7 @@ class RealEstateTransaction(BaseModel):
     managersChequePercent: float
     paymentPlan: float
     totalPrice: float
+    initData: str
     user_id: int
 
 
