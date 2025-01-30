@@ -88,6 +88,10 @@ def create_router(bot: TeleBot) -> APIRouter:
             user_id = web_app_data['user']['id']
             #user_id = data.user_id
             user_dir = f"data/{user_id}"
+            
+            if not os.path.exists(user_dir):
+                os.makedirs(user_dir)
+                
             filepath = f"{user_dir}/calculator.xlsx"
 
             format_calculator_result(data, filepath)
