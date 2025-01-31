@@ -1,9 +1,10 @@
 import os
+
 import openpyxl
-from xlsx2html import xlsx2html
 import weasyprint
-from openpyxl.styles import Alignment, PatternFill, Font
+from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils import get_column_letter
+from xlsx2html import xlsx2html
 
 
 def format_areas(filepath: str, header_color: str = "92d050"):
@@ -150,20 +151,20 @@ def format_calculator_result(transaction, filename: str):
     ws.append(["3. DLD Registration Trustee fee + 5%VAT", f"AED {transaction.registrationTrusteeFee}"])
     ws.append(["4. Buyer's agent commission 2% + 5%VAT", f"AED {transaction.agentCommission}"])
 
-    manager_cheque_string = f"Manager cheque {transaction.managersChequePercent}%"
-    parties = [
-        "Seller" if transaction.sellerCheque else None,
-        "DLD" if transaction.dldCheque else None,
-        "Comission" if transaction.commissionCheque else None
-    ]
-    parties = [party for party in parties if party]
-    if len(parties) > 1:
-        manager_cheque_string += f" ({', '.join(parties)})"
-    if len(parties) == 1:
-        manager_cheque_string += f" ({parties[0]})"
+    if transaction.managersChequePercent:
+        manager_cheque_string = f"Manager cheque {transaction.managersChequePercent}%"
+        parties = [
+            "Seller" if transaction.sellerCheque else None,
+            "DLD" if transaction.dldCheque else None,
+            "Comission" if transaction.comissionCheque else None
+        ]
+        parties = [party for party in parties if party]
+        if len(parties) > 1:
+            manager_cheque_string += f" ({', '.join(parties)})"
+        if len(parties) == 1:
+            manager_cheque_string += f" ({parties[0]})"
 
-    ws.append([manager_cheque_string, f"AED {transaction.managersChequeAmount}"])
-
+        ws.append([manager_cheque_string, f"AED {transaction.managersChequeAmount}"])
     # Add blank row
     ws.append([])
 
