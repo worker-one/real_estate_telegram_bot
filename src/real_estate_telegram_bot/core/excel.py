@@ -156,7 +156,7 @@ def format_calculator_result(transaction, filename: str):
         parties = [
             "Seller" if transaction.sellerCheque else None,
             "DLD" if transaction.dldCheque else None,
-            "Comission" if transaction.comissionCheque else None
+            "Comission" if transaction.commissionCheque else None
         ]
         parties = [party for party in parties if party]
         if len(parties) > 1:
