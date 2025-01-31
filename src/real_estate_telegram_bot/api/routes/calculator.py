@@ -34,10 +34,10 @@ class RealEstateTransaction(BaseModel):
     mortgagePaymentsDates: Optional[list[str]] = None
     sellerCheque: bool
     dldCheque: bool
-    commissionCheque: bool  # Fixed typo from comissionCheque
-    managersChequeAmount: float
-    managersChequePercent: float
-    paymentPlan: float
+    commissionCheque: Optional[bool] = None
+    managersChequeAmount: Optional[float] = None
+    managersChequePercent: Optional[float] = None
+    paymentPlan: Optional[float] = None
     totalPrice: float
     initData: str
 
