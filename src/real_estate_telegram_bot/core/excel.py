@@ -151,7 +151,6 @@ def format_calculator_result(transaction, filename: str):
     ws.append(["3. DLD Registration Trustee fee + 5%VAT", f"AED {transaction.registrationTrusteeFee}"])
     ws.append(["4. Buyer's agent commission 2% + 5%VAT", f"AED {transaction.agentCommission}"])
 
-
     if transaction.managersChequePercent:
         manager_cheque_string = f"Manager cheque {transaction.managersChequePercent}%"
         parties = [
@@ -166,7 +165,6 @@ def format_calculator_result(transaction, filename: str):
             manager_cheque_string += f" ({parties[0]})"
 
         ws.append([manager_cheque_string, f"AED {transaction.managersChequeAmount}"])
-
     # Add blank row
     ws.append([])
 
