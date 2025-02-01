@@ -67,7 +67,9 @@ def create_router(bot: TeleBot) -> APIRouter:
             # Download file as a excel
             if not os.path.exists(user_dir):
                 os.makedirs(user_dir, exist_ok=True)
-            filepath = f"{user_dir}/calculator.xlsx"
+                
+            filename = data.projectName.replace(" ", "_")
+            filepath = f"{user_dir}/{filename}.xlsx"
             format_calculator_result(data, filepath)
 
             # Convert the excel file to pdf
@@ -89,8 +91,9 @@ def create_router(bot: TeleBot) -> APIRouter:
             
             if not os.path.exists(user_dir):
                 os.makedirs(user_dir, exist_ok=True)
-                
-            filepath = f"{user_dir}/calculator.xlsx"
+
+            filename = data.projectName.replace(" ", "_")
+            filepath = f"{user_dir}/{filename}.xlsx"
 
             format_calculator_result(data, filepath)
 
