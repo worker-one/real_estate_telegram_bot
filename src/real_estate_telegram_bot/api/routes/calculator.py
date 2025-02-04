@@ -56,7 +56,7 @@ def create_router(bot: TeleBot) -> APIRouter:
     def download_pdf(data: RealEstateTransaction):
 
         initData = data.initData
-        print(initData)
+        print(data)
         if validate_web_app_data(bot.token, initData):
             web_app_data = parse_web_app_data(bot.token, initData)
 
@@ -67,7 +67,7 @@ def create_router(bot: TeleBot) -> APIRouter:
             # Download file as a excel
             if not os.path.exists(user_dir):
                 os.makedirs(user_dir, exist_ok=True)
-                
+
             filename = data.projectName.replace(" ", "_")
             filepath = f"{user_dir}/{filename}.xlsx"
             format_calculator_result(data, filepath)
@@ -88,7 +88,7 @@ def create_router(bot: TeleBot) -> APIRouter:
 
             user_id = web_app_data['user']['id']
             user_dir = f"data/{user_id}"
-            
+
             if not os.path.exists(user_dir):
                 os.makedirs(user_dir, exist_ok=True)
 

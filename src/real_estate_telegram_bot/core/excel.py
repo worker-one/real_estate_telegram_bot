@@ -152,7 +152,7 @@ def format_calculator_result(transaction, filename: str):
     ws.append(["4. Buyer's agent commission 2% + 5%VAT", f"AED {transaction.agentCommission}"])
 
     if transaction.managersChequePercent:
-        manager_cheque_string = f"Manager cheque {transaction.managersChequePercent}%"
+        manager_cheque_string = f"5. Manager cheque {transaction.managersChequePercent}%"
         parties = [
             "Seller" if transaction.sellerCheque else None,
             "DLD" if transaction.dldCheque else None,
