@@ -1,5 +1,5 @@
 app:
-  base_url: "https://happy-carrot.duckdns.org"
+  base_url: "https://real-estate-telegram-app-admio.ondigitalocean.app"
 strings:
   en:
     start: "Calculator"
