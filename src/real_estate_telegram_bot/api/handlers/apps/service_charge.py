@@ -10,8 +10,11 @@ from real_estate_telegram_bot.core import excel
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/apps/service_charge.yaml")
 strings = config.strings
 
-logging.basicConfig(level=logging.INFO)
+# Set up logging
 logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 def create_areas_names_menu_markup(lang):
     areas = [

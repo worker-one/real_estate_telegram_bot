@@ -7,8 +7,11 @@ from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/admin/menu.yaml")
 
 
-logging.basicConfig(level=logging.INFO)
+# Set up logging
 logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 
 def create_admin_menu_markup(lang) -> InlineKeyboardMarkup:

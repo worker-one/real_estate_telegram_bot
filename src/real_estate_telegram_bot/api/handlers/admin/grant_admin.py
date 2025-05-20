@@ -12,8 +12,11 @@ from real_estate_telegram_bot.db import crud
 strings = OmegaConf.load("./src/real_estate_telegram_bot/conf/admin/grant_admin.yaml")
 
 # Initialize logging
-logging.basicConfig(level=logging.INFO)
+# Set up logging
 logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 
 # React to any text if not command

@@ -11,8 +11,11 @@ from sqlalchemy.pool import NullPool
 from .models import Base, Event, User
 
 # Load logging configuration with OmegaConf
-logging.basicConfig(level=logging.INFO)
+# Set up logging
 logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 load_dotenv(find_dotenv(usecwd=True))
 

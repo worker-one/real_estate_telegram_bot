@@ -9,8 +9,11 @@ lang = config.lang
 strings = config.stringsstrings = OmegaConf.load("./src/real_estate_telegram_bot/conf/strings.yaml")
 
 
-logging.basicConfig(level=logging.INFO)
+# Set up logging
 logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 def register_handlers(bot):
     @bot.message_handler(commands=['start'])

@@ -11,8 +11,11 @@ from omegaconf import OmegaConf
 from real_estate_telegram_bot.db import crud
 from real_estate_telegram_bot.core.google import GoogleDriveAPI
 
-logging.basicConfig(level=logging.INFO)
+# Set up logging
 logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 load_dotenv(find_dotenv(usecwd=True))  # Load environment variables from .env file
 BOT_TOKEN = os.getenv("BOT_TOKEN")
