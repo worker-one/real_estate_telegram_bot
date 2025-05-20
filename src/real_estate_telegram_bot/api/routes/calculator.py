@@ -12,8 +12,11 @@ from real_estate_telegram_bot.core.excel import format_calculator_result, to_pdf
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/apps/calculator.yaml")
 strings = config.strings
 
-logging.basicConfig(level=logging.INFO)
+# Set up logging
 logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 from datetime import date
 

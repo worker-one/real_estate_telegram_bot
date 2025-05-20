@@ -14,8 +14,11 @@ from real_estate_telegram_bot.db.models import ProjectFile
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/apps/query_files.yaml")
 strings = config.strings
 
-logging.basicConfig(level=logging.INFO)
+# Set up logging
 logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 # Initialize Google Drive service
 google_drive_service = GoogleDriveService()

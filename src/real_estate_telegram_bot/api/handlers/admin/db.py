@@ -9,13 +9,18 @@ from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 from omegaconf import OmegaConf
 from real_estate_telegram_bot.db import crud
 from real_estate_telegram_bot.core.db import import_projects_from_excel, import_service_charges_from_excel
+from real_estate_telegram_bot.db.models import Project, ProjectServiceCharge
+import pandas as pd
 
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
 app_config = OmegaConf.load("./src/real_estate_telegram_bot/conf/admin/db.yaml")
 strings = app_config.strings
 
-logging.basicConfig(level=logging.INFO)
+# Set up logging
 logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 
 class ImportStates(StatesGroup):
@@ -90,6 +95,27 @@ def register_handlers(bot):
             with data["state"].data() as data_items:
                 table_type = data_items["table_type"]
             
+            # Check that all column names are correct
+            if table_type == "import_projects":
+                model = Project
+            else:
+                model = ProjectServiceCharge
+
+            expected_columns = [c.name for c in model.__table__.columns]
+            df = pd.read_excel(temp_file)
+            file_columns = list(df.columns)
+            missing = [col for col in expected_columns if col not in file_columns]
+            extra = [col for col in file_columns if col not in expected_columns]
+            if missing or extra:
+                msg = strings[user.lang].column_mismatch.format(
+                    missing=", ".join(missing) if missing else "-",
+                    extra=", ".join(extra) if extra else "-"
+                )
+                bot.send_message(message.chat.id, msg)
+                os.remove(temp_file)
+                data["state"].delete()
+                return
+
             bot.send_message(message.chat.id, strings[user.lang].please_wait)
             if table_type == "import_projects":
                 results_df = import_projects_from_excel(temp_file)

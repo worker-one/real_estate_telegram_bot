@@ -17,8 +17,11 @@ config = OmegaConf.load("./src/real_estate_telegram_bot/conf/apps/query.yaml").a
 strings = OmegaConf.load("./src/real_estate_telegram_bot/conf/apps/query.yaml").strings
 config_common = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")
 
-logging.basicConfig(level=logging.INFO)
+# Set up logging
 logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 load_dotenv(find_dotenv(usecwd=True, raise_error_if_not_found=True), override=True)
 google_drive_service = GoogleDriveService()

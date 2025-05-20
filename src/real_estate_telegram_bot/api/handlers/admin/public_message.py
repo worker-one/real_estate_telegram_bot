@@ -28,8 +28,11 @@ user_data: dict[str, Any] = {}
 # Data structure to store scheduled messages
 scheduled_messages: dict[str, dict] = {}
 
-logging.basicConfig(level=logging.INFO)
+# Set up logging
 logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 
 def create_keyboard_markup(lang: str) -> InlineKeyboardMarkup:

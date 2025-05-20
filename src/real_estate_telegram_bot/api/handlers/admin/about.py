@@ -6,8 +6,11 @@ import logging.config
 from omegaconf import OmegaConf
 
 # Set up logging
-logging.basicConfig(level=logging.INFO)
+# Set up logging
 logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 # Load configuration
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/config.yaml")

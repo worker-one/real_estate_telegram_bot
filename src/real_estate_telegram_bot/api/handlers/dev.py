@@ -12,8 +12,11 @@ from real_estate_telegram_bot.db import crud
 config = OmegaConf.load("./src/real_estate_telegram_bot/conf/dev/menu.yaml")
 
 
-logging.basicConfig(level=logging.INFO)
+# Set up logging
 logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 def create_dev_menu_markup(lang) -> InlineKeyboardMarkup:
     """Create the dev menu markup."""

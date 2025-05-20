@@ -16,8 +16,11 @@ from real_estate_telegram_bot.api.middlewares.user import UserCallbackMiddleware
 from real_estate_telegram_bot.api.routes import calculator as calculator_routes
 from real_estate_telegram_bot.api.routes import health as health_routes
 
-logging.basicConfig(level=logging.INFO)
+# Set up logging
 logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
