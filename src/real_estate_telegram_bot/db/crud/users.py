@@ -109,7 +109,7 @@ def update_user(
                 user.role = role
             user.last_message_timestamp = datetime.now()
             db.commit()
-            logger.info(f"User with ID {user.id} updated successfully.")
+            logger.debug(f"User with ID {user.id} updated successfully.")
         else:
             logger.error(f"User with ID {id} not found.")
             raise ValueError(f"User with ID {id} not found.")
