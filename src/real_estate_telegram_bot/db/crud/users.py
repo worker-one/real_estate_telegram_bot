@@ -68,7 +68,7 @@ def create_user(
         )
         db.add(user)
         db.commit()
-        logger.info(f"User with name {user.username} added successfully.")
+        logger.debug(f"User with name {user.username} added successfully.")
     except Exception as e:
         db.rollback()
         logger.error(f"Error adding user with name {username}: {e}")
