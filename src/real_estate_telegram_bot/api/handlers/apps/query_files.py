@@ -174,7 +174,6 @@ def register_handlers(bot):
         user_id = message.from_user.id
         project_name = message.text
 
-        logger.info(msg="User event", extra={"user_id": user_id, "user_message": message.text})
         try:
             projects = crud.query_projects_by_name(project_name, mode="ilike")
 
@@ -250,8 +249,6 @@ def register_handlers(bot):
     def perform_keyword_search(message, user):
         user_id = message.from_user.id
         keyword = message.text
-
-        logger.info(msg="User event", extra={"user_id": user_id, "user_message": message.text})
         project_files = crud.get_project_files_by_name(keyword)
         if project_files:
             bot.send_message(user_id, strings[user.lang].files_found.format(n=len(project_files)))
